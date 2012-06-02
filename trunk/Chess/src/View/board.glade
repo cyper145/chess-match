@@ -1,30 +1,38 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy project-wide -->
   <object class="GtkWindow" id="window1">
+    <property name="can_focus">False</property>
     <property name="title" translatable="yes">Chess-Match</property>
     <property name="resizable">False</property>
     <property name="window_position">center-always</property>
-    <signal name="destroy" handler="on_window1_destroy"/>
+    <signal name="destroy" handler="on_window1_destroy" swapped="no"/>
     <child>
       <object class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
         <child>
           <object class="GtkMenuBar" id="menubar1">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <child>
               <object class="GtkMenuItem" id="menuitem1">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">_File</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu" id="menu1">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <child>
                       <object class="GtkImageMenuItem" id="imagemenuitem1">
                         <property name="label">gtk-new</property>
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </object>
@@ -33,6 +41,8 @@
                       <object class="GtkImageMenuItem" id="imagemenuitem2">
                         <property name="label">gtk-open</property>
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </object>
@@ -41,6 +51,8 @@
                       <object class="GtkImageMenuItem" id="imagemenuitem3">
                         <property name="label">gtk-save</property>
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </object>
@@ -49,6 +61,8 @@
                       <object class="GtkImageMenuItem" id="imagemenuitem4">
                         <property name="label">gtk-save-as</property>
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </object>
@@ -56,12 +70,15 @@
                     <child>
                       <object class="GtkSeparatorMenuItem" id="separatormenuitem1">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                       </object>
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="imagemenuitem5">
                         <property name="label">gtk-quit</property>
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </object>
@@ -73,15 +90,20 @@
             <child>
               <object class="GtkMenuItem" id="menuitem2">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">_Edit</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu" id="menu2">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <child>
                       <object class="GtkImageMenuItem" id="imagemenuitem6">
                         <property name="label">gtk-cut</property>
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </object>
@@ -90,6 +112,8 @@
                       <object class="GtkImageMenuItem" id="imagemenuitem7">
                         <property name="label">gtk-copy</property>
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </object>
@@ -98,6 +122,8 @@
                       <object class="GtkImageMenuItem" id="imagemenuitem8">
                         <property name="label">gtk-paste</property>
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </object>
@@ -106,6 +132,8 @@
                       <object class="GtkImageMenuItem" id="imagemenuitem9">
                         <property name="label">gtk-delete</property>
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </object>
@@ -117,6 +145,8 @@
             <child>
               <object class="GtkMenuItem" id="menuitem3">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">_View</property>
                 <property name="use_underline">True</property>
               </object>
@@ -124,15 +154,20 @@
             <child>
               <object class="GtkMenuItem" id="menuitem4">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">_Help</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu" id="menu3">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <child>
                       <object class="GtkImageMenuItem" id="imagemenuitem10">
                         <property name="label">gtk-about</property>
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </object>
@@ -144,6 +179,7 @@
           </object>
           <packing>
             <property name="expand">False</property>
+            <property name="fill">True</property>
             <property name="position">0</property>
           </packing>
         </child>
@@ -168,7 +204,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -183,7 +220,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked" object="'a1'"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" object="'a1'" swapped="yes"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -200,7 +238,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -217,7 +256,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -234,7 +274,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -251,7 +292,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -268,7 +310,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -285,7 +328,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -302,7 +346,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -317,7 +362,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -334,7 +380,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -351,7 +398,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -368,7 +416,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -385,7 +434,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -402,7 +452,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -419,7 +470,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -436,7 +488,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -451,7 +504,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -468,7 +522,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -485,7 +540,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -502,7 +558,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -519,7 +576,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -536,7 +594,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -553,7 +612,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -570,7 +630,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -585,7 +646,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -602,7 +664,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -619,7 +682,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -636,7 +700,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -653,7 +718,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -670,6 +736,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <property name="use_action_appearance">False</property>
                     <child>
                       <placeholder/>
                     </child>
@@ -686,7 +753,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -703,7 +771,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -718,7 +787,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -735,7 +805,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -752,7 +823,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -769,7 +841,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -786,7 +859,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -803,7 +877,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -820,7 +895,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -837,7 +913,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -852,7 +929,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -869,7 +947,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -886,7 +965,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -903,7 +983,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -920,7 +1001,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -937,7 +1019,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -954,7 +1037,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -971,7 +1055,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -986,7 +1071,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -1003,7 +1089,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -1020,7 +1107,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -1037,7 +1125,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -1054,7 +1143,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -1071,7 +1161,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -1088,7 +1179,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -1105,7 +1197,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -1116,7 +1209,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -1131,7 +1225,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -1146,7 +1241,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -1161,7 +1257,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -1176,7 +1273,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -1191,7 +1289,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -1206,7 +1305,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="pieza_clicked"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="pieza_clicked" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -1226,74 +1326,92 @@
             <child>
               <object class="GtkVBox" id="vbox2">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <child>
                   <object class="GtkLabel" id="label1">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="xalign">0.25</property>
                     <property name="label" translatable="yes">label</property>
                     <attributes>
                       <attribute name="weight" value="heavy"/>
                       <attribute name="foreground" value="#05d4233fef0d"/>
-                      <attribute name="scale" value="2,000000"/>
+                      <attribute name="scale" value="2"/>
                     </attributes>
                   </object>
                   <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="label2">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="xalign">0.25</property>
                     <property name="label" translatable="yes">label</property>
                     <attributes>
                       <attribute name="weight" value="heavy"/>
                       <attribute name="foreground" value="#10591752f2a1"/>
-                      <attribute name="scale" value="2,000000"/>
+                      <attribute name="scale" value="2"/>
                     </attributes>
                   </object>
                   <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkHBox" id="hbox2">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <child>
                       <placeholder/>
                     </child>
                     <child>
                       <object class="GtkScrolledWindow" id="scrolledwindow1">
+                        <property name="width_request">30</property>
+                        <property name="height_request">50</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="hscrollbar_policy">automatic</property>
-                        <property name="vscrollbar_policy">never</property>
+                        <property name="vscrollbar_policy">automatic</property>
                         <child>
                           <object class="GtkTextView" id="textview1">
+                            <property name="width_request">30</property>
+                            <property name="height_request">50</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                           </object>
                         </child>
                       </object>
                       <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
                         <property name="padding">40</property>
                         <property name="position">13</property>
                       </packing>
                     </child>
                   </object>
                   <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
                     <property name="position">2</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkHButtonBox" id="hbuttonbox1">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <child>
                       <object class="GtkButton" id="button65">
                         <property name="label" translatable="yes">&lt;&lt;</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <property name="use_action_appearance">False</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1310,6 +1428,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <property name="use_action_appearance">False</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1319,18 +1438,22 @@
                     </child>
                   </object>
                   <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
                     <property name="position">3</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkHButtonBox" id="hbuttonbox2">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <child>
                       <object class="GtkButton" id="button67">
                         <property name="label" translatable="yes">Draw</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <property name="use_action_appearance">False</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1344,6 +1467,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <property name="use_action_appearance">False</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1353,11 +1477,15 @@
                     </child>
                   </object>
                   <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
                     <property name="position">4</property>
                   </packing>
                 </child>
               </object>
               <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
                 <property name="padding">35</property>
                 <property name="position">1</property>
               </packing>

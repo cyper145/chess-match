@@ -10,9 +10,12 @@ class ControlVista():
         self.builder= gtk.Builder()
         self.builder.add_from_file('View/board.glade' )
         self.ventanaprincipal = self.builder.get_object("window1" )
+	self.text = self.builder.get_object("textview1" )
 
+	self.buff=gtk.TextBuffer()
+	self.text.set_buffer(self.buff)
 	self.controlP=cp
-
+	
         self.square=[]
         for k in range(8):
             self.square.append([0]*8)
@@ -59,8 +62,11 @@ class ControlVista():
        image = gtk.Image()	
        for a in range(8):
             for b in range(8):
-		image = gtk.Image()	
-		image.set_from_file('Images/set1/' + tabler[a][b]+'.jpg')
+		image = gtk.Image()
+		if (tabler[a][b] != 'Blanco' and tabler[a][b] != 'Negro'):	
+			image.set_from_file(tabler[a][b].imagen)
+		else:
+			image.set_from_file('Images/set1/'+tabler[a][b]+'.jpg')
        		image.show()
 		self.square[a][b].set_image(image)
      
@@ -75,6 +81,7 @@ class ControlVista():
     def pieza_clicked(self,widget, data=None):
       
       k=0
+      print "Pieza clicked!!!"	
       #######################################  
       #Determina la primer y segunda casilla
       #	clickeada
@@ -97,8 +104,18 @@ class ControlVista():
 	  
 	except:
 	   k = k+1	
-	
      
 #########################################################################################################
+
+
+#########################################################################################################
+    def set_text(self,jugada):
+	print "set text"
+		
+	self.buff.insert_at_cursor(jugada)
+	self.text.set_buffer(self.buff)
+	return
+#########################################################################################################
+ 
 
         
