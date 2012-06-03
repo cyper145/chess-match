@@ -30,7 +30,6 @@ class Torre():
 #####################################################################################################################
 	def validar_Movimiento(self, des,tablero):
 
-		print "Validar torre"
 		jugada = False
 		c=1
 		self.enroque=False
@@ -41,7 +40,7 @@ class Torre():
 				c = -1
 	   		k= self.casilla[0]+ c
 	   		while k != des[0]:	
-				if (tablero[k][self.casilla[1]] != 'Blanco' and tablero[k][self.casilla[1]]!= 'Negro'):
+				if (tablero[k][self.casilla[1]] != None):
 					jugada= False
 				k=k+c	
 
@@ -52,7 +51,7 @@ class Torre():
 				c = -1
 	   		k= self.casilla[1]+ c
 	   		while k != des[1]:	
-				if (tablero[self.casilla[0]][k] != 'Blanco' and tablero[self.casilla[0]][k]!= 'Negro'):
+				if (tablero[self.casilla[0]][k] != None):
 					jugada= False
 				k=k+c	
 
@@ -60,4 +59,67 @@ class Torre():
 
 		return jugada
 
+#####################################################################################################################
+
+
+
+#####################################################################################################################
+	def verificar_descubierto(self,tablero):
+
+		
+		
+		jugada = False		
+		jugada_abajo=True
+		jugada_arriba=True
+		jugada_izq=True
+		jugada_der=True
+
+		#verifica horizontal
+		#------------------------------------------------------------------------
+		col=self.casilla[1]-1
+		fil=self.casilla[0]
+		while(col>=0):
+			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+				break
+			
+			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+				jugada_abajo=False
+				break
+			col=col-1
+		col=self.casilla[1]+1
+		while(col<=7):
+			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color))):
+				break
+			
+			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+				jugada_arriba=False
+				break
+			col=col+1
+
+
+		#verifica vertical
+		#------------------------------------------------------------------------
+		col=self.casilla[1]
+		fil=self.casilla[0]-1
+		while(fil>=0):
+			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+				break
+			
+			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+				jugada_izq=False
+				break
+			fil=fil-1
+		fil=self.casilla[0]+1
+		while(fil<=7):
+			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color))):
+				break
+			
+			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+				jugada_der=False
+				break
+			fil=fil+1
+		
+		jugada= (jugada_abajo and jugada_arriba) and (jugada_izq and jugada_der)
+		
+		return jugada
 #####################################################################################################################

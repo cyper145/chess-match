@@ -31,7 +31,6 @@ class Rey():
 #####################################################################################################################
 	def validar_Movimiento(self, des,tablero):
 
-		print "Validar rey"
 		jugada=False
 		
 		if((abs(self.casilla[0]-des[0])<=1) and (abs(self.casilla[1]-des[1])<=1)):
@@ -42,15 +41,32 @@ class Rey():
 		#Enroque corto
 		#-------------------------------------------------------------------------
 		if((des[1]==6 and self.enroque) and (des[0]==self.casilla[0])):
-			if(tablero[des[0]][5][-1]=='o' and tablero[des[0]][6][-1]=='o'):
+			if(tablero[des[0]][5]==None and tablero[des[0]][6]==None):
 				try:
 					if(tablero[des[0]][7].enroque):				
 						jugada=True
 						self.enroque=False
 						self.aviso=True
+						return jugada
 				except:
 					print"No hay torre!!"
-					
+		#-------------------------------------------------------------------------
+
+	
+		#Enroque largo
+		#-------------------------------------------------------------------------
+		if((des[1]==2 and self.enroque) and (des[0]==self.casilla[0])):
+			if((tablero[des[0]][3]==None and tablero[des[0]][2]==None)and tablero[des[0]][1]==None):
+				try:
+					if(tablero[des[0]][0].enroque):				
+						jugada=True
+						self.enroque=False
+						self.aviso=True
+						return jugada
+				except:
+					print"No hay torre!!"
+		#-------------------------------------------------------------------------
+
 		return jugada
 
 #####################################################################################################################

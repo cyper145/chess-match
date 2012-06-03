@@ -29,7 +29,7 @@ class Caballo():
 #####################################################################################################################
 	def validar_Movimiento(self, des,tablero):
 
-		print "Validar caballo"
+		
 		jugada = False
 
 		if (abs(self.casilla[0]-des[0]) == 2 and abs(self.casilla[1]-des[1])==1):
