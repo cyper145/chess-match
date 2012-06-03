@@ -18,6 +18,7 @@ class ControlVista():
 	self.text = self.builder.get_object("textview1" )
         timeBlackLabel=self.builder.get_object("label1" )
         timeWhiteLabel=self.builder.get_object("label2" )
+	self.mensaje=self.builder.get_object("label3" )
 	
 	#variables de tiempo
 	#------------------------------------------------------------------
@@ -50,7 +51,7 @@ class ControlVista():
             for b in range(8):
 		
                 self.square[a][b]= self.builder.get_object("button"+ str((a*8)+(b+1)) )
-		print  self.square[a][b] 
+		#print  self.square[a][b] 
 
 
 
@@ -64,8 +65,8 @@ class ControlVista():
 	self.primer_click= True
 	self.jugada=[]
 	
-	self.tiempoBlanco.start()
-	self.tiempoNegro.start()
+	#self.tiempoBlanco.start()
+	#self.tiempoNegro.start()
 		
 #########################################################################################################
 
@@ -92,10 +93,13 @@ class ControlVista():
        for a in range(8):
             for b in range(8):
 		image = gtk.Image()
-		if (tabler[a][b] != 'Blanco' and tabler[a][b] != 'Negro'):	
+		if (tabler[a][b] != None):	
 			image.set_from_file(tabler[a][b].imagen)
 		else:
-			image.set_from_file('Images/set1/'+tabler[a][b]+'.jpg')
+			if(a+b)%2==0:			
+				image.set_from_file('Images/set1/'+'Negro'+'.jpg')
+			else:		
+				image.set_from_file('Images/set1/'+'Blanco'+'.jpg')
        		image.show()
 		self.square[a][b].set_image(image)
      
@@ -110,7 +114,6 @@ class ControlVista():
     def pieza_clicked(self,widget, data=None):
       
       k=0
-      print "Pieza clicked!!!"	
       #######################################  
       #Determina la primer y segunda casilla
       #	clickeada
@@ -139,8 +142,7 @@ class ControlVista():
 
 #########################################################################################################
     def set_text(self,jugada):
-	print "set text"
-		
+			
 	self.buff.insert_at_cursor(jugada)
 	self.text.set_buffer(self.buff)
 	return
@@ -153,5 +155,10 @@ class ControlVista():
 	self.tiempoBlanco.turno=not self.tiempoBlanco.turno
 	self.tiempoNegro.turno=not self.tiempoNegro.turno
 	self.lock.release()	
+#########################################################################################################
+
+#########################################################################################################
+    def set_mensaje(self,texto):
+	self.mensaje.set_text(texto)
 #########################################################################################################
  
