@@ -1,5 +1,8 @@
 import gtk
 from View import *
+from ControlTime import*
+
+
 
 class ControlVista():
 
@@ -7,14 +10,35 @@ class ControlVista():
 #########################################################################################################
     def __init__(self, cp):
 
+	gtk.gdk.threads_init()
+	self.lock = threading.Lock()
         self.builder= gtk.Builder()
         self.builder.add_from_file('View/board.glade' )
         self.ventanaprincipal = self.builder.get_object("window1" )
 	self.text = self.builder.get_object("textview1" )
+        timeBlackLabel=self.builder.get_object("label1" )
+        timeWhiteLabel=self.builder.get_object("label2" )
+	
+	#variables de tiempo
+	#------------------------------------------------------------------
+	self.hb=0	
+	self.mb=5
+	self.sb=0
+	self.hn=0	
+	self.mn=5
+	self.sn=0
+	#------------------------------------------------------------------
+
+
 
 	self.buff=gtk.TextBuffer()
 	self.text.set_buffer(self.buff)
 	self.controlP=cp
+	
+	self.tiempoBlanco=Timer(timeWhiteLabel,0,5,0)
+	self.tiempoBlanco.turno=True
+	self.tiempoNegro=Timer(timeBlackLabel,0,5,0)
+
 	
         self.square=[]
         for k in range(8):
@@ -28,11 +52,9 @@ class ControlVista():
                 self.square[a][b]= self.builder.get_object("button"+ str((a*8)+(b+1)) )
 		print  self.square[a][b] 
 
-        self.timeBlackLabel=self.builder.get_object("label1" )
-        self.timeWhiteLabel=self.builder.get_object("label2" )
 
-        self.timeBlackLabel.set_text("0:00:00")
-        self.timeWhiteLabel.set_text("0:00:00")
+
+     
 
         self.builder.connect_signals(self)
         self.ventanaprincipal.show()
@@ -41,6 +63,10 @@ class ControlVista():
 	#variables para indicar si es el primer o segundo click sobre el tablero
 	self.primer_click= True
 	self.jugada=[]
+	
+	self.tiempoBlanco.start()
+	self.tiempoNegro.start()
+		
 #########################################################################################################
 
 
@@ -48,6 +74,9 @@ class ControlVista():
 
 #########################################################################################################
     def on_window1_destroy(self, widget, data=None):
+	 gtk.gdk.threads_leave()
+	 self.tiempoBlanco.stop()
+	 self.tiempoNegro.stop()
          gtk.main_quit()
 #########################################################################################################
 
@@ -118,4 +147,11 @@ class ControlVista():
 #########################################################################################################
  
 
-        
+#########################################################################################################
+    def change_turnos(self):
+	self.lock.acquire()
+	self.tiempoBlanco.turno=not self.tiempoBlanco.turno
+	self.tiempoNegro.turno=not self.tiempoNegro.turno
+	self.lock.release()	
+#########################################################################################################
+ 

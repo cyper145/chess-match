@@ -7,7 +7,7 @@ class Torre():
 		self.color=color
 		self.casilla=casilla
 		self.name='T'
-
+		self.enroque=True
 		self.set_Imagen(self.casilla)
 
 
@@ -33,7 +33,7 @@ class Torre():
 		print "Validar torre"
 		jugada = False
 		c=1
-	
+		self.enroque=False
 		#Mueve vertical
 		if (self.casilla[1]==des[1]):
 			jugada = True
