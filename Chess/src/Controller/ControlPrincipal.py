@@ -6,12 +6,15 @@ from Model.Knight import *
 from Model.Bishop import *
 from Model.Queen import *
 from Model.King import *
+
+
 class ControlPrincipal():
 
  
 #########################################################################################################
     def __init__(self):
 
+	
         self.controlView = ControlVista(self)
 	
         self.tablero =[[Torre('B',(0,0)),Caballo('B',(0,1)),Alfil('B',(0,2)),Dama('B',(0,3)),Rey('B',(0,4)),Alfil('B',(0,5)),Caballo('B',(0,6)),Torre('B',(0,7))],
@@ -43,12 +46,10 @@ class ControlPrincipal():
 	col2= mov[1][1]	
 	
 	pieza=self.tablero[fila1][col1]
-	print "pieza ",pieza
+	
 
 	if(pieza!='Blanco' and pieza!='Negro'):
-		print "Validar movimiento"
-
-	
+			
 		if (pieza.color=='N' and self.turnoBlanco):
 			print "no es el turno Negro"
 			return
@@ -56,16 +57,64 @@ class ControlPrincipal():
 			print "No es el turno blanco"
 			return	
 	
-		print "movimiento ", mov[1]		
+			
 		jugada=pieza.validar_Movimiento(mov[1],self.tablero)
 		print "Jugada ",jugada
 	
 	
 		#No come pieza del mismo color
+		#------------------------------------------------------------------------------------------------------
 		if (self.tablero[mov[1][0]][mov[1][1]]!= 'Blanco' and self.tablero[mov[1][0]][mov[1][1]]!= 'Negro'):
 			if (self.tablero[mov[1][0]][mov[1][1]].color== self.tablero[mov[0][0]][mov[0][1]].color):
 				jugada = False
-		
+		#------------------------------------------------------------------------------------------------------
+
+
+		#Enroque corto
+		#------------------------------------------------------------------------------------------------------
+		if(self.tablero[fila1][col1].name=='R' and self.tablero[fila1][col1].aviso):
+			self.tablero[fila1][col1].aviso=False
+			#Muevo torre
+			self.tablero[fila1][7].casilla=(fila1,5)
+			self.tablero[fila1][7].set_Imagen((fila1,5))
+			
+			torre = self.tablero[fila1].pop(7)
+			if((fila1+7)%2)==0:
+				self.tablero[fila1].insert(7,'Negro')
+			else:
+				self.tablero[fila1].insert(7,'Blanco')
+			
+			self.tablero[fila1].pop(5)
+			self.tablero[fila1].insert(5,torre)
+
+			#Muevo rey
+			self.tablero[fila1][4].casilla=(fila1,6)
+			self.tablero[fila1][4].set_Imagen((fila1,6))
+			
+			rey = self.tablero[fila1].pop(4)
+			if((fila1+4)%2)==0:
+				self.tablero[fila1].insert(4,'Negro')
+			else:
+				self.tablero[fila1].insert(4,'Blanco')
+			
+			self.tablero[fila1].pop(6)
+			self.tablero[fila1].insert(6,rey)
+
+			#anoto
+			if(self.turnoBlanco):
+				self.contador=self.contador+1
+				texto= str(self.contador)+'. '+'0-0' 
+			else:
+				texto='  '+'0-0'+'\n' 
+			self.controlView.set_text(texto)
+			texto=''
+			self.turnoBlanco= not self.turnoBlanco
+			self.controlView.change_turnos()
+			self.controlView.dibujar(self.tablero)
+			return
+		#------------------------------------------------------------------------------------------------------
+
+	
 		print jugada
 		if jugada:
 	 
@@ -75,16 +124,17 @@ class ControlPrincipal():
 			pieza.set_Imagen(mov[1])
 			
 			
-			self.tablero[fila2].pop(col2)
-			self.tablero[fila2].insert(col2,pieza)
+			
 				
 				
-			self.tablero[fila1].pop(col1)
+			pza=self.tablero[fila1].pop(col1)
 			if((fila1+col1)%2)==0:
 				self.tablero[fila1].insert(col1,'Negro')
 			else:	
 				self.tablero[fila1].insert(col1,'Blanco')
 			
+			self.tablero[fila2].pop(col2)
+			self.tablero[fila2].insert(col2,pza)
 			
 			self.controlView.dibujar(self.tablero)
 			
@@ -95,6 +145,7 @@ class ControlPrincipal():
 			self.controlView.set_text(texto)
 			texto=''
 			self.turnoBlanco= not self.turnoBlanco
+			self.controlView.change_turnos()
         return
 #########################################################################################################
 
