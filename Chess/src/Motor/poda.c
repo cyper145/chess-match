@@ -1,6 +1,6 @@
 /* MOTOR DE AJEDREZ
 *
-* 	- Modulo de poda ALPHA-BETA del algoritmo MINIMAX
+* 	- Modulo de poda ALPHA-BETA con algoritmo MINIMAX
 *
 *
 *   Autor:  Martin Alonso
@@ -9,8 +9,14 @@
 
 
 /***********************************************************************************************
-* 
-*
+* Este modulo tiene como objetivo la reduccion del arbol de jugadas generado por el modulo de
+* generacion. Para poder reducir los nodos del arbol se deben descartar las secuencia de jugadas 
+* o lineas con menor valoracion. Para esto se utiliza el metodo de poda Alfa-Beta con el algoritmo
+* MiniMax. Este consiste en valuar cada nodo con el menor valor de sus hijos (o el mayor en caso de
+* turno negro) y elegir las mejores secuencias tomando el nodo con mayor valoracio para los turnos 
+* blancos  y los con menor valoracion para los turnos negros. Asi, se va alternando en minimos y 
+* maximos. De esta manera, es como ir elegiendo la mejor jugada propia y esperar la mejor jugada 
+* del oponente.
 *************************************************************************************************/
 
 
@@ -24,14 +30,23 @@
 
 
 
-
+/***************************************************************************************************
+* Por cada nodo en el arbol se eligen una cantidad (LEVEL_NODES) de hijos de acuerdo al algoritmo
+* MiniMax. Los demas hijos son descartados.
+* El algoritmo MiniMax basicamente espera o busca la mejores jugadas del oponente. Es decir, si el
+* turno del nodo padre es blanco, se elegiran las [LEVEL_NODES] mejores jugadas negras.
+* Luego de la poda, el ultimo nivel del arbol debe quedar con una cantidad de nodos igual a
+* LEVEL_NODES elvado a DEEP. 
+****************************************************************************************************/
 void podar(nodo nod)
 {
 	nodo aux = nod->hijo,aux2;
 	nodo ant;
 	int val,i;
-	//int minimax[LEVEL_NODES]={-100,-100,-100,-100,-100,-100,-100,-100};
-	int minimax[LEVEL_NODES]={-100,-100,-100,-100};
+	int minimax[LEVEL_NODES];
+	for(i=0;i < LEVEL_NODES-1;i++){
+		minimax[i] = -10000;
+	}	
 	int t = nod->turno;
 	while(aux != NULL)	
 		{
@@ -46,7 +61,6 @@ void podar(nodo nod)
 					else break;
 				}
 			}
-		
 		aux=aux->sig;
 		}
 
@@ -60,8 +74,6 @@ void podar(nodo nod)
 				if(ant==NULL) {
 					nod->hijo=aux->sig;
 					aux2 =aux->sig;
-					//aux=NULL;
-					//free(aux);
 					borrar_all_hijos(aux);
 					cont_f++;
 					free(aux);
@@ -71,10 +83,7 @@ void podar(nodo nod)
 				}
 				else	{
 				ant->sig=aux->sig;
-				//printf("free %s\n",aux->notation);
 				aux2 =aux->sig;
-				//aux=NULL;
-				//free(aux);
 				borrar_all_hijos(aux);
 				cont_f++;
 				free(aux);
@@ -87,14 +96,22 @@ void podar(nodo nod)
 		         aux=aux->sig;
 			}
 		 }	
-
-
 }
 
 
-void borrar_all_hijos(nodo nod){
 
-	
+
+
+
+
+
+
+
+/***********************************************************************************************
+* Borra y libera la memoria de todos los nodos hijos (y los hijos de los hijos....)
+* para un nodo en particular
+*************************************************************************************************/
+void borrar_all_hijos(nodo nod){
 	nodo aux = nod->hijo,aux2;
 	while(aux != NULL)
 	{
@@ -107,40 +124,37 @@ void borrar_all_hijos(nodo nod){
 		}	
 		else {
 			aux2=aux->sig;
-			//aux = NULL;
 			free(aux);
 			aux = aux2;
 			cont_free ++;
 		}		
-
-
-
 	}
-	//printf("count_free %ld\n",cont_free);
-	//free(nod);
-	//cont_free++;
 }
 
 
+
+
+
+/**********************************************************************************************************
+* Esta funcion es llamada para podar el arbol de jugadas. Recorre todos los nodos de manera decreciente,
+* es dcir, comenzando por el padre hacia abajo y por cada uno llama a la funcion podar, la cual descartara
+* los nodos con menor valoracion (peores jugadas).
+***********************************************************************************************************/
 void poda(nodo nod){
-
-
 	podar(nod);
 	nod=nod->hijo;
-	
 	while(nod!=NULL){
-
 		if(nod->hijo != NULL){
-
 			poda(nod);
-
 			}
-
 		nod=nod->sig;
-
 	}
-
 }
+
+
+
+
+
 
 
 void preseleccion(nodo nod)
@@ -152,9 +166,15 @@ void preseleccion(nodo nod)
 		   preselect(aux,aux->value);		
 		   aux = aux->sig;	
 		}		
-
-
 }
+
+
+
+
+
+
+
+
 
 
 void preselect(nodo nod,int max)
@@ -163,7 +183,6 @@ void preselect(nodo nod,int max)
 	nodo aux = nod->hijo;
 
 	while(aux != NULL){
-
 		if(aux->value != max) {
 			ax = aux;
 			aux = aux->sig;
@@ -190,41 +209,33 @@ void preselect(nodo nod,int max)
 			preselect(aux,aux->value);
 			break;
 		}
-		
-
 	}
-
 }
 
-void acomodar_minimax(nodo nod, int prof){
 
+
+
+
+
+
+void acomodar_minimax(nodo nod, int prof){
 	nodo aux;
-	int m,n;
+	int m, n, min=10000, max= -10000;
 	aux =nod->hijo;
 
-	int min=10000;
-	int max= -10000;
-
 	while(aux!=NULL){
-
 			if(aux->hijo != NULL){
-
 				acomodar_minimax(aux,prof+1);
-
 				}
-
 			else{
 				m = (aux->value);
-				 }
-
+			 }
 			if(aux->value > max) max=aux->value;
 			if(aux->value < min) min=aux->value;
 
 			aux=aux->sig;
-
 		}
 		if(nod->turno != blanco) nod->value = max;
 		else	nod->value = min;
-
 }
 
