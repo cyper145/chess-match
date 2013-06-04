@@ -42,3 +42,40 @@ class Caballo():
 		return jugada
 
 #####################################################################################################################
+
+
+#####################################################################################################################
+	def verificar_jaque(self, tablero):
+
+
+		#############################
+		# Como maximo el caballo ataca
+		# 8 casillas
+		#############################
+		jaque = False
+		d_fila=2
+		d_col=1
+		
+		
+		for i in range(2):
+			for j in range(2):
+				for k in range(2):
+				
+					f=self.casilla[0]+ d_fila
+					c=self.casilla[1]+d_col
+					try:
+						if (tablero[f][c].name=='R' and tablero[f][c].color != self.color):
+							jaque = True
+							break
+					except:
+						a=1
+					
+					d_col=d_col*(-1)
+				d_fila=d_fila*(-1)
+			d_fila=1
+			d_col=2
+
+				
+		return jaque
+
+#####################################################################################################################

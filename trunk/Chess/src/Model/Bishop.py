@@ -49,6 +49,7 @@ class Alfil():
 				jugada = True
 			if (tablero[fila][col] != None):
 				break
+		
 		return jugada
 
 #####################################################################################################################
@@ -127,4 +128,83 @@ class Alfil():
 		return jugada
 
 ##########################################################################################################################
+
+
+##########################################################################################################################
+	def verificar_jaque(self, tablero):
+		
+		jaque = False
+		
+		
+		jaque_izq_ab=False
+		jaque_izq_ar=False
+		jaque_der_ab=False
+		jaque_der_ar=False
+
+		#Verifica hacia la izq
+		#-------------------------------------------------------------------
+
+		#Abajo
+		fil=self.casilla[0]-1
+		col=self.casilla[1]-1
+		while(fil>=0 and col>=0):
+			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+				jaque_izq_ab=False	
+				break
+			
+			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+				jaque_izq_ab=True
+				break
+			fil=fil-1
+			col=col-1
+		
+		#Arriba	
+		fil=self.casilla[0]+1
+		col=self.casilla[1]-1
+		while(fil<=7 and col>=0):
+			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+				jaque_izq_ar=False
+				break
+			
+			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+				jaque_izq_ar=True
+				break
+			fil=fil+1
+			col=col-1	
+		
+		#Verifica hacia la der
+		#-------------------------------------------------------------------
+
+		#Abajo
+		fil=self.casilla[0]-1
+		col=self.casilla[1]+1
+		while(fil>=0 and col<=7):
+			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+				jaque_der_ab=False
+				break
+			
+			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+				jaque_der_ab=True
+				break
+			fil=fil-1
+			col=col+1
+		
+		#Arriba	
+		fil=self.casilla[0]+1
+		col=self.casilla[1]+1
+		while(fil<=7 and col<=0):
+			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+				jaque_der_ar=False
+				break
+			
+			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+				jaque_der_ar=True
+				break
+			fil=fil+1
+			col=col+1	
+		
+		jaque=(jaque_izq_ab or jaque_izq_ar) or (jaque_der_ab or jaque_der_ar)
+		return jaque
+##########################################################################################################################
+
 

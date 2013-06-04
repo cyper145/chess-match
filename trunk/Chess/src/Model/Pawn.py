@@ -80,3 +80,37 @@ class Peon():
 	def set_Casilla(self,casilla):
 		self.casilla=casilla
 #####################################################################################################################
+
+
+
+#####################################################################################################################
+	def verificar_jaque(self, tablero):
+	
+		##################################
+		#El peon ataca solo dos casillas
+	        # Se comprueba q el rey enemigo
+		# no este en ninguna de las dos
+		######################################
+		d_f=1
+		color_enemigo='N'
+		jaque = False
+	
+		if self.color == 'N':
+			d_f= -1
+			color_enemigo='B'
+		fila = self.casilla[0] + d_f
+		try:
+			if (tablero[fila][self.casilla[1]+1].name=='R' and tablero[fila][self.casilla[1]+1].color== color_enemigo ):
+				jaque = True
+			if (tablero[fila][self.casilla[1]-1].name=='R' and tablero[fila][self.casilla[1]-1].color== color_enemigo ):
+				jaque= True
+
+		except:
+			a=1
+		return jaque
+
+#####################################################################################################################
+
+
+
+
