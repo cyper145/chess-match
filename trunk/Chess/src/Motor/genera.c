@@ -72,14 +72,23 @@ char* jugar(int t);
 char* seleccionar(nodo nod,int color );
 
 
+
+
+
+/*-------- Tablero con posicion inicial--------*/
 Tablero posicion={{5,3,4,10,100,4,3,5},
-			  {1,1,1,1,1,1,1,1},
-			  {0,0,0,0,0,0,0,0},
-			  {0,0,0,0,0,0,0,0},
-			  {0,0,0,0,0,0,0,0},
-			  {0,0,0,0,0,0,0,0},
-			  {-1,-1,-1,-1,-1,-1,-1,-1},
-			  {-5,-3,-4,-10,-100,-4,-3,-5}};
+		  {1,1,1,1,1,1,1,1},
+		  {0,0,0,0,0,0,0,0},
+		  {0,0,0,0,0,0,0,0},
+		  {0,0,0,0,0,0,0,0},
+		  {0,0,0,0,0,0,0,0},
+		  {-1,-1,-1,-1,-1,-1,-1,-1},
+		  {-5,-3,-4,-10,-100,-4,-3,-5}};
+/*---------------------------------------------*/
+
+
+
+
 
 
 char* generate(int t)
@@ -87,8 +96,6 @@ char* generate(int t)
 	int k, turno;
 	char *a="", *jugada=NULL;;
 	turno = t;
-	
-	
 
 	/*---Inicializa el primer nodo del arbol------*/
 	struct Nodo inicial;
@@ -110,6 +117,7 @@ char* generate(int t)
 	poda(&inicial);
 	acomodar_minimax(&inicial,0);
 	preseleccion(&inicial);
+	//mostrar_arbol(0,&inicial,a);
 	
 	for(k=0;k<6;k++)	
 	{
@@ -121,12 +129,10 @@ char* generate(int t)
 	}
 	
 	
-
-
-	//mostrar_arbol(0,&inicial,a);
+	/*Selecciona la mejor jugada*/	
 	jugada = seleccionar(&inicial, turno);
 	printf ("%s ",jugada );
-	mostrar_arbol(0,&inicial,a);
+	//mostrar_arbol(0,&inicial,a);
 	cont_f++;
 	
 	return (jugada);
@@ -165,36 +171,36 @@ void set_jugada(int f_origen,int c_origen,int f_dest,int c_dest)
 
 void generar(int prof,nodo nod, int turno){
 
-
 	gen(nod,nod->board,turno);
 	nod->turno=turno;
 	nod=nod->hijo;
 	
 	while(nod!=NULL){
-
 		if(prof<DEEP){
-
 			generar(prof+1,nod,(turno*-1));
-
 			}
-
 		nod=nod->sig;
-
 	}
 }
 
 
 
-
+/***************************************************************************************
+* Recorre todas las casillas del tablero. Por cada pieza del color del cual es
+* el turno genera todas las posibles jugadas.
+*
+* @ inicial: nodo inicial del arbol
+*
+* @tab:	tablero con la posicion actual
+*
+* @turno: turno actual.  1 = blancas  -1 = negras
+****************************************************************************************/
 void gen(nodo inicial,Tablero tab,int turno)
 {
   int f,c;
 
-  //nodo inicial=ini;
-
  for(f=0;f<8;f++){
 	for(c=0;c<8;c++){
-
 		if((tab[f][c]*turno)>0){
 			casilla cas={f,c};
 			switch (tab[f][c]*turno){
@@ -234,11 +240,8 @@ void regenera(nodo nod)
 	int turno = nod->turno;
 
 	while(aux!=NULL){
-
 		if(aux->hijo != NULL){
-
 			regenera(aux);
-
 			}
 		else {
 			generar(DEEP-2,aux,turno);
@@ -246,38 +249,24 @@ void regenera(nodo nod)
 			poda(aux);
 			acomodar_minimax(aux,0);
 		}	
-
 		aux=aux->sig;
-
 	}
-
-
-
 }
 
-/*
-void eliminar(nodo nod)
-{
-	nodo aux,aux2;
-	aux = nod->hijo;
-	while(aux != NULL)
-	{
-		if(aux->hijo != NULL)
-		{
-			eliminar(aux);			
-		}
-		aux2 = aux->sig;
-		free(aux);
-		aux = aux2;
-		aux2 = aux2->padre;
-		//aux2->hijo = NULL;
-	}	
 
 
-}
-*/
 
 
+
+/***************************************************************************************
+* Analiza y agrega al arbol cada jugada posible para una torre.
+*
+* @padre: nodo inicial del arbol
+*
+* @tab: tablero con la posicion actual
+*
+* @cas: casilla donde se encuentra la torre a analizar 
+****************************************************************************************/
 void torre(nodo padre,Tablero tab,casilla cas){
 
 	short int f,c,fil,col;
@@ -287,53 +276,48 @@ void torre(nodo padre,Tablero tab,casilla cas){
 	f=cas[0]-1;
 	c=cas[1];
 
-	//abajo
+	/*abajo*/
 	while(f>=0){
 
 		if((tab[fil][col]*tab[f][c])<=0){
-			//printf("Torre juega %hi %hi",f,c);
 			casilla to={f,c};
 			insertar_nodo(padre,cas,to);
-
 		}
 		else break;
 		f--;
 	}
 	f=cas[0]+1;
 	c=cas[1];
-	//arriba
+
+	/*arriba*/
 	while(f<=7){
 		if((tab[fil][col]*tab[f][c])<=0){
-			//printf("Torre juega %hi %hi",f,c);
 			casilla to={f,c};
 			insertar_nodo(padre,cas,to);
-
 		}
 		else break;
 		f++;
 	}
 	f=cas[0];
 	c=cas[1]-1;
-	//izquierda
+
+	/*izquierda*/
 	while(c>=0){
 		if((tab[fil][col]*tab[f][c])<=0){
-			//printf("Torre juega %i %i",f,c);
 			casilla to={f,c};
 			insertar_nodo(padre,cas,to);
-
 		}
 		else break;
 		c--;
 	}
 	f=cas[0];
 	c=cas[1]+1;
-	//arriba
+	
+	/*derecha*/
 	while(c<=7){
 		if((tab[fil][col]*tab[f][c])<=0){
-			//printf("Torre juega %i %i",f,c);
 			casilla to={f,c};
 			insertar_nodo(padre,cas,to);
-
 		}
 		else break;
 		c++;
@@ -343,6 +327,17 @@ void torre(nodo padre,Tablero tab,casilla cas){
 
 
 
+
+
+/***************************************************************************************
+* Analiza y agrega al arbol cada jugada posible para un caballo.
+*
+* @padre: nodo inicial del arbol
+*
+* @tab: tablero con la posicion actual
+*
+* @cas: casilla donde se encuentra el caballo a analizar 
+****************************************************************************************/
 void caballo(nodo padre,Tablero tab,casilla cas){
 
   short int f,c,i,j,k,fil,col;
@@ -358,7 +353,6 @@ void caballo(nodo padre,Tablero tab,casilla cas){
 			f=cas[0]+d_f;
 			c=cas[1]+d_c;
 			if((0<=f)&&(f<=7)&&(0<=c)&&(c<=7)&&((tab[fil][col]*tab[f][c])<=0)){
-				//printf("caballo juega %hi%hi %hi%hi \n",cas[0],cas[1],f,c);
 				casilla to={f,c};
 				insertar_nodo(padre,cas,to);
 			}
@@ -373,6 +367,24 @@ void caballo(nodo padre,Tablero tab,casilla cas){
 }
 
 
+
+
+
+
+
+
+
+
+
+/***************************************************************************************
+* Analiza y agrega al arbol cada jugada posible para un alfil.
+*
+* @padre: nodo inicial del arbol
+*
+* @tab: tablero con la posicion actual
+*
+* @cas: casilla donde se encuentra el alfil a analizar 
+****************************************************************************************/
 void alfil(nodo padre,Tablero tab,casilla cas){
 
   short int f,c,i,j,k,fil,col;
@@ -382,11 +394,10 @@ void alfil(nodo padre,Tablero tab,casilla cas){
   c=cas[1]-1;
   fil=cas[0];
   col=cas[1];
-  //Derecha
-  //abajo
+  /**Derecha**/
+  /*abajo*/
   while((f<=7)&&(c>=0)){
 	if((tab[fil][col]*tab[f][c])<=0){
-		//printf("Alfil juega %hi %hi \n",f,c);
 		casilla to={f,c};
 		insertar_nodo(padre,cas,to);
 		if(tab[f][c]<0) break;
@@ -395,12 +406,11 @@ void alfil(nodo padre,Tablero tab,casilla cas){
 	f++;
   	c--;
   }
-  //arriba
+  /*arriba*/
   f=cas[0]+1;
   c=cas[1]+1;
   while((f<=7)&&(c<=7)){
 	if((tab[fil][col]*tab[f][c])<=0){
-		//printf("Alfil juega %hi %hi \n",f,c);
 		casilla to={f,c};
 		insertar_nodo(padre,cas,to);
 		if(tab[f][c]<0) break;
@@ -409,13 +419,12 @@ void alfil(nodo padre,Tablero tab,casilla cas){
 	f++;
   	c++;
   }
-  //izquierda
-  //arriba
+  /**izquierda**/
+  /*arriba*/
   f=cas[0]-1;
   c=cas[1]+1;
   while((f>=0)&&(c<=7)){
 	if((tab[fil][col]*tab[f][c])<=0){
-		//printf("Alfil juega %hi %hi \n",f,c);
 		casilla to={f,c};
 		insertar_nodo(padre,cas,to);
 		if(tab[f][c]<0) break;
@@ -424,12 +433,11 @@ void alfil(nodo padre,Tablero tab,casilla cas){
 	f--;
   	c++;
   }
-   //abajo
+   /*abajo*/
   f=cas[0]-1;
   c=cas[1]-1;
   while((f>=0)&&(c>=0)){
 	if((tab[fil][col]*tab[f][c])<=0){
-		//printf("Alfil juega %hi %hi \n",f,c);
 		casilla to={f,c};
 		insertar_nodo(padre,cas,to);
 		if(tab[f][c]<0) break;
@@ -442,6 +450,21 @@ void alfil(nodo padre,Tablero tab,casilla cas){
 
 
 
+
+
+
+
+
+
+/***************************************************************************************
+* Analiza y agrega al arbol cada jugada posible para un rey. (falta implementar los enroques!!)
+*
+* @padre: nodo inicial del arbol
+*
+* @tab: tablero con la posicion actual
+*
+* @cas: casilla donde se encuentra el rey a analizar 
+****************************************************************************************/
 void rey(nodo padre,Tablero tab,casilla cas){
 
  short int f,c,i,j,k,fil,col;
@@ -456,7 +479,6 @@ void rey(nodo padre,Tablero tab,casilla cas){
 		f=cas[0]+d_f;
 		c=cas[1]+d_c;
 		if((0<=f)&&(f<=7)&&(0<=c)&&(c<=7)&&((tab[fil][col]*tab[f][c])<=0)){
-			//printf("Rey juega %hi %hi \n",f,c);
 			casilla to={f,c};
 			insertar_nodo(padre,cas,to);
 		}
@@ -474,7 +496,6 @@ void rey(nodo padre,Tablero tab,casilla cas){
 		f=cas[0]+d_f;
 		c=cas[1]+d_c;
 		if((0<=f)&&(f<=7)&&(0<=c)&&(c<=7)&&((tab[fil][col]*tab[f][c])<=0)){
-			//printf("Rey juega %hi %hi \n",f,c);
 			casilla to={f,c};
 			insertar_nodo(padre,cas,to);
 		}
@@ -485,6 +506,25 @@ void rey(nodo padre,Tablero tab,casilla cas){
 
 }
 
+
+
+
+
+
+
+
+
+
+
+/***************************************************************************************
+* Analiza y agrega al arbol cada jugada posible para un peon.
+*
+* @padre: nodo inicial del arbol
+*
+* @tab: tablero con la posicion actual
+*
+* @cas: casilla donde se encuentra el peon a analizar 
+****************************************************************************************/
 void peon(nodo padre,Tablero tab,casilla cas){
 
    short int paso,f,c,j,d_c,fil,col;
@@ -494,37 +534,41 @@ void peon(nodo padre,Tablero tab,casilla cas){
    paso=tab[fil][col];
 
 
-   //una casilla adelante
+   /*una casilla adelante*/
    f=cas[0]+paso;
    c=cas[1];
    if((tab[f][c])==0){
-	//printf("peon juega %hi %hi\n",f,c);
 	casilla to={f,c};
 	insertar_nodo(padre,cas,to);
 	}
 
 
-   //dos casillas adelante
-
+   /*dos casillas adelante*/
    if (((cas[0]==((paso+7)%7))&& (tab[f][cas[1]]==0)) && (tab[f+paso][c]==0)){
-
-   	//printf("peon juega %hi %hi\n",(f+paso),c);
 	casilla to={(f+paso),c};
 	insertar_nodo(padre,cas,to);
  	}
 
-   //come
+   /*come*/
    d_c=1;
    for(j=0;j<2;j++){
 	c=cas[1]+d_c;
 	if(((tab[f][c]*tab[fil][col])<0)&&((c<=7)&&(0<=c))) {
-		//printf("peon COME %hi %hi\n",f,c);
 		casilla to={f,c};
 		insertar_nodo(padre,cas,to);
 	}
 	d_c=d_c*-1;
     }
 }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -596,6 +640,8 @@ void insertar_nodo(nodo padre,casilla from,casilla to){
 	}
 	else printf("no hay memoria\n");
 }
+
+
 
 int cont=0;
 

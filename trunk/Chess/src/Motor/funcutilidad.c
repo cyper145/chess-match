@@ -32,37 +32,25 @@
 #include "var_data.h"
 
 
-int min=100;
-int max= -100;
-
 
 void valuar_utilidad(nodo inicial, int prof){
-
 	nodo aux;
 	int m,n;
 	aux =inicial->hijo;
-	
-	int min=100;
-	int max= -100;
+	int min=10000;
+	int max= -10000;
 
 	while(aux!=NULL){
-		
 		if(aux->hijo != NULL){
-
 			valuar_utilidad(aux,prof+1);
-
 			}
-
 		else{
 			m = valoracion(aux->board);
 			aux->value=m;
 		     }	
-
 		if(aux->value > max) max=aux->value;
 		if(aux->value < min) min=aux->value;
-              
 		aux=aux->sig;		
-	
 	}
 	if(inicial->turno != blanco) inicial->value = max;
 	else	inicial->value = min;
@@ -196,17 +184,13 @@ int valoracion(Tablero tab){
 	actividad = actividad * P_ACTIVIDAD;	
 	posicion = posicion * P_POSICION;
 
-
-
 	return (centro + material + actividad + posicion);
-	//return ( material + actividad);
-
 }
-/*
-int actividad_piezas(){
 
-}
-*/
+
+
+
+
 
 int actividad_caballo(Tablero tab,int fila,int columna,int turno){
 	int i,j,k,val=0,f,c,d_f=2,d_c=1;
@@ -231,12 +215,14 @@ int actividad_caballo(Tablero tab,int fila,int columna,int turno){
 }
 
 
+
+
+
+
+
 int actividad_torre(Tablero tab,int fila,int columna,int turno){
-
-
 	short int f,c,fil,col;
 	int casillas=0;	
-
 	fil=fila;
 	col=columna;
 	f=fila-1;
@@ -244,10 +230,8 @@ int actividad_torre(Tablero tab,int fila,int columna,int turno){
 
 	//abajo
 	while(f>=0){
-
 		if((turno*tab[f][c])<=0){
 			casillas=casillas+turno;
-
 		}
 		else break;
 		f--;
@@ -258,7 +242,6 @@ int actividad_torre(Tablero tab,int fila,int columna,int turno){
 	while(f<=7){
 		if((turno*tab[f][c])<=0){
 			casillas=casillas+turno;
-
 		}
 		else break;
 		f++;
@@ -269,7 +252,6 @@ int actividad_torre(Tablero tab,int fila,int columna,int turno){
 	while(c>=0){
 		if((turno*tab[f][c])<=0){
 			casillas=casillas+turno;
-
 		}
 		else break;
 		c--;
@@ -280,20 +262,21 @@ int actividad_torre(Tablero tab,int fila,int columna,int turno){
 	while(c<=7){
 		if((turno*tab[f][c])<=0){
 			casillas=casillas+turno;
-
 		}
 		else break;
 		c++;
 	}
-    
-	
     return (casillas/5);
-
 }
 
 
-int actividad_alfil(Tablero tab,int fila,int columna,int turno){
 
+
+
+
+
+
+int actividad_alfil(Tablero tab,int fila,int columna,int turno){
   short int f,c,i,j,k,fil,col;
   short int d_f=1;
   short int d_c=-1;
@@ -306,7 +289,6 @@ int actividad_alfil(Tablero tab,int fila,int columna,int turno){
   //abajo
   while((f<=7)&&(c>=0)){
 	if((turno*tab[f][c])<=0){
-		
 		casillas=casillas+turno;
 		if(tab[f][c]<0) break;
 	}
@@ -351,10 +333,13 @@ int actividad_alfil(Tablero tab,int fila,int columna,int turno){
 	f--;
   	c--;
   }
-	
-  //printf("Actividad alfil: %d\n",casillas);	
   return (casillas/3);
 }
+
+
+
+
+
 
 int posicion_torre(Tablero tab,int fila,int columna,int turno ){
 
@@ -373,21 +358,26 @@ int posicion_torre(Tablero tab,int fila,int columna,int turno ){
 }
 
 
-int posicion_caballo(Tablero tab,int fila,int columna,int turno ){
 
+
+
+
+int posicion_caballo(Tablero tab,int fila,int columna,int turno ){
 	int valor=0;
 	if(fila>F_3 && fila<F_6 && columna>C_C && columna < C_F){
 		valor=3;
 	}
 	return (valor);
-
 }
 
+
+
+
+
+
+
 int posicion_alfil(Tablero tab,int fila,int columna,int turno ){
-
 	int valor=0;
-
 	if(fila == (columna % 7)) valor = 3;
 	return (valor);
-
 }
