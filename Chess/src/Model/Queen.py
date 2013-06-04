@@ -100,8 +100,8 @@ class Dama():
 	def verificar_descubierto(self,tablero):
 		
 
-		t_jugada_abajo=True
-		t_jugada_arriba=True
+		t_jugada_ab=True
+		t_jugada_ar=True
 		t_jugada_izq=True
 		t_jugada_der=True
 
@@ -120,7 +120,7 @@ class Dama():
 				break
 		
 			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
-				t_jugada_abajo=False
+				t_jugada_ab=False
 				break
 			col=col-1
 		col=self.casilla[1]+1
@@ -128,7 +128,7 @@ class Dama():
 			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color))):
 				break
 			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
-				t_jugada_arriba=False
+				t_jugada_ar=False
 				break
 			col=col+1
 
@@ -157,7 +157,7 @@ class Dama():
 				break
 			fil=fil+1
 
-		t_jugada= (t_jugada_abajo and t_jugada_arriba) and (t_jugada_izq and t_jugada_der)
+		t_jugada= (t_jugada_ab and t_jugada_ar) and (t_jugada_izq and t_jugada_der)
 		#####################################################################################################################
 
 
@@ -212,7 +212,7 @@ class Dama():
 		#Arriba	
 		fil=self.casilla[0]+1
 		col=self.casilla[1]+1
-		while(fil<=7 and col>=0):
+		while(fil<=7 and col<=0):
 			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				break
 			
@@ -228,3 +228,154 @@ class Dama():
 		return jugada
 
 ##########################################################################################################################
+
+
+
+##########################################################################################################################
+	def verificar_jaque(self, tablero):
+
+		t_jaque_ab=False
+		t_jaque_ar=False
+		t_jaque_izq=False
+		t_jaque_der=False
+
+		a_jaque_izq_ab=False
+		a_jaque_izq_ar=False
+		a_jaque_der_ab=False
+		a_jaque_der_ar=False
+
+		
+		########################### Movimiento de torre################################
+		#verifica horizontal
+		#------------------------------------------------------------------------
+		col=self.casilla[1]-1
+		fil=self.casilla[0]
+		while(col>=0):
+			
+			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+				t_jaque_ab=False				
+				break
+		
+			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+				t_jaque_ab=True
+				break
+			col=col-1
+		col=self.casilla[1]+1
+		while(col<=7):
+			
+			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color))):
+				t_jaque_ar=False				
+				break
+			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+				t_jaque_ar=True
+				break
+			col=col+1
+
+
+		#verifica vertical
+		#------------------------------------------------------------------------
+		col=self.casilla[1]
+		fil=self.casilla[0]-1
+		while(fil>=0):
+			
+			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+				t_jaque_izq=False
+				break
+			
+			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+				t_jaque_izq=True
+				break
+			fil=fil-1
+		fil=self.casilla[0]+1
+		while(fil<=7):
+			
+			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color))):
+				t_jaque_der=False
+				break
+			
+			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+				t_jaque_der=True
+				break
+			fil=fil+1
+
+		t_jaque= (t_jaque_ab or t_jaque_ar) or (t_jaque_izq or t_jaque_der)
+		#####################################################################################################################
+
+
+
+		################################### Movimiento de alfil ##############################################################
+
+		#Verifica hacia la izq
+		#-------------------------------------------------------------------
+
+		#Abajo
+		fil=self.casilla[0]-1
+		col=self.casilla[1]-1
+		while(fil>=0 and col>=0):
+			
+			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+				a_jaque_izq_ab=False				
+				break
+			
+			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+				a_jaque_izq_ab=True
+				break
+			fil=fil-1
+			col=col-1
+		
+		#Arriba	
+		fil=self.casilla[0]+1
+		col=self.casilla[1]-1
+		while(fil<=7 and col>=0):
+			
+			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+				a_jaque_izq_ar=False				
+				break
+		
+			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+				a_jaque_izq_ar=True
+				break
+			fil=fil+1
+			col=col-1	
+
+		#Verifica hacia la der
+		#-------------------------------------------------------------------
+
+		#Abajo
+		fil=self.casilla[0]-1
+		col=self.casilla[1]+1
+		while(fil>=0 and col<=7):
+			
+			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+				a_jaque_der_ab=False
+				break
+			
+			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+				a_jaque_der_ab=True
+				break
+			fil=fil-1
+			col=col+1
+		
+		#Arriba	
+		fil=self.casilla[0]+1
+		col=self.casilla[1]+1
+		while(fil<=7 and col<=7):
+			
+			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+				
+				a_jaque_der_ar=False					
+				break
+			
+			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+				a_jaque_der_ar=True
+				break
+			fil=fil+1
+			col=col+1	
+			
+
+		
+		a_jaque=(a_jaque_izq_ab or a_jaque_izq_ar) or (a_jaque_der_ab or a_jaque_der_ar)
+		jaque = t_jaque or a_jaque
+		
+		return jaque
+#####################################################################################################################

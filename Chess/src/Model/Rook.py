@@ -123,3 +123,72 @@ class Torre():
 		
 		return jugada
 #####################################################################################################################
+
+
+
+
+#####################################################################################################################
+	def verificar_jaque(self, tablero):
+
+		
+		jaque = False		
+		jaque_abajo=False
+		jaque_arriba=False
+		jaque_izq=False
+		jaque_der=False
+
+		#verifica horizontal
+		#------------------------------------------------------------------------
+		col=self.casilla[1]-1
+		fil=self.casilla[0]
+		while(col>=0):
+			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+				jaque_abajo=False				
+				break
+			
+			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+				jaque_abajo=True
+				break
+			col=col-1
+		col=self.casilla[1]+1
+		while(col<=7):
+			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color))):
+				jaque_arriba=False				
+				break
+			
+			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+				jaque_arriba=True
+				break
+			col=col+1
+
+
+		#verifica vertical
+		#------------------------------------------------------------------------
+		col=self.casilla[1]
+		fil=self.casilla[0]-1
+		while(fil>=0):
+			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+				jaque_izq=False				
+				break
+			
+			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+				jaque_izq=True
+				break
+			fil=fil-1
+		fil=self.casilla[0]+1
+		while(fil<=7):
+			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color))):
+				jaque_der=False				
+				break
+			
+			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+				jaque_der=True
+				break
+			fil=fil+1
+		
+		jaque= (jaque_abajo or jaque_arriba) or (jaque_izq or jaque_der)
+		
+		return jaque
+
+
+#####################################################################################################################
