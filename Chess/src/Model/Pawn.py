@@ -25,14 +25,21 @@ class Peon():
 
 
 
+
 #####################################################################################################################
-	def validar_Movimiento(self, des,tablero):
+        def setCasilla(self,pos):
+               self.casilla = pos
+#####################################################################################################################
+
+
+
+
+#####################################################################################################################
+	def legalMove(self, des,tablero):
 
 		jugada = False
-		
-	
-
-		if self.color=='B':
+                print "PEON----->" + self.color
+                if self.color=='B':
 	  	#--------PEON BLANCO--------------------	
 
 	  		#Misma columna- se mueve para adelante	
@@ -47,7 +54,9 @@ class Peon():
 
 	  		#Distinta columna - come pieza
 	  		elif (self.casilla[1]==des[1]+1 or self.casilla[1]==des[1]-1)  and (tablero[des[0]][des[1]].color=='N'):
+                                
 				if (self.casilla[0]==des[0]-1 ):
+                                       
 					jugada=True
 
 
@@ -67,7 +76,11 @@ class Peon():
 	
 	  		#Distinta columna - come pieza
 	  		elif (self.casilla[1]==des[1]+1 or self.casilla[1]==des[1]-1)  and (tablero[des[0]][des[1]].color=='B'):
+                                print "peon------"
+                                print self.casilla[0]
+                                print des[0]+1
 				if (self.casilla[0]==des[0]+1 ):
+                                        print "peon2"
 					jugada=True
 	
 		return jugada
@@ -76,10 +89,7 @@ class Peon():
 #####################################################################################################################
 
 
-#####################################################################################################################
-	def set_Casilla(self,casilla):
-		self.casilla=casilla
-#####################################################################################################################
+
 
 
 
