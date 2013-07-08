@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : board.xml
+    Created on : 8 de julio de 2013, 17:30
+    Author     : martin
+    Description:
+        Purpose of the document follows.
+-->
+
+<root>
+<initialBoard name= "initialBoard">
+    <Rook ></Rook>
+    <Knight></Knight>
+    <Bishop></Bishop>
+    <King></King>
+    <Queen></Queen>
+    <Bishop></Bishop>
+    <Knight></Knight>
+    <Rook ></Rook>
+    <Pawn></Pawn>
+    <Pawn></Pawn>
+    <Pawn></Pawn>
+    <Pawn></Pawn>
+    <Pawn></Pawn>
+    <Pawn></Pawn>
+    <Pawn></Pawn>
+    <Pawn></Pawn>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Empty></Empty>
+    <Pawn></Pawn>
+    <Pawn></Pawn>
+    <Pawn></Pawn>
+    <Pawn></Pawn>
+    <Pawn></Pawn>
+    <Pawn></Pawn>
+    <Pawn></Pawn>
+    <Pawn></Pawn>
+    <Rook ></Rook>
+    <Knight></Knight>
+    <Bishop></Bishop>
+    <King></King>
+    <Queen></Queen>
+    <Bishop></Bishop>
+    <Knight></Knight>
+    <Rook ></Rook>
+</initialBoard>
+</root>
