@@ -1,5 +1,6 @@
 
 from ControlVista import *
+from XmlParser import *
 from Model.Pawn import *
 from Model.Rook import *
 from Model.Knight import *
@@ -7,6 +8,7 @@ from Model.Bishop import *
 from Model.Queen import *
 from Model.King import *
 from ctypes import *
+
 import sys
 
 from threading import *
@@ -27,18 +29,20 @@ class ControlPrincipal():
 	self.moveQueue = Queue()	
         self.controlView = ControlVista(self,self.moveQueue)
         self.iniciar_variables()
-	
-
-
+       # parser = XmlParser()
 #########################################################################################################
+
+
+
+
+
+
 
 
 
 
 #########################################################################################################
     def iniciar_variables(self):
-
-
 
 	self.casillas=['a','b','c','d','e','f','g','h']
 	self.tablero =[[Torre('B',(0,0)),Caballo('B',(0,1)),Alfil('B',(0,2)),Dama('B',(0,3)),Rey('B',(0,4)),Alfil('B',(0,5)),Caballo('B',(0,6)),Torre('B',(0,7))],
@@ -67,244 +71,142 @@ class ControlPrincipal():
 
 
 
+
+
+
+
+
+
+
+
+
+############################################################################################################################
+   
+    def newGame(self,blancas,negras,horas,minut,inc):	
+	""" Maneja un juego entre dos oponentes. Cada jugador puede ser humano o el Motor de ajedrez  """
+
+	self.blancas=blancas
+	self.negras=negras
+
+	self.game= Thread(target=self.Game)
+    	self.game.daemon = True
+    	self.game.start()
+
+
+    def Game(self):
+	
+	count = 0		
+	while True:
+		
+		count+=1
+                self.controlView.dibujar(self.tablero)
+		#======================== JUEGAN BLANCAS ==========================================
+		if self.blancas == 0:
+
+			#.................... Humano ............................................
+			valido = False
+			while not valido:
+				jugada = self.moveQueue.get()
+				valido =self.validarMovimiento(jugada)
+                        self.anotar(False,self.tablero[jugada[1][0]][jugada[1][1]],jugada[1])
+			motor.set_jugada(jugada[0][0],jugada[0][1],jugada[1][0],jugada[1][1]);
+			#........................................................................
+
+
+			#................... Computadora  .......................................
+		else:
+			jugada=self.jugarMotor(1);
+			self.codificar_jugada(jugada)
+			self.controlView.set_text(str(count)+"."+jugada)
+			#........................................................................
+		#====================================================================================
+
+
+		#========================  JUEGAN NEGRAS ============================================
+		if self.negras == 0:
+			
+			#................... Humano .................................................
+			valido = False
+			while not valido:	
+				jugada = self.moveQueue.get()
+				valido =self.validarMovimiento(jugada)
+                        self.anotar(False,self.tablero[jugada[1][0]][jugada[1][1]],jugada[1])
+			motor.set_jugada(jugada[0][0],jugada[0][1],jugada[1][0],jugada[1][1]);	
+			#............................................................................
+
+
+			#.................... Computadora ...........................................
+		else:
+			jugada=self.jugarMotor(-1);
+			self.codificar_jugada(jugada)
+			self.controlView.set_text("  "+jugada+"\n")
+			#............................................................................
+       		#=====================================================================================
+                self.changeTurns()
+                
+############################################################################################################################
+
+
+
+
+
+
+
+
+
+
+############################################################################################################################
+    def jugarMotor(self,turno):
+	""" LLama la funcion del modulo c """
+	i=0
+	jugada=''
+	a = motor.jugar(turno)
+	while True:
+		if (a[i] != '\x00'):
+			jugada = jugada + a[i]
+		else:
+			break
+		i=i+1
+	print "Motor juega: ",jugada
+	return jugada
+############################################################################################################################
+
+
+
+
+
+
+
+
+
+
+
 #########################################################################################################
     def validarMovimiento(self,mov): 
 	"""Controla que el movimiento realizado por un humano sea valido, de acuerdo a las reglas del juego """
 
-	fila1= mov[0][0]
-	col1= mov[0][1]	
-	fila2= mov[1][0]
-	col2= mov[1][1]	
+        self.origen = mov[0]
+        self.dest = mov[1]
+	self.fila1= mov[0][0]
+	self.col1= mov[0][1]
+	self.fila2= mov[1][0]
+	self.col2= mov[1][1]
 	self.controlView.set_mensaje("")	
-	pieza=self.tablero[fila1][col1]
-	destino = self.tablero[fila2][col2]
-	#print "1"
-	if(pieza!=None):
-			
-		if (pieza.color=='N' and self.turnoBlanco):
-			print "no es el turno Negro"
-			return False
-		if (pieza.color=='B' and (not self.turnoBlanco)):
-			print "No es el turno blanco"
-			return	False
-	
-			
-		jugada=pieza.validar_Movimiento(mov[1],self.tablero)
-		
-		
-		#No come pieza del mismo color
-		#------------------------------------------------------------------------------------------------------
-		if (destino!= None ):
-			if (destino.color== pieza.color):
-				jugada = False
-		#------------------------------------------------------------------------------------------------------
-		
-		
-		#Enroque corto
-		#------------------------------------------------------------------------------------------------------
-		if(pieza.name=='R' and pieza.aviso) and mov[1][1]==6:
-			pieza.aviso=False
-			#Muevo torre
-			self.tablero[fila1][7].casilla=(fila1,5)
-			self.tablero[fila1][7].set_Imagen((fila1,5))
-			
-			torre = self.tablero[fila1].pop(7)
-			self.tablero[fila1].insert(7,None)
-			
-			
-			self.tablero[fila1].pop(5)
-			self.tablero[fila1].insert(5,torre)
 
-			#Muevo rey
-			self.tablero[fila1][4].casilla=(fila1,6)
-			self.tablero[fila1][4].set_Imagen((fila1,6))
-			
-			rey = self.tablero[fila1].pop(4)
-			self.tablero[fila1].insert(4,None)
-			
-			self.tablero[fila1].pop(6)
-			self.tablero[fila1].insert(6,rey)
-
-			#anoto
-			if(self.turnoBlanco):
-				self.contador=self.contador+1
-				texto= str(self.contador)+'. '+'0-0' 
-			else:
-				texto='  '+'0-0'+'\n' 
-			self.controlView.set_text(texto)
-			texto=''
-			self.turnoBlanco= not self.turnoBlanco
-			self.controlView.change_turnos()
-			self.controlView.dibujar(self.tablero)
-			self.controlView.actual=self.controlView.actual +1
-			self.controlView.actual_aux=self.controlView.actual_aux +1
-			self.controlView.tablero_to_string(self.tablero)
-			#self.controlView.partida.append(self.tablero)
-			return True
-		#------------------------------------------------------------------------------------------------------
-		
-		#Enroque largo
-		#------------------------------------------------------------------------------------------------------
-		if(pieza.name=='R' and pieza.aviso) and mov[1][1]==2:
-			pieza.aviso=False
-			#Muevo torre
-			self.tablero[fila1][0].casilla=(fila1,3)
-			self.tablero[fila1][0].set_Imagen((fila1,3))
-			
-			torre = self.tablero[fila1].pop(0)
-			self.tablero[fila1].insert(0,None)
-			
-			self.tablero[fila1].pop(3)
-			self.tablero[fila1].insert(3,torre)
-
-			#Muevo rey
-			self.tablero[fila1][4].casilla=(fila1,2)
-			self.tablero[fila1][4].set_Imagen((fila1,2))
-			
-			rey = self.tablero[fila1].pop(4)
-			self.tablero[fila1].insert(4,None)
-			
-			self.tablero[fila1].pop(2)
-			self.tablero[fila1].insert(2,rey)
-
-			#anoto
-			if(self.turnoBlanco):
-				self.contador=self.contador+1
-				texto= str(self.contador)+'. '+'0-0-0' 
-			else:
-				texto='  '+'0-0-0'+'\n' 
-			self.controlView.set_text(texto)
-			texto=''
-			self.turnoBlanco= not self.turnoBlanco
-			self.controlView.change_turnos()
-			self.controlView.dibujar(self.tablero)
-			self.controlView.actual=self.controlView.actual +1
-			self.controlView.actual_aux=self.controlView.actual_aux +1
-			self.controlView.tablero_to_string(self.tablero)
-			#self.controlView.partida.append(self.tablero)
-			return True
-		#------------------------------------------------------------------------------------------------------
-		
-				
-		if jugada:
-	 
-			
-			if(self.turnoBlanco):			
-				self.contador=self.contador+1
-			pieza.casilla=mov[1]
-			pieza.set_Imagen(mov[1])
-			
-			
-			
-				
-				
-			pza=self.tablero[fila1].pop(col1)
-			self.tablero[fila1].insert(col1,None)
-			
-			guardo=self.tablero[fila2].pop(col2)
-			self.tablero[fila2].insert(col2,pza)
-			
-			
-			#verificar jaque descubierto
-			#----------------------------------------------------------------------------
-			if (not self.verificarDescubierto()):
-				#volver pa atras
-				
-				
-				pza=self.tablero[fila2].pop(col2)
-
-				pieza.casilla=mov[0]
-				pieza.set_Imagen(mov[0])
-			
-				self.tablero[fila1].pop(col1)
-				self.tablero[fila1].insert(col1,pza)
-				self.tablero[fila2].insert(col2,guardo)
-				self.controlView.set_mensaje("Movimiento ilegal")	
-				
-				return False
-		
-			#----------------------------------------------------------------------------
-			
-			#verifica si esta en jaque
-			#------------------------------------------------------------------------------------------------------
-			if (self.turnoBlanco and self.bl_en_jaque):
-			 
-			  for n in range(8):
-			     for m in range(8):
-				 
-				 if (self.tablero[n][m]!= None):
-				   if(self.tablero[n][m].color=='N'):
-				     if(self.tablero[n][m].verificar_jaque(self.tablero)):
-					  pza=self.tablero[fila2].pop(col2)
-
-					  pieza.casilla=mov[0]
-					  pieza.set_Imagen(mov[0])
-			
-					  self.tablero[fila1].pop(col1)
-					  self.tablero[fila1].insert(col1,pza)
-	
-					  self.tablero[fila2].insert(col2,guardo)
-					  self.controlView.set_mensaje("Movimiento ilegal")	
-					  return False		
-			
-			if ((not self.turnoBlanco) and self.ng_en_jaque):
-			   	
-			   for n in range(8):
-			      for m in range(8):
-				
-				 if (self.tablero[n][m] != None): 
-				    if(self.tablero[n][m].color=='B'):
-				       if(self.tablero[n][m].verificar_jaque(self.tablero)):
-					  pza=self.tablero[fila2].pop(col2)
-
-					  pieza.casilla=mov[0]
-					  pieza.set_Imagen(mov[0])
-			
-					  self.tablero[fila1].pop(col1)
-					  self.tablero[fila1].insert(col1,pza)
-	
-					  self.tablero[fila2].insert(col2,guardo)
-					  self.controlView.set_mensaje("Movimiento ilegal")	
-					  return False
-
-
-			
-			self.bl_en_jaque=False
-			self.ng_en_jaque=False
-			
-			
-			#Verifica si la jugada hace jaque
-			#-----------------------------------------------------------------------------
-			if (pieza.verificar_jaque(self.tablero)):
-				#print "11"
-				self.controlView.set_mensaje("Jaque")
-				if self.turnoBlanco:
-					self.ng_en_jaque= True
-				else:
-					self.bl_en_jaque= True
-			
-			self.controlView.dibujar(self.tablero)
-			
-			
-			if(self.turnoBlanco):
-				texto= str(self.contador)+'. '+pieza.name+self.casillas[col2]+str(fila2+1) 
-			else:
-				texto='  '+pieza.name+self.casillas[col2]+str(fila2+1)+'\n' 
-			self.controlView.set_text(texto)
-			texto=''
-			self.turnoBlanco= not self.turnoBlanco
-			self.controlView.change_turnos()
-			tab=self.tablero
-			
-			
-			self.controlView.actual=self.controlView.actual +1
-			self.controlView.actual_aux=self.controlView.actual_aux +1
-			self.controlView.tablero_to_string(self.tablero)
-			#self.controlView.partida.append(self.tablero)
-			
-
-		else: return False
-		
+        self.pieza=self.tablero[self.fila1][self.col1]
+	destino = self.tablero[self.fila2][self.col2]
+       
+	if(not pieza):
+		return False
+	if(self.isNotColorTurn()):
+		return False
+        if(self.takeSameColor()):
+		return False
+        if(not pieza.legalMove(mov[1],self.tablero)):
+		return False
+        if(self.isInCheck()):
+		return False
+        self.controlCheck()
         return True
 #########################################################################################################
 
@@ -314,49 +216,174 @@ class ControlPrincipal():
 
 
 
+
+
+
+
+
 #########################################################################################################
+
+    #------------------------------------------------------------------------------------------------------
+    def isNotColorTurn(self):
+	if (self.pieza.color=='N' and self.turnoBlanco):
+                        return True
+	if (self.pieza.color=='B' and (not self.turnoBlanco)):
+                       	return	True
+        return False
+    #------------------------------------------------------------------------------------------------------
+
+
+    #------------------------------------------------------------------------------------------------------
+    def takeSameColor(self):
+		if (self.destino):
+			if(self.destino.color== pieza.color):
+				return True
+		return False
+    #------------------------------------------------------------------------------------------------------
+
+
+    #------------------------------------------------------------------------------------------------------
+    def controlCheck(self):
+        if (self.pieza.verificar_jaque(self.tablero)):
+            self.controlView.set_mensaje("Jaque")
+            if self.turnoBlanco:
+			self.ng_en_jaque= True
+            else:
+			self.bl_en_jaque= True
+    #------------------------------------------------------------------------------------------------------
+
+
+    #------------------------------------------------------------------------------------------------------
+    def changeTurns(self):
+        self.turnoBlanco= not self.turnoBlanco
+	self.controlView.change_turnos()
+	self.controlView.actual=self.controlView.actual +1
+	self.controlView.actual_aux=self.controlView.actual_aux +1
+	self.controlView.tablero_to_string(self.tablero)
+    #------------------------------------------------------------------------------------------------------
+
+
+    #------------------------------------------------------------------------------------------------------
+    def anotar(self,wTurn,pieza, destino):
+       if(wTurn):
+            texto= str(self.contador)+'. '+pieza.name+self.casillas[destino[1]]+str(destino[0]+1)
+       else:
+            texto='  '+pieza.name+self.casillas[destino[1]]+str(destino[0]+1)+'\n'
+   
+       self.controlView.set_text(texto)
+    #------------------------------------------------------------------------------------------------------
+
+
+    #------------------------------------------------------------------------------------------------------
     def verificarDescubierto(self):
+	""" El jaque descubierto sucede cuando una pieza se mueve y destapa el
+         ataque de otra. Solo lo pueden hacer la torre, el alfil y la dama"""
+
+	jugada=True
+	if(self.turnoBlanco):
+	   for filas in self.tablero:
+		for casilla in filas:
+		     try:
+			if((casilla.name=='T'  or casilla.name=='A' or casilla.name =='D') and casilla.color=='N'):
+				j=casilla.verificar_descubierto(self.tablero)
+				jugada= jugada and j
+		     except:
+			 pass
+	else:
+	    for filas in self.tablero:
+		for casilla in filas:
+		     try:
+			if((casilla.name=='T'  or casilla.name=='A' or casilla.name =='D') and casilla.color=='B'):
+				j=casilla.verificar_descubierto(self.tablero)
+				jugada= jugada and j
+		     except:
+			 pass
+
+	return jugada
+    #------------------------------------------------------------------------------------------------------
+
+
+    #------------------------------------------------------------------------------------------------------
+    def isInCheck(self):
+
+                self.move()
+ 		#
+		#-------------------verificar jaque descubierto (discovered Check)-----------
+		if (not self.verificarDescubierto()):
+			#volver pa atras
+			self.moveBack()
+			return True
+		#----------------------------------------------------------------------------
+
 		
-		
-		########################################################
-		# El jaque descubierto sucede cuando una pieza se mueve
-		# y destapa el ataque de otra.
-		# Solo lo pueden hacer la torre, el alfil y la dama
-		########################################################
-		jugada=True
-		
-		if(self.turnoBlanco):
-		   for filas in self.tablero:
-			for casilla in filas:
-			     try:
-				
-				if((casilla.name=='T'  or casilla.name=='A' or casilla.name =='D') and casilla.color=='N'):
-					j=casilla.verificar_descubierto(self.tablero)
-					jugada= jugada and j
-			     except:	
-				 pass		
-		else:
-		    for filas in self.tablero:
-			for casilla in filas:
-			     try:
-				
-				if((casilla.name=='T'  or casilla.name=='A' or casilla.name =='D') and casilla.color=='B'):
-					j=casilla.verificar_descubierto(self.tablero)
-					jugada= jugada and j
-			     except:	
-				 pass	
-		 		
-		return jugada
+		#-------------------verifica si esta en jaque--------------------------------
+		if (self.turnoBlanco and self.bl_en_jaque):
+		  for n in range(8):
+		     for m in range(8):
+			 if (self.tablero[n][m]!= None):
+			   if(self.tablero[n][m].color=='N'):
+			     if(self.tablero[n][m].verificar_jaque(self.tablero)):
+					  self.moveBack()
+					  return True
+		if ((not self.turnoBlanco) and self.ng_en_jaque):
+		   for n in range(8):
+		      for m in range(8):
+			 if (self.tablero[n][m] != None):
+			    if(self.tablero[n][m].color=='B'):
+			       if(self.tablero[n][m].verificar_jaque(self.tablero)):
+					  self.moveBack()
+					  return True
+
+		self.bl_en_jaque=False
+		self.ng_en_jaque=False
+		return False
+    #------------------------------------------------------------------------------------------------------
+
+
+    #------------------------------------------------------------------------------------------------------
+    def move(self):
+        self.pieza.setCasilla(self.destino)
+	self.pieza.set_Imagen(self.destino)
+	pza=self.tablero[self.fila1].pop(self.col1)
+	self.tablero[self.fila1].insert(self.col1,None)
+
+	self.guardo=self.tablero[self.fila2].pop(self.col2)
+	self.tablero[self.fila2].insert(self.col2,pza)
+    #------------------------------------------------------------------------------------------------------
+
+
+    #------------------------------------------------------------------------------------------------------
+    def moveBack(self):
+        pza=self.tablero[self.fila2].pop(self.col2)
+	self.pieza.setCasilla(self.origen)
+	self.pieza.set_Imagen(self.origen)
+
+	self.tablero[self.fila1].pop(self.col1)
+	self.tablero[self.fila1].insert(self.col1,pza)
+	self.tablero[self.fila2].insert(self.col2,self.guardo)
+	self.controlView.set_mensaje("Movimiento ilegal")
+    #------------------------------------------------------------------------------------------------------
 #########################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #########################################################################################################
 
     def codificar_jugada(self,j):
 	"""Transforma la jugada leida en notacion algebraica en un movimiento de pieza en el tablero"""
-
 	d=-1
-	
 	#---------------------------------------------ENROQUE LARGO----------------------------------------------
 	if(j[0:5]=='O-O-O'):
 
@@ -923,99 +950,13 @@ class ControlPrincipal():
 	self.controlView.dibujar(self.tablero)
 	self.turnoBlanco= not self.turnoBlanco
 	self.controlView.change_turnos()
-						
-		
+
 		
 	self.controlView.actual=self.controlView.actual +1
 	self.controlView.actual_aux=self.controlView.actual_aux +1
 	self.controlView.tablero_to_string(self.tablero)
-
-	
-	
 ############################################################################################################################
 
 
 
-############################################################################################################################
 
-   
-    def newGame(self,blancas,negras,horas,minut,inc):	
-	""" Maneja un juego entre dos oponentes. Cada jugador puede ser humano o el Motor de ajedrez  """
-
-	self.blancas=blancas
-	self.negras=negras
-
-	self.game= Thread(target=self.Game)
-    	self.game.daemon = True
-    	self.game.start()
-
-
-    def Game(self):
-	
-	count = 0		
-	while True:
-		
-		count+=1
-		#======================== JUEGAN BLANCAS ==========================================
-		if self.blancas == 0:
-
-			#.................... Humano ............................................
-			valido = False
-			while not valido:
-				jugada = self.moveQueue.get()
-				valido =self.validarMovimiento(jugada)
-			motor.set_jugada(jugada[0][0],jugada[0][1],jugada[1][0],jugada[1][1]);
-			#........................................................................
-
-
-			#................... Computadora  .......................................
-		else:
-			jugada=self.jugarMotor(1);
-			self.codificar_jugada(jugada)
-			self.controlView.set_text(str(count)+"."+jugada)
-			#........................................................................
-		#====================================================================================
-
-
-		#========================  JUEGAN NEGRAS ============================================
-		if self.negras == 0:
-			
-			#................... Humano .................................................
-			valido = False
-			while not valido:	
-				jugada = self.moveQueue.get()
-				valido =self.validarMovimiento(jugada)
-			motor.set_jugada(jugada[0][0],jugada[0][1],jugada[1][0],jugada[1][1]);	
-			#............................................................................
-
-
-			#.................... Computadora ...........................................
-		else:
-			jugada=self.jugarMotor(-1);
-			self.codificar_jugada(jugada)
-			self.controlView.set_text("  "+jugada+"\n")
-			#............................................................................
-		#=====================================================================================
-
-############################################################################################################################
-
-
-
-############################################################################################################################
-    def jugarMotor(self,turno):
-	""" LLama la funcion del modulo c """
-	i=0
-	jugada=''
-	a = motor.jugar(turno)
-	while True:
-		if (a[i] != '\x00'):
-			jugada = jugada + a[i]
-		else:
-			break
-		
-		i=i+1
-	
-	print "Motor juega: ",jugada
-	return jugada
-	
-############################################################################################################################

@@ -128,7 +128,8 @@ char* generate(int t)
 		preseleccion(&inicial);
 	}
 	
-	
+
+	mostrar_arbol(0,&inicial,a);
 	/*Selecciona la mejor jugada*/	
 	jugada = seleccionar(&inicial, turno);
 	printf ("%s ",jugada );
