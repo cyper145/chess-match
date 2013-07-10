@@ -4,7 +4,7 @@
 
 
 
-#define DEEP	2
+#define DEEP	3
 
 
 //--------CASILLAS---------------------------
@@ -47,7 +47,7 @@
 
 
 //-------PONDERACIONES-----------------------
-#define P_MATERIAL	10
+#define P_MATERIAL	100
 #define P_CENTRO	4
 #define P_ACTIVIDAD	3
 #define P_POSICION	3
@@ -88,6 +88,7 @@ struct Nodo {
 	struct Nodo  *padre;
 };
 typedef struct Nodo* nodo;
+
 
 
 #endif

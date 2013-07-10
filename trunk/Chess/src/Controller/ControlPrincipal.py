@@ -194,15 +194,15 @@ class ControlPrincipal():
 	self.controlView.set_mensaje("")	
 
         self.pieza=self.tablero[self.fila1][self.col1]
-	destino = self.tablero[self.fila2][self.col2]
+	self.destino = self.tablero[self.fila2][self.col2]
        
-	if(not pieza):
+	if(not self.pieza):
 		return False
 	if(self.isNotColorTurn()):
 		return False
         if(self.takeSameColor()):
 		return False
-        if(not pieza.legalMove(mov[1],self.tablero)):
+        if(not self.pieza.legalMove(mov[1],self.tablero)):
 		return False
         if(self.isInCheck()):
 		return False
@@ -236,7 +236,7 @@ class ControlPrincipal():
     #------------------------------------------------------------------------------------------------------
     def takeSameColor(self):
 		if (self.destino):
-			if(self.destino.color== pieza.color):
+			if(self.destino.color== self.pieza.color):
 				return True
 		return False
     #------------------------------------------------------------------------------------------------------
@@ -342,8 +342,8 @@ class ControlPrincipal():
 
     #------------------------------------------------------------------------------------------------------
     def move(self):
-        self.pieza.setCasilla(self.destino)
-	self.pieza.set_Imagen(self.destino)
+        self.pieza.setCasilla(self.dest)
+	self.pieza.set_Imagen(self.dest)
 	pza=self.tablero[self.fila1].pop(self.col1)
 	self.tablero[self.fila1].insert(self.col1,None)
 
