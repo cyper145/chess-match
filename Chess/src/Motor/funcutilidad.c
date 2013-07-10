@@ -33,6 +33,17 @@
 
 
 
+
+int Tabla_posicion_caballo[8][8]={{-10,-5,-5,-5,-5,-5,-5,-10},
+				{-5,0,0,3,3,0,0,-5},
+				{-4,0,5,5,5,5,0,-4},
+				{-4,0,5,10,10,5,0,-4},
+				{-4,0,5,10,10,5,0,-4},
+				{-4,0,5,5,5,5,0,-4},
+				{-5,0,0,3,3,0,0,-5},
+				{-10,-5,-5,-5,-5,-5,-5,-10}};
+
+
 void valuar_utilidad(nodo inicial, int prof){
 	nodo aux;
 	int m,n;
@@ -105,6 +116,7 @@ int valoracion(Tablero tab){
 				case (CABALLO_N):
 					/*CABALLO NEGRO*/
 					//control del centro
+					/*
 					if((i== F_6)&&(j==C_F)) centro=centro-4;
 					if((i== F_7)&&(j==C_E)) centro=centro-1;
 					if((i== F_6)&&(j==C_C)) centro=centro-4;
@@ -113,13 +125,14 @@ int valoracion(Tablero tab){
 
 					//actividad de la pieza
 					actividad=actividad+(actividad_caballo(tab,i,j,-1));
-
+					*/
 					//posicion
-					posicion=posicion + (posicion_caballo(tab,i,j,-1));
+					posicion=posicion + (Tabla_posicion_caballo[i][j] * -1);
 					break;
 				case (CABALLO_B):
 					/*CABALLO BLANCO*/
 					//control del centro
+					/*
 					if((i== F_3)&&(j==C_F)) centro=centro+4;
 					if((i== F_2)&&(j==C_E)) centro=centro+2;
 					if((i== F_3)&&(j==C_C)) centro=centro+4;
@@ -127,9 +140,9 @@ int valoracion(Tablero tab){
 
 					//actividad de la pieza
 					actividad=actividad+(actividad_caballo(tab,i,j,1));
-
+					*/
 					//posicion
-					posicion=posicion + (posicion_caballo(tab,i,j,1));
+					posicion=posicion + Tabla_posicion_caballo[i][j];
 					break;
 				case (ALFIL_N):
 					//actividad de la pieza

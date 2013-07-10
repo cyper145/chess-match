@@ -51,6 +51,7 @@ const char re[]="K";
 const char come[]="x";
 
 char *partido[2*DEEP];
+int valores[2*DEEP];
 
 
 
@@ -114,11 +115,14 @@ char* generate(int t)
 	generar(0,&inicial,turno);
 	
 	valuar_utilidad(&inicial,0);
+	//mostrar_arbol(0,&inicial,a);
 	poda(&inicial);
+	mostrar_arbol(0,&inicial,a);
 	acomodar_minimax(&inicial,0);
+	//mostrar_arbol(0,&inicial,a);
 	preseleccion(&inicial);
 	//mostrar_arbol(0,&inicial,a);
-	
+	/*
 	for(k=0;k<6;k++)	
 	{
 		regenera(&inicial);
@@ -127,9 +131,9 @@ char* generate(int t)
 		acomodar_minimax(&inicial,0);
 		preseleccion(&inicial);
 	}
-	
+	*/
 
-	mostrar_arbol(0,&inicial,a);
+	//mostrar_arbol(0,&inicial,a);
 	/*Selecciona la mejor jugada*/	
 	jugada = seleccionar(&inicial, turno);
 	printf ("%s ",jugada );
@@ -280,10 +284,15 @@ void torre(nodo padre,Tablero tab,casilla cas){
 	/*abajo*/
 	while(f>=0){
 
-		if((tab[fil][col]*tab[f][c])<=0){
+		if((tab[fil][col]*tab[f][c])==0){
 			casilla to={f,c};
 			insertar_nodo(padre,cas,to);
 		}
+		else if((tab[fil][col]*tab[f][c])<0){
+			casilla to={f,c};
+			insertar_nodo(padre,cas,to);
+			break;
+		}	
 		else break;
 		f--;
 	}
@@ -292,10 +301,15 @@ void torre(nodo padre,Tablero tab,casilla cas){
 
 	/*arriba*/
 	while(f<=7){
-		if((tab[fil][col]*tab[f][c])<=0){
+		if((tab[fil][col]*tab[f][c])==0){
 			casilla to={f,c};
 			insertar_nodo(padre,cas,to);
 		}
+		else if((tab[fil][col]*tab[f][c])<0){
+			casilla to={f,c};
+			insertar_nodo(padre,cas,to);
+			break;
+		}	
 		else break;
 		f++;
 	}
@@ -304,10 +318,15 @@ void torre(nodo padre,Tablero tab,casilla cas){
 
 	/*izquierda*/
 	while(c>=0){
-		if((tab[fil][col]*tab[f][c])<=0){
+		if((tab[fil][col]*tab[f][c])==0){
 			casilla to={f,c};
 			insertar_nodo(padre,cas,to);
 		}
+		else if((tab[fil][col]*tab[f][c])<0){
+			casilla to={f,c};
+			insertar_nodo(padre,cas,to);
+			break;
+		}	
 		else break;
 		c--;
 	}
@@ -316,10 +335,15 @@ void torre(nodo padre,Tablero tab,casilla cas){
 	
 	/*derecha*/
 	while(c<=7){
-		if((tab[fil][col]*tab[f][c])<=0){
+		if((tab[fil][col]*tab[f][c])==0){
 			casilla to={f,c};
 			insertar_nodo(padre,cas,to);
 		}
+		else if((tab[fil][col]*tab[f][c])<0){
+			casilla to={f,c};
+			insertar_nodo(padre,cas,to);
+			break;
+		}	
 		else break;
 		c++;
 	}
@@ -401,7 +425,7 @@ void alfil(nodo padre,Tablero tab,casilla cas){
 	if((tab[fil][col]*tab[f][c])<=0){
 		casilla to={f,c};
 		insertar_nodo(padre,cas,to);
-		if(tab[f][c]<0) break;
+		if(tab[f][c]!=0) break;
 	}
 	else break;
 	f++;
@@ -414,7 +438,7 @@ void alfil(nodo padre,Tablero tab,casilla cas){
 	if((tab[fil][col]*tab[f][c])<=0){
 		casilla to={f,c};
 		insertar_nodo(padre,cas,to);
-		if(tab[f][c]<0) break;
+		if(tab[f][c]!=0) break;
 	}
 	else break;
 	f++;
@@ -428,7 +452,7 @@ void alfil(nodo padre,Tablero tab,casilla cas){
 	if((tab[fil][col]*tab[f][c])<=0){
 		casilla to={f,c};
 		insertar_nodo(padre,cas,to);
-		if(tab[f][c]<0) break;
+		if(tab[f][c]!=0) break;
 	}
 	else break;
 	f--;
@@ -441,7 +465,7 @@ void alfil(nodo padre,Tablero tab,casilla cas){
 	if((tab[fil][col]*tab[f][c])<=0){
 		casilla to={f,c};
 		insertar_nodo(padre,cas,to);
-		if(tab[f][c]<0) break;
+		if(tab[f][c]!=0) break;
 	}
 	else break;
 	f--;
@@ -499,6 +523,7 @@ void rey(nodo padre,Tablero tab,casilla cas){
 		if((0<=f)&&(f<=7)&&(0<=c)&&(c<=7)&&((tab[fil][col]*tab[f][c])<=0)){
 			casilla to={f,c};
 			insertar_nodo(padre,cas,to);
+			
 		}
 		d_c=d_c*-1;
 	}
@@ -653,6 +678,7 @@ void mostrar_arbol(int prof,nodo padre, char *z){
 
 	int k;
 	partido[prof]=padre->notation;
+	valores[prof]=padre->value;
 	//partido[prof]=padre->hijo->notation;
 	nodo aux =padre->hijo;
 	//partido[prof]=aux->notation;
@@ -668,9 +694,10 @@ void mostrar_arbol(int prof,nodo padre, char *z){
 		//if(prof==DEEP){
 		else{
 			partido[prof+1]=aux->notation;
+			valores[prof+1]=aux->value;
 
 			for(k=1;k<= prof+1;k++){
-				printf("%s ",partido[k]);
+				printf("%s  %d  ",partido[k], valores[k]);
 			}
 			printf("valor: %d\n",aux->value);
 			cont=cont+1;
