@@ -23,6 +23,7 @@
 #define LEVEL_NODES	4
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "poda.h"
 
 
@@ -66,6 +67,7 @@ void podar(nodo nod)
 
 	aux=nod->hijo;
 	ant=NULL;
+	int sem;
 	while(aux != NULL)	
 		{
 			val=(aux->value * nod->turno);
@@ -80,6 +82,7 @@ void podar(nodo nod)
 					aux = aux2;
 					cont_free ++;
 					
+					
 				}
 				else	{
 				ant->sig=aux->sig;
@@ -89,6 +92,7 @@ void podar(nodo nod)
 				free(aux);
 				aux = aux2;
 				cont_free ++;
+				
 				}
 			}
 			else{
@@ -113,6 +117,7 @@ void podar(nodo nod)
 *************************************************************************************************/
 void borrar_all_hijos(nodo nod){
 	nodo aux = nod->hijo,aux2;
+	int sem;
 	while(aux != NULL)
 	{
 	 	if (aux->hijo != NULL){
@@ -125,8 +130,9 @@ void borrar_all_hijos(nodo nod){
 		else {
 			aux2=aux->sig;
 			free(aux);
-			aux = aux2;
 			cont_free ++;
+			aux = aux2;
+			
 		}		
 	}
 }
@@ -140,15 +146,17 @@ void borrar_all_hijos(nodo nod){
 * es dcir, comenzando por el padre hacia abajo y por cada uno llama a la funcion podar, la cual descartara
 * los nodos con menor valoracion (peores jugadas).
 ***********************************************************************************************************/
-void poda(nodo nod){
+int poda(nodo nod){
 	podar(nod);
 	nod=nod->hijo;
+	int a;
 	while(nod!=NULL){
 		if(nod->hijo != NULL){
-			poda(nod);
+			a = poda(nod);
 			}
 		nod=nod->sig;
 	}
+	return 1;
 }
 
 
@@ -157,7 +165,7 @@ void poda(nodo nod){
 
 
 
-void preseleccion(nodo nod)
+int preseleccion(nodo nod)
 {
 	nodo aux = nod->hijo;
 	int t = nod->turno;
@@ -165,7 +173,8 @@ void preseleccion(nodo nod)
 		{
 		   preselect(aux,aux->value);		
 		   aux = aux->sig;	
-		}		
+		}
+	return 1;		
 }
 
 
@@ -218,14 +227,15 @@ void preselect(nodo nod,int max)
 
 
 
-void acomodar_minimax(nodo nod, int prof){
+int acomodar_minimax(nodo nod, int prof){
 	nodo aux;
 	int m, n, min=10000, max= -10000;
 	aux =nod->hijo;
+	int a;
 
 	while(aux!=NULL){
 			if(aux->hijo != NULL){
-				acomodar_minimax(aux,prof+1);
+				a = acomodar_minimax(aux,prof+1);
 				}
 			else{
 				m = (aux->value);
@@ -235,7 +245,8 @@ void acomodar_minimax(nodo nod, int prof){
 
 			aux=aux->sig;
 		}
-		if(nod->turno != blanco) nod->value = max;
-		else	nod->value = min;
+	if(nod->turno != blanco) nod->value = max;
+	else	nod->value = min;
+	return 1;	
 }
 

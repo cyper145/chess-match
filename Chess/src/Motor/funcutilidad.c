@@ -29,6 +29,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "var_data.h"
 
 
@@ -44,28 +45,30 @@ int Tabla_posicion_caballo[8][8]={{-10,-5,-5,-5,-5,-5,-5,-10},
 				{-10,-5,-5,-5,-5,-5,-5,-10}};
 
 
-void valuar_utilidad(nodo inicial, int prof){
+int valuar_utilidad(nodo inicial, int prof){
 	nodo aux;
-	int m,n;
+	int n;
+	double m;
 	aux =inicial->hijo;
-	int min=10000;
-	int max= -10000;
-
+	double min=10000;
+	double max= -10000;
+	int a;
 	while(aux!=NULL){
 		if(aux->hijo != NULL){
-			valuar_utilidad(aux,prof+1);
+			a = valuar_utilidad(aux,prof+1);
 			}
 		else{
 			m = valoracion(aux->board);
-			aux->value=m;
+			memcpy(&aux->value,&m,sizeof(double));
+			//aux->value=m;
 		     }	
 		if(aux->value > max) max=aux->value;
 		if(aux->value < min) min=aux->value;
 		aux=aux->sig;		
 	}
-	if(inicial->turno != blanco) inicial->value = max;
-	else	inicial->value = min;
-		
+	if(inicial->turno == blanco) memcpy(&inicial->value,&max,sizeof(double));//inicial->value = max;
+	else	memcpy(&inicial->value,&min,sizeof(double));//inicial->value = min;
+	return 1;
 }
 
 
