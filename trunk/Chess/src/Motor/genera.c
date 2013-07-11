@@ -32,6 +32,7 @@
 #include "poda.h"
 #include "funcutilidad.h"
 #include "var_data.h"
+#include <time.h> 
 
 
  
@@ -51,7 +52,7 @@ const char re[]="K";
 const char come[]="x";
 
 char *partido[2*DEEP];
-int valores[2*DEEP];
+int valores[3*DEEP];
 
 
 
@@ -65,8 +66,8 @@ void rey(nodo padre,Tablero tab,casilla cas);
 void peon(nodo padre,Tablero tab,casilla cas);
 void insertar_nodo(nodo padre,casilla from,casilla to);
 void mostrar_arbol(int prof,nodo padre, char *z);
-void generar(int prof,nodo nod,int turno);
-void regenera(nodo nod);
+int  generar(int prof,nodo nod,int turno);
+int regenera(nodo nod);
 void convert_to_char(nodo padre,casilla from,casilla to,char *s);
 void set_jugada(int f_origen,int c_origen,int f_dest,int c_dest);
 char* jugar(int t);
@@ -98,6 +99,8 @@ char* generate(int t)
 	char *a="", *jugada=NULL;;
 	turno = t;
 
+	clock_t start = clock();  
+
 	/*---Inicializa el primer nodo del arbol------*/
 	struct Nodo inicial;
 	memcpy(inicial.board,posicion,sizeof(Tablero));
@@ -108,35 +111,41 @@ char* generate(int t)
   	inicial.sig=NULL;
   	memcpy(inicial.notation,"",0);
 	inicial.turno=turno;
+	inicial.value=0;
 	/*---------------------------------------------*/
+	int sem;
 
 
-
-	generar(0,&inicial,turno);
+	sem = generar(0,&inicial,turno);
 	
-	valuar_utilidad(&inicial,0);
-	//mostrar_arbol(0,&inicial,a);
-	poda(&inicial);
-	mostrar_arbol(0,&inicial,a);
-	acomodar_minimax(&inicial,0);
-	//mostrar_arbol(0,&inicial,a);
-	preseleccion(&inicial);
-	//mostrar_arbol(0,&inicial,a);
-	/*
-	for(k=0;k<6;k++)	
-	{
-		regenera(&inicial);
-		valuar_utilidad(&inicial,0);
-		poda(&inicial);
-		acomodar_minimax(&inicial,0);
-		preseleccion(&inicial);
-	}
-	*/
+	if(sem) sem = valuar_utilidad(&inicial,0);
+	
+	if(sem) sem = poda(&inicial);
 
+	if(sem) sem = preseleccion(&inicial);
+	
+	
 	//mostrar_arbol(0,&inicial,a);
+	
+	for(k=0;k<6;k++)	
+	{	
+		if(sem) sem = regenera(&inicial);
+		//mostrar_arbol(0,&inicial,a);
+		//printf("---------------------------------------------------------------------------------------\n\n\n");
+		//valuar_utilidad(&inicial,0);
+		if(sem) sem = acomodar_minimax(&inicial,0);
+		//mostrar_arbol(0,&inicial,a);
+		//poda(&inicial);
+		//acomodar_minimax(&inicial,0);
+		if(sem) sem = preseleccion(&inicial);
+	}
+	
+
+	
 	/*Selecciona la mejor jugada*/	
 	jugada = seleccionar(&inicial, turno);
-	printf ("%s ",jugada );
+	double finish = (((double)clock() - start) / CLOCKS_PER_SEC);
+	printf ("Jugadas analizadas: %ld - timepo: %f  seg - Seleccionada: %s ",contador,finish,jugada );
 	//mostrar_arbol(0,&inicial,a);
 	cont_f++;
 	
@@ -174,18 +183,20 @@ void set_jugada(int f_origen,int c_origen,int f_dest,int c_dest)
 }
 
 
-void generar(int prof,nodo nod, int turno){
+int generar(int prof,nodo nod, int turno){
 
+	int a;
 	gen(nod,nod->board,turno);
 	nod->turno=turno;
 	nod=nod->hijo;
 	
 	while(nod!=NULL){
 		if(prof<DEEP){
-			generar(prof+1,nod,(turno*-1));
+			a=generar(prof+1,nod,(turno*-1));
 			}
 		nod=nod->sig;
 	}
+	return 1;
 }
 
 
@@ -238,15 +249,15 @@ void gen(nodo inicial,Tablero tab,int turno)
 
 }
 
-void regenera(nodo nod)
+int regenera(nodo nod)
 {
 	nodo aux;
 	aux = nod->hijo;
 	int turno = nod->turno;
-
+	int a;
 	while(aux!=NULL){
 		if(aux->hijo != NULL){
-			regenera(aux);
+			a = regenera(aux);
 			}
 		else {
 			generar(DEEP-2,aux,turno);
@@ -256,6 +267,7 @@ void regenera(nodo nod)
 		}	
 		aux=aux->sig;
 	}
+	return 1;
 }
 
 
@@ -626,25 +638,33 @@ void insertar_nodo(nodo padre,casilla from,casilla to){
 	nuevo=malloc(sizeof(struct Nodo));
 	//nuevo=(nodo)malloc(sizeof(struct Nodo));
 	if(nuevo!=NULL){
-	
+
+		memcpy(nuevo->j.from,from,sizeof(casilla));
+		memcpy(nuevo->j.to,to,sizeof(casilla));
+		/*
 		nuevo->j.from[0]=from[0];
 		nuevo->j.from[1]=from[1];
 		nuevo->j.to[0]=to[0];
 		nuevo->j.to[1]=to[1];
-
+		*/
+		memcpy(nuevo->board,padre->board,sizeof(Tablero));
+		/*
 		for(j=0;j<8;j++){
 			for(i=0;i<8;i++)  nuevo->board[j][i]=padre->board[j][i];
 
 			}
-
+		*/
 	//	memcpy(nuevo.board, padre.board,148);
-		nuevo->board[from[0]][from[1]]=0;
-		nuevo->board[to[0]][to[1]]=auxiliar;
+		short int ax = 0;
+		memcpy(&nuevo->board[from[0]][from[1]],&ax,sizeof(short int));
+		memcpy(&nuevo->board[to[0]][to[1]],&auxiliar,sizeof(short int));
+		//nuevo->board[from[0]][from[1]]=0;
+		//nuevo->board[to[0]][to[1]]=auxiliar;
 
 		nuevo->hijo=NULL;
 		nuevo->sig=NULL;
 
-		convert_to_char(padre,from,to,&nuevo->notation);
+		convert_to_char(padre,from,to,nuevo->notation);
 		//printf("%s \n",&nuevo->notation);
 
 		if(padre->hijo==NULL){
@@ -677,6 +697,7 @@ int cont=0;
 void mostrar_arbol(int prof,nodo padre, char *z){
 
 	int k;
+	
 	partido[prof]=padre->notation;
 	valores[prof]=padre->value;
 	//partido[prof]=padre->hijo->notation;
@@ -694,17 +715,17 @@ void mostrar_arbol(int prof,nodo padre, char *z){
 		//if(prof==DEEP){
 		else{
 			partido[prof+1]=aux->notation;
-			valores[prof+1]=aux->value;
+			//valores[prof+1]=aux->value;
 
 			for(k=1;k<= prof+1;k++){
-				printf("%s  %d  ",partido[k], valores[k]);
+				printf("%s ",partido[k]);
 			}
-			printf("valor: %d\n",aux->value);
+			printf("valor: %f\n",aux->value);
 			cont=cont+1;
 		}
 		aux=aux->sig;
 	}
-	//printf("%d Jugadas\n",cont);
+	
 }
 
 

@@ -8,7 +8,7 @@
 #include "var_data.h"
 
 
-void valuar_utilidad(nodo inicial, int prof);
+int valuar_utilidad(nodo inicial, int prof);
 int valoracion(Tablero tab);
 int actividad_caballo(Tablero tab,int fila,int columna,int turno);
 int actividad_torre(Tablero tab,int fila,int columna,int turno);

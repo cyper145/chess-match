@@ -81,7 +81,7 @@ struct Nodo {
 	jugada j;
 	Tablero board;
 	char notation[5];
-	int value;
+	double value;
 	short int turno;
 	struct Nodo  *hijo;
 	struct Nodo  *sig;
