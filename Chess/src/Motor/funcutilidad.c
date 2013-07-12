@@ -45,30 +45,29 @@ int Tabla_posicion_caballo[8][8]={{-10,-5,-5,-5,-5,-5,-5,-10},
 				{-10,-5,-5,-5,-5,-5,-5,-10}};
 
 
-int valuar_utilidad(nodo inicial, int prof){
+void valuar_utilidad(nodo inicial, int prof){
 	nodo aux;
 	int n;
-	double m;
+	int m;
 	aux =inicial->hijo;
-	double min=10000;
-	double max= -10000;
+	int min=10000;
+	int max= -10000;
 	int a;
 	while(aux!=NULL){
 		if(aux->hijo != NULL){
-			a = valuar_utilidad(aux,prof+1);
+			valuar_utilidad(aux,prof+1);
 			}
 		else{
 			m = valoracion(aux->board);
-			memcpy(&aux->value,&m,sizeof(double));
+			memcpy(&aux->value,&m,sizeof(int));
 			//aux->value=m;
 		     }	
 		if(aux->value > max) max=aux->value;
 		if(aux->value < min) min=aux->value;
 		aux=aux->sig;		
 	}
-	if(inicial->turno == blanco) memcpy(&inicial->value,&max,sizeof(double));//inicial->value = max;
-	else	memcpy(&inicial->value,&min,sizeof(double));//inicial->value = min;
-	return 1;
+	if(inicial->turno == blanco) memcpy(&inicial->value,&max,sizeof(int));//inicial->value = max;
+	else	memcpy(&inicial->value,&min,sizeof(int));//inicial->value = min;
 }
 
 
