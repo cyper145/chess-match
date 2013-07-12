@@ -35,8 +35,6 @@
 #include <time.h> 
 
 
- 
-
 
 
 
@@ -54,7 +52,7 @@ const char come[]="x";
 char *partido[2*DEEP];
 int valores[3*DEEP];
 
-
+    
 
 void eliminar(nodo nod);
 void mostrar_tablero(Tablero tab);
@@ -66,8 +64,8 @@ void rey(nodo padre,Tablero tab,casilla cas);
 void peon(nodo padre,Tablero tab,casilla cas);
 void insertar_nodo(nodo padre,casilla from,casilla to);
 void mostrar_arbol(int prof,nodo padre, char *z);
-int  generar(int prof,nodo nod,int turno);
-int regenera(nodo nod);
+void generar(int prof,nodo nod,int turno);
+void regenera(nodo nod);
 void convert_to_char(nodo padre,casilla from,casilla to,char *s);
 void set_jugada(int f_origen,int c_origen,int f_dest,int c_dest);
 char* jugar(int t);
@@ -98,57 +96,48 @@ char* generate(int t)
 	int k, turno;
 	char *a="", *jugada=NULL;;
 	turno = t;
-
-	clock_t start = clock();  
-
+	
+	clock_t start = clock();
+	
+	
 	/*---Inicializa el primer nodo del arbol------*/
-	struct Nodo inicial;
-	memcpy(inicial.board,posicion,sizeof(Tablero));
+	nodo inicial;
+	inicial=malloc(sizeof(struct Nodo));
+	//struct Nodo inicial;
+	memcpy(inicial->board,posicion,sizeof(Tablero));
 	cont_free = 0;
 	contador =0;
 	cont_f=0;
-  	inicial.hijo=NULL;
-  	inicial.sig=NULL;
-  	memcpy(inicial.notation,"",0);
-	inicial.turno=turno;
-	inicial.value=0;
+  	inicial->hijo=NULL;
+  	inicial->sig=NULL;
+  	memcpy(inicial->notation,"",(5*sizeof(char)));
+	inicial->turno=turno;
+	inicial->value=0;
 	/*---------------------------------------------*/
-	int sem;
+	
+	
 
-
-	sem = generar(0,&inicial,turno);
-	
-	if(sem) sem = valuar_utilidad(&inicial,0);
-	
-	if(sem) sem = poda(&inicial);
-
-	if(sem) sem = preseleccion(&inicial);
-	
-	
-	//mostrar_arbol(0,&inicial,a);
-	
+	generar(0,inicial,turno);
+	valuar_utilidad(inicial,0);
+	poda(inicial);
+	preseleccion(inicial);
 	for(k=0;k<6;k++)	
 	{	
-		if(sem) sem = regenera(&inicial);
-		//mostrar_arbol(0,&inicial,a);
-		//printf("---------------------------------------------------------------------------------------\n\n\n");
-		//valuar_utilidad(&inicial,0);
-		if(sem) sem = acomodar_minimax(&inicial,0);
-		//mostrar_arbol(0,&inicial,a);
-		//poda(&inicial);
-		//acomodar_minimax(&inicial,0);
-		if(sem) sem = preseleccion(&inicial);
+		regenera(inicial);
+		acomodar_minimax(inicial,0);
+		preseleccion(inicial);
 	}
 	
 
 	
 	/*Selecciona la mejor jugada*/	
-	jugada = seleccionar(&inicial, turno);
+	jugada = seleccionar(inicial, turno);
+	
 	double finish = (((double)clock() - start) / CLOCKS_PER_SEC);
 	printf ("Jugadas analizadas: %ld - timepo: %f  seg - Seleccionada: %s ",contador,finish,jugada );
-	//mostrar_arbol(0,&inicial,a);
-	cont_f++;
 	
+	cont_f++;
+	borrar_all_hijos(inicial);
 	return (jugada);
 }
 
@@ -171,11 +160,22 @@ char* jugar(int t)
 }
 
 
+
+
+
+
+
+
+
+/*********************************************************************************************
+* Esta funcion se llama cuando un jugador humano realiza una jugada.
+* Actualiza la posicion del tablero con la posicion actual.*
+*********************************************************************************************/
 void set_jugada(int f_origen,int c_origen,int f_dest,int c_dest)
 {
-	int aux;
+	short aux,cero=0;
 	aux = posicion[f_origen][c_origen];
-	posicion[f_origen][c_origen] = 0;
+	posicion[f_origen][c_origen] = cero;
 	posicion[f_dest][c_dest] = aux;
 	//printf("MOSTRAR TABLERO \n");	
 	//mostrar_tablero(posicion);
@@ -183,21 +183,27 @@ void set_jugada(int f_origen,int c_origen,int f_dest,int c_dest)
 }
 
 
-int generar(int prof,nodo nod, int turno){
 
-	int a;
+
+
+void generar(int prof,nodo nod, int turno){
+	
 	gen(nod,nod->board,turno);
 	nod->turno=turno;
 	nod=nod->hijo;
 	
 	while(nod!=NULL){
 		if(prof<DEEP){
-			a=generar(prof+1,nod,(turno*-1));
+			generar(prof+1,nod,(turno*-1));
 			}
 		nod=nod->sig;
 	}
-	return 1;
 }
+
+
+
+
+
 
 
 
@@ -213,7 +219,7 @@ int generar(int prof,nodo nod, int turno){
 ****************************************************************************************/
 void gen(nodo inicial,Tablero tab,int turno)
 {
-  int f,c;
+  short f,c;
 
  for(f=0;f<8;f++){
 	for(c=0;c<8;c++){
@@ -249,7 +255,7 @@ void gen(nodo inicial,Tablero tab,int turno)
 
 }
 
-int regenera(nodo nod)
+void regenera(nodo nod)
 {
 	nodo aux;
 	aux = nod->hijo;
@@ -257,17 +263,31 @@ int regenera(nodo nod)
 	int a;
 	while(aux!=NULL){
 		if(aux->hijo != NULL){
-			a = regenera(aux);
+			regenera(aux);
 			}
 		else {
 			generar(DEEP-2,aux,turno);
 			valuar_utilidad(aux,0);
 			poda(aux);
 			acomodar_minimax(aux,0);
+			
+			/*
+			if(sem_wait(&semaforo) == 0){
+				valuar_utilidad(aux,0);
+				sem_post(&semaforo);
+			}	
+			if(sem_wait(&semaforo) == 0){
+				poda(aux);
+				sem_post(&semaforo);
+			}
+			if(sem_wait(&semaforo) == 0){
+				acomodar_minimax(aux,0);
+				sem_post(&semaforo);
+			}
+			*/
 		}	
 		aux=aux->sig;
 	}
-	return 1;
 }
 
 
@@ -286,7 +306,7 @@ int regenera(nodo nod)
 ****************************************************************************************/
 void torre(nodo padre,Tablero tab,casilla cas){
 
-	short int f,c,fil,col;
+	short f,c,fil,col;
 
 	fil=cas[0];
 	col=cas[1];
@@ -377,9 +397,9 @@ void torre(nodo padre,Tablero tab,casilla cas){
 ****************************************************************************************/
 void caballo(nodo padre,Tablero tab,casilla cas){
 
-  short int f,c,i,j,k,fil,col;
-  short int d_f=2;
-  short int d_c=1;
+  short  f,c,i,j,k,fil,col;
+  short  d_f=2;
+  short  d_c=1;
   fil=cas[0];
   col=cas[1];
   f=cas[0];
@@ -424,9 +444,9 @@ void caballo(nodo padre,Tablero tab,casilla cas){
 ****************************************************************************************/
 void alfil(nodo padre,Tablero tab,casilla cas){
 
-  short int f,c,i,j,k,fil,col;
-  short int d_f=1;
-  short int d_c=-1;
+  short  f,c,i,j,k,fil,col;
+  short  d_f=1;
+  short  d_c=-1;
   f=cas[0]+1;
   c=cas[1]-1;
   fil=cas[0];
@@ -504,9 +524,9 @@ void alfil(nodo padre,Tablero tab,casilla cas){
 ****************************************************************************************/
 void rey(nodo padre,Tablero tab,casilla cas){
 
- short int f,c,i,j,k,fil,col;
- short int d_f=1;
- short int d_c=0;
+ short  f,c,i,j,k,fil,col;
+ short  d_f=1;
+ short  d_c=0;
 
  fil=cas[0];
  col=cas[1];
@@ -565,17 +585,19 @@ void rey(nodo padre,Tablero tab,casilla cas){
 ****************************************************************************************/
 void peon(nodo padre,Tablero tab,casilla cas){
 
-   short int paso,f,c,j,d_c,fil,col;
+   short  paso,f,c,j,d_c,fil,col, destino;
    fil=cas[0];
    col=cas[1];
 
    paso=tab[fil][col];
-
+   
 
    /*una casilla adelante*/
    f=cas[0]+paso;
    c=cas[1];
-   if((tab[f][c])==0){
+   destino = tab[f][c];
+   if((0<=f)&&(f>=7))	
+   if((tab[f][c]) == 0){
 	casilla to={f,c};
 	insertar_nodo(padre,cas,to);
 	}
@@ -625,7 +647,7 @@ void peon(nodo padre,Tablero tab,casilla cas){
 void insertar_nodo(nodo padre,casilla from,casilla to){
 
 	nodo nuevo,aux;
-	short int auxiliar,j,i;
+	short  auxiliar,j,i;
 	char *nota;
 	//convert_to_char(padre,from,to,&nota);
 
@@ -639,14 +661,14 @@ void insertar_nodo(nodo padre,casilla from,casilla to){
 	//nuevo=(nodo)malloc(sizeof(struct Nodo));
 	if(nuevo!=NULL){
 
-		memcpy(nuevo->j.from,from,sizeof(casilla));
-		memcpy(nuevo->j.to,to,sizeof(casilla));
-		/*
+		//memcpy(nuevo->j.from,from,sizeof(casilla));
+		//memcpy(nuevo->j.to,to,sizeof(casilla));
+		
 		nuevo->j.from[0]=from[0];
 		nuevo->j.from[1]=from[1];
 		nuevo->j.to[0]=to[0];
 		nuevo->j.to[1]=to[1];
-		*/
+		
 		memcpy(nuevo->board,padre->board,sizeof(Tablero));
 		/*
 		for(j=0;j<8;j++){
@@ -655,15 +677,16 @@ void insertar_nodo(nodo padre,casilla from,casilla to){
 			}
 		*/
 	//	memcpy(nuevo.board, padre.board,148);
-		short int ax = 0;
-		memcpy(&nuevo->board[from[0]][from[1]],&ax,sizeof(short int));
-		memcpy(&nuevo->board[to[0]][to[1]],&auxiliar,sizeof(short int));
-		//nuevo->board[from[0]][from[1]]=0;
-		//nuevo->board[to[0]][to[1]]=auxiliar;
+		short  ax = 0;
+		//memcpy(nuevo->board[from[0]][from[1]],ax,sizeof(short));
+		//memcpy(nuevo->board[to[0]][to[1]],auxiliar,sizeof(short));
+		nuevo->board[to[0]][to[1]]=nuevo->board[from[0]][from[1]];
+		nuevo->board[from[0]][from[1]]=0;
+		
 
 		nuevo->hijo=NULL;
 		nuevo->sig=NULL;
-
+		nuevo->value=0;
 		convert_to_char(padre,from,to,nuevo->notation);
 		//printf("%s \n",&nuevo->notation);
 
@@ -720,7 +743,7 @@ void mostrar_arbol(int prof,nodo padre, char *z){
 			for(k=1;k<= prof+1;k++){
 				printf("%s ",partido[k]);
 			}
-			printf("valor: %f\n",aux->value);
+			printf("valor: %d\n",aux->value);
 			cont=cont+1;
 		}
 		aux=aux->sig;
@@ -739,7 +762,7 @@ void mostrar_arbol(int prof,nodo padre, char *z){
 ********************************************************************************************/
 void convert_to_char(nodo padre,casilla from,casilla to,char *s){
 
-	char not[10]="",cc[2]="";
+	char not[5]="",cc[2]="";
 
 	int pza,pza2;
 	char casillas[8]={'a','b','c','d','e','f','g','h'};
@@ -835,10 +858,10 @@ char* seleccionar(nodo nod, int color)
 	nodo aux;
 	aux = nod->hijo;
 	int max = -1000;
-	int auxiliar,f_origen,c_origen,f_dest,c_dest;
+	short auxiliar,f_origen,c_origen,f_dest,c_dest;
 	char * j;
 	jugada move;
-
+	int flag = 0;
 	while(aux != NULL)
 	{
 
@@ -850,6 +873,7 @@ char* seleccionar(nodo nod, int color)
 			c_origen=aux->j.from[1];
 			f_dest=aux->j.to[0];
 			c_dest=aux->j.to[1];	
+			flag=1;
 		
 		}
 		
@@ -857,8 +881,11 @@ char* seleccionar(nodo nod, int color)
 	}	
 
 	auxiliar = posicion[f_origen][c_origen];
-	posicion[f_origen][c_origen] = 0;
-	posicion[f_dest][c_dest] = auxiliar;
+	if(flag){
+		posicion[f_origen][c_origen] = 0;
+		posicion[f_dest][c_dest] = auxiliar;
+	}
 	return (j);
 }
+
 

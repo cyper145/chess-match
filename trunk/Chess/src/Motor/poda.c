@@ -43,9 +43,9 @@ void podar(nodo nod)
 {
 	nodo aux = nod->hijo,aux2;
 	nodo ant;
-	int val,i;
+	int val=0,i;
 	int minimax[LEVEL_NODES];
-	for(i=0;i < LEVEL_NODES-1;i++){
+	for(i=0;i < LEVEL_NODES;i++){
 		minimax[i] = -10000;
 	}	
 	int t = nod->turno;
@@ -54,8 +54,8 @@ void podar(nodo nod)
 			val=(aux->value * t);
 			if(val > minimax[0]){
 				minimax[0]=val;
-				for(i=0;i<(LEVEL_NODES-1);i++){
-					if(val >= minimax[i+1]){
+				for(i=0;i<(LEVEL_NODES - 1);i++){
+					if(val >=  minimax[i+1]){
 						minimax[i]=minimax[i+1];
 						minimax[i+1]=val;
 						}
@@ -117,7 +117,6 @@ void podar(nodo nod)
 *************************************************************************************************/
 void borrar_all_hijos(nodo nod){
 	nodo aux = nod->hijo,aux2;
-	int sem;
 	while(aux != NULL)
 	{
 	 	if (aux->hijo != NULL){
@@ -146,17 +145,15 @@ void borrar_all_hijos(nodo nod){
 * es dcir, comenzando por el padre hacia abajo y por cada uno llama a la funcion podar, la cual descartara
 * los nodos con menor valoracion (peores jugadas).
 ***********************************************************************************************************/
-int poda(nodo nod){
+void poda(nodo nod){
 	podar(nod);
 	nod=nod->hijo;
-	int a;
 	while(nod!=NULL){
 		if(nod->hijo != NULL){
-			a = poda(nod);
+			poda(nod);
 			}
 		nod=nod->sig;
 	}
-	return 1;
 }
 
 
@@ -165,7 +162,7 @@ int poda(nodo nod){
 
 
 
-int preseleccion(nodo nod)
+void preseleccion(nodo nod)
 {
 	nodo aux = nod->hijo;
 	int t = nod->turno;
@@ -174,7 +171,7 @@ int preseleccion(nodo nod)
 		   preselect(aux,aux->value);		
 		   aux = aux->sig;	
 		}
-	return 1;		
+	
 }
 
 
@@ -227,15 +224,14 @@ void preselect(nodo nod,int max)
 
 
 
-int acomodar_minimax(nodo nod, int prof){
+void acomodar_minimax(nodo nod, int prof){
 	nodo aux;
 	int m, n, min=10000, max= -10000;
 	aux =nod->hijo;
-	int a;
-
+	
 	while(aux!=NULL){
 			if(aux->hijo != NULL){
-				a = acomodar_minimax(aux,prof+1);
+				acomodar_minimax(aux,prof+1);
 				}
 			else{
 				m = (aux->value);
@@ -247,6 +243,8 @@ int acomodar_minimax(nodo nod, int prof){
 		}
 	if(nod->turno != blanco) nod->value = max;
 	else	nod->value = min;
-	return 1;	
 }
+
+
+
 

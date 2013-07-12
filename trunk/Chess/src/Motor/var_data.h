@@ -62,8 +62,8 @@
 
 
 
-typedef short int casilla[2];
-typedef short int Tablero[8][8];
+typedef short  casilla [2];
+typedef short  Tablero [8][8];
 
 
 
@@ -81,8 +81,8 @@ struct Nodo {
 	jugada j;
 	Tablero board;
 	char notation[5];
-	double value;
-	short int turno;
+	int value;
+	short  turno;
 	struct Nodo  *hijo;
 	struct Nodo  *sig;
 	struct Nodo  *padre;
