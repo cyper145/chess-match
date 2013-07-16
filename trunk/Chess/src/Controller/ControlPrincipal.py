@@ -129,8 +129,8 @@ class ControlPrincipal():
 		else:
 			jugada=self.jugarMotor(1);
 			self.codificar_jugada(jugada)
-			self.changeTurns()
-			self.controlView.set_text(str(count)+"."+jugada)
+			#self.changeTurns()
+			self.controlView.set_text(str(self.contador)+"."+jugada)
 			#........................................................................
 		#====================================================================================
 		
@@ -155,7 +155,7 @@ class ControlPrincipal():
 		else:
 			jugada=self.jugarMotor(-1);
 			self.codificar_jugada(jugada)
-			self.changeTurns()
+			#self.changeTurns()
 			self.controlView.set_text("  "+jugada+"\n")
 			#............................................................................
        		#=====================================================================================
@@ -211,7 +211,7 @@ class ControlPrincipal():
 
         self.pieza=self.tablero[self.fila1][self.col1]
 	self.destino = self.tablero[self.fila2][self.col2]
-      	if(not self.pieza):
+      	if(isinstance(self.pieza,Square)):
 		return False
 	if(self.isNotColorTurn()):
 		return False
