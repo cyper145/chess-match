@@ -54,12 +54,12 @@ class ControlPrincipal():
 
 	self.casillas=['a','b','c','d','e','f','g','h']
 	self.tablero =[[Torre('B',(0,0),'T'),Caballo('B',(0,1),'C'),Alfil('B',(0,2),'A'),Dama('B',(0,3),'D'),Rey('B',(0,4),'R'),Alfil('B',(0,5),'A'),Caballo('B',(0,6),'C'),Torre('B',(0,7),'T')],
-                   [Peon('B',(1,0),'P'),Peon('B',(1,1),'P'),Peon('B',(1,2),'P'),Peon('B',(1,3),'P'),Peon('B',(1,4),'P'),Peon('B',(1,5),'P'),Peon('B',(1,6),'P'),Peon('B',(1,7),'P')],
+                   [Peon('B',(1,0),''),Peon('B',(1,1),''),Peon('B',(1,2),''),Peon('B',(1,3),''),Peon('B',(1,4),''),Peon('B',(1,5),''),Peon('B',(1,6),''),Peon('B',(1,7),'')],
                    [Square('',(2,0),'as'),Square('',(2,1),''),Square('',(2,2),''),Square('',(2,3),''),Square('',(2,4),''),Square('',(2,5),''),Square('',(2,6),''),Square('',(2,7),'')],
                    [Square('',(3,0),''),Square('',(3,1),''),Square('',(3,2),''),Square('',(3,3),''),Square('',(3,4),''),Square('',(3,5),''),Square('',(3,6),''),Square('',(3,7),'')],
                    [Square('',(4,0),''),Square('',(4,1),''),Square('',(4,2),''),Square('',(4,3),''),Square('',(4,4),''),Square('',(4,5),''),Square('',(4,6),''),Square('',(4,7),'')],
                    [Square('',(5,0),''),Square('',(5,1),''),Square('',(5,2),''),Square('',(5,3),''),Square('',(5,4),''),Square('',(5,5),''),Square('',(5,6),''),Square('',(5,7),'')],
-                   [Peon('N',(6,0),'P'),Peon('N',(6,1),'P'),Peon('N',(6,2),'P'),Peon('N',(6,3),'P'),Peon('N',(6,4),'P'),Peon('N',(6,5),'P'),Peon('N',(6,6),'P'),Peon('N',(6,7),'P')],
+                   [Peon('N',(6,0),''),Peon('N',(6,1),''),Peon('N',(6,2),''),Peon('N',(6,3),''),Peon('N',(6,4),''),Peon('N',(6,5),''),Peon('N',(6,6),''),Peon('N',(6,7),'')],
                    [Torre('N',(7,0),'T'),Caballo('N',(7,1),'C'),Alfil('N',(7,2),'A'),Dama('N',(7,3),'D'),Rey('N',(7,4),'R'),Alfil('N',(7,5),'A'),Caballo('N',(7,6),'C'),Torre('N',(7,7),'T')]]
   
 	self.contador=0     
@@ -121,6 +121,7 @@ class ControlPrincipal():
                         self.anotar(True,self.tablero[jugada[1][0]][jugada[1][1]],jugada[1])
 			motor.set_jugada(jugada[0][0],jugada[0][1],jugada[1][0],jugada[1][1]);
 			self.changeTurns()
+			self.controlView.repaint(jugada[0],jugada[1],self.tablero)	
 			#........................................................................
 
 
@@ -128,8 +129,8 @@ class ControlPrincipal():
 		else:
 			jugada=self.jugarMotor(1);
 			self.codificar_jugada(jugada)
-			#self.changeTurns()
-			#self.controlView.set_text(str(count)+"."+jugada)
+			self.changeTurns()
+			self.controlView.set_text(str(count)+"."+jugada)
 			#........................................................................
 		#====================================================================================
 		
@@ -146,6 +147,7 @@ class ControlPrincipal():
                         self.anotar(False,self.tablero[jugada[1][0]][jugada[1][1]],jugada[1])
 			motor.set_jugada(jugada[0][0],jugada[0][1],jugada[1][0],jugada[1][1]);	
 			self.changeTurns()
+			self.controlView.repaint(jugada[0],jugada[1],self.tablero)
 			#............................................................................
 
 
@@ -153,8 +155,8 @@ class ControlPrincipal():
 		else:
 			jugada=self.jugarMotor(-1);
 			self.codificar_jugada(jugada)
-			#self.changeTurns()
-			#self.controlView.set_text("  "+jugada+"\n")
+			self.changeTurns()
+			self.controlView.set_text("  "+jugada+"\n")
 			#............................................................................
        		#=====================================================================================
                 #self.controlView.dibujar(self.tablero)
@@ -491,6 +493,7 @@ class ControlPrincipal():
 		pza.set_Imagen((fila,columna))
 
 	
+	self.controlView.repaint(origen,destino,self.tablero)
 	#self.controlView.dibujar(self.tablero)
 	self.turnoBlanco= not self.turnoBlanco
 	self.controlView.change_turnos()
