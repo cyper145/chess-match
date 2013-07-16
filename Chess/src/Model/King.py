@@ -3,7 +3,8 @@ from Square import *
 
 class Rey(Pieza):
 
-
+	enroque = True
+	enroqueLargo = True
 
 
 #####################################################################################################################
@@ -27,22 +28,20 @@ class Rey(Pieza):
 		jugada=False
 		
 		if((abs(self.casilla[0]-des[0])<=1) and (abs(self.casilla[1]-des[1])<=1)):
-			jugada=True
-			self.enroque=False
+			jugada = True
+			self.enroque = False
+			self.enroqueLargo = False
 			return jugada
 		
 		#Enroque corto
 		#-------------------------------------------------------------------------
 		if((des[1]==6 and self.enroque) and (des[0]==self.casilla[0])):
-			if(tablero[des[0]][5]==None and isinstance(tablero[des[0]][6],Square)):
-				try:
-					if(tablero[des[0]][7].enroque):				
-						jugada=True
-						self.enroque=False
-						self.aviso=True
-						return jugada
-				except:
-					print"No hay torre!!"
+			if(isinstance(tablero[des[0]][5],Square) and isinstance(tablero[des[0]][6],Square)):
+				jugada = True
+				self.enroque = False
+				self.enroqueLargo = False
+				self.aviso = True
+				return jugada
 		#-------------------------------------------------------------------------
 
 			
@@ -50,14 +49,11 @@ class Rey(Pieza):
 		#-------------------------------------------------------------------------
 		if((des[1]==2 and self.enroque) and (des[0]==self.casilla[0])):
 			if((isinstance(tablero[des[0]][3],Square) and isinstance(tablero[des[0]][2],Square))and isinstance(tablero[des[0]][1],Square)):
-				try:
-					if(tablero[des[0]][0].enroque):				
-						jugada=True
-						self.enroque=False
-						self.aviso=True
-						return jugada
-				except:
-					print"No hay torre!!"
+				jugada = True
+				self.enroque = False
+				self.enroqueLargo = False
+				self.aviso=True
+				return jugada
 		#-------------------------------------------------------------------------
 
 		return jugada

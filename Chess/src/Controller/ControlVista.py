@@ -370,7 +370,7 @@ class ControlVista():
     def reproducir_posicion(self,posicion):	
 	
 
-	self.lock.acquire()
+	#self.lock.acquire()
 	for a in range(8):
             for b in range(8):
 
@@ -382,7 +382,7 @@ class ControlVista():
        		image.show()
 		self.square[a][b].set_image(image)
 	
-	self.lock.release()
+	#self.lock.release()
 #########################################################################################################
 
 
@@ -492,9 +492,9 @@ class ControlVista():
 #########################################################################################################   
 
     def on_imagemenuitem11_activate(self,widget, data=None):
-	self.lock.acquire()
+	#self.lock.acquire()
 	self.choser.show()
-	self.lock.release()
+	#self.lock.release()
 
     def on_button70_clicked(self,widget, data=None):
 	#self.lock.acquire() 	
