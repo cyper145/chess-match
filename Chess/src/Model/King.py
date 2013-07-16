@@ -1,18 +1,7 @@
+from Pieza import *
+from Square import *
 
-
-class Rey():
-
-#####################################################################################################################
-	def __init__(self,color,casilla):
-
-		self.color=color
-		self.casilla=casilla
-		self.name='R'
-		self.set_Imagen(self.casilla)
-		self.enroque=True
-		self.aviso=False
-
-#####################################################################################################################
+class Rey(Pieza):
 
 
 
@@ -30,12 +19,6 @@ class Rey():
 
 
 
-#####################################################################################################################
-        def setCasilla(self,pos):	
-		self.casilla = pos
-#####################################################################################################################
-
-
 
 
 #####################################################################################################################
@@ -51,7 +34,7 @@ class Rey():
 		#Enroque corto
 		#-------------------------------------------------------------------------
 		if((des[1]==6 and self.enroque) and (des[0]==self.casilla[0])):
-			if(tablero[des[0]][5]==None and tablero[des[0]][6]==None):
+			if(tablero[des[0]][5]==None and isinstance(tablero[des[0]][6],Square)):
 				try:
 					if(tablero[des[0]][7].enroque):				
 						jugada=True
@@ -66,7 +49,7 @@ class Rey():
 		#Enroque largo
 		#-------------------------------------------------------------------------
 		if((des[1]==2 and self.enroque) and (des[0]==self.casilla[0])):
-			if((tablero[des[0]][3]==None and tablero[des[0]][2]==None)and tablero[des[0]][1]==None):
+			if((isinstance(tablero[des[0]][3],Square) and isinstance(tablero[des[0]][2],Square))and isinstance(tablero[des[0]][1],Square)):
 				try:
 					if(tablero[des[0]][0].enroque):				
 						jugada=True

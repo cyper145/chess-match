@@ -1,24 +1,12 @@
+from Pieza import *
+from Square import *
 
-class Torre():
-
-#####################################################################################################################
-	def __init__(self,color,casilla):
-
-		self.color=color
-		self.casilla=casilla
-		self.name='T'
-		self.enroque=True
-		self.set_Imagen(self.casilla)
-
-
-#####################################################################################################################
+class Torre(Pieza):
 
 
 
 #####################################################################################################################
-
 	def set_Imagen(self,casilla):
-		
 		if ((casilla[0]+casilla[1])%2) == 0 :
 			self.imagen= 'Images/set1/Torre'+self.color+'N'+'.jpg'
 		else: 
@@ -28,10 +16,13 @@ class Torre():
 
 
 
+
+
 #####################################################################################################################
         def setCasilla(self,pos):	
 		self.casilla = pos
 #####################################################################################################################
+
 
 
 
@@ -50,7 +41,7 @@ class Torre():
 				c = -1
 	   		k= self.casilla[0]+ c
 	   		while k != des[0]:	
-				if (tablero[k][self.casilla[1]] != None):
+				if not(isinstance(tablero[k][self.casilla[1]],Square)):
 					jugada= False
 				k=k+c	
 
@@ -61,12 +52,11 @@ class Torre():
 				c = -1
 	   		k= self.casilla[1]+ c
 	   		while k != des[1]:	
-				if (tablero[self.casilla[0]][k] != None):
+				if not(isinstance(tablero[self.casilla[0]][k],Square)):
 					jugada= False
 				k=k+c	
 
 	
-
 		return jugada
 
 #####################################################################################################################
@@ -89,19 +79,19 @@ class Torre():
 		col=self.casilla[1]-1
 		fil=self.casilla[0]
 		while(col>=0):
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				jugada_abajo=False
 				break
 			col=col-1
 		col=self.casilla[1]+1
 		while(col<=7):
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color))):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color))):
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				jugada_arriba=False
 				break
 			col=col+1
@@ -112,19 +102,19 @@ class Torre():
 		col=self.casilla[1]
 		fil=self.casilla[0]-1
 		while(fil>=0):
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				jugada_izq=False
 				break
 			fil=fil-1
 		fil=self.casilla[0]+1
 		while(fil<=7):
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color))):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color))):
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				jugada_der=False
 				break
 			fil=fil+1
@@ -152,21 +142,21 @@ class Torre():
 		col=self.casilla[1]-1
 		fil=self.casilla[0]
 		while(col>=0):
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				jaque_abajo=False				
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				jaque_abajo=True
 				break
 			col=col-1
 		col=self.casilla[1]+1
 		while(col<=7):
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color))):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color))):
 				jaque_arriba=False				
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				jaque_arriba=True
 				break
 			col=col+1
@@ -177,21 +167,21 @@ class Torre():
 		col=self.casilla[1]
 		fil=self.casilla[0]-1
 		while(fil>=0):
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				jaque_izq=False				
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				jaque_izq=True
 				break
 			fil=fil-1
 		fil=self.casilla[0]+1
 		while(fil<=7):
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color))):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color))):
 				jaque_der=False				
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				jaque_der=True
 				break
 			fil=fil+1

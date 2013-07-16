@@ -1,19 +1,8 @@
+from Pieza import *
+from Square import *
 
 
-class Dama():
-
-#####################################################################################################################
-	def __init__(self,color,casilla):
-
-		self.color=color
-		self.casilla=casilla
-		self.name='D'
-
-		self.set_Imagen(self.casilla)
-
-
-#####################################################################################################################
-
+class Dama(Pieza):
 
 
 
@@ -28,11 +17,6 @@ class Dama():
 #####################################################################################################################
 
 
-
-#####################################################################################################################
-        def setCasilla(self,pos):	
-		self.casilla = pos
-#####################################################################################################################
 
 
 
@@ -59,7 +43,7 @@ class Dama():
 				c = -1
 	   		k= self.casilla[0]+ c
 	   		while k != des[0]:	
-				if (tablero[k][self.casilla[1]] != None):
+				if not(isinstance(tablero[k][self.casilla[1]],Square)):
 					jugada= False
 				k=k+c	
 
@@ -70,7 +54,7 @@ class Dama():
 				c = -1
 	   		k= self.casilla[1]+ c
 	   		while k != des[1]:	
-				if (tablero[self.casilla[0]][k] != None):
+				if not(isinstance(tablero[self.casilla[0]][k],Square)):
 					jugada= False
 				k=k+c	
 
@@ -97,7 +81,7 @@ class Dama():
 			col= col + d_c
 			if (des[0] == fila and des[1]==col):
 				jugada = True
-			if (tablero[fila][col] != None):
+			if not(isinstance(tablero[fila][col],Square)):
 				break
 		return jugada
 
@@ -125,18 +109,18 @@ class Dama():
 		col=self.casilla[1]-1
 		fil=self.casilla[0]
 		while(col>=0):
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				break
 		
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				t_jugada_ab=False
 				break
 			col=col-1
 		col=self.casilla[1]+1
 		while(col<=7):
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color))):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color))):
 				break
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				t_jugada_ar=False
 				break
 			col=col+1
@@ -147,21 +131,21 @@ class Dama():
 		col=self.casilla[1]
 		fil=self.casilla[0]-1
 		while(fil>=0):
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				t_jugada_izq=False
 				break
 			fil=fil-1
 		fil=self.casilla[0]+1
 		while(fil<=7):
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color))):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color))):
 				
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				t_jugada_der=False
 				break
 			fil=fil+1
@@ -180,10 +164,10 @@ class Dama():
 		fil=self.casilla[0]-1
 		col=self.casilla[1]-1
 		while(fil>=0 and col>=0):
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				a_jugada_izq_ab=False
 				break
 			fil=fil-1
@@ -193,10 +177,10 @@ class Dama():
 		fil=self.casilla[0]+1
 		col=self.casilla[1]-1
 		while(fil<=7 and col>=0):
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				break
 		
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				a_jugada_izq_ar=False
 				break
 			fil=fil+1
@@ -209,10 +193,10 @@ class Dama():
 		fil=self.casilla[0]-1
 		col=self.casilla[1]+1
 		while(fil>=0 and col<=7):
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				a_jugada_der_ab=False
 				break
 			fil=fil-1
@@ -222,10 +206,10 @@ class Dama():
 		fil=self.casilla[0]+1
 		col=self.casilla[1]+1
 		while(fil<=7 and col<=0):
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				a_jugada_der_ar=False
 				break
 			fil=fil+1
@@ -261,21 +245,21 @@ class Dama():
 		fil=self.casilla[0]
 		while(col>=0):
 			
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				t_jaque_ab=False				
 				break
 		
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				t_jaque_ab=True
 				break
 			col=col-1
 		col=self.casilla[1]+1
 		while(col<=7):
 			
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color))):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color))):
 				t_jaque_ar=False				
 				break
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				t_jaque_ar=True
 				break
 			col=col+1
@@ -287,22 +271,22 @@ class Dama():
 		fil=self.casilla[0]-1
 		while(fil>=0):
 			
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				t_jaque_izq=False
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				t_jaque_izq=True
 				break
 			fil=fil-1
 		fil=self.casilla[0]+1
 		while(fil<=7):
 			
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color))):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color))):
 				t_jaque_der=False
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				t_jaque_der=True
 				break
 			fil=fil+1
@@ -322,11 +306,11 @@ class Dama():
 		col=self.casilla[1]-1
 		while(fil>=0 and col>=0):
 			
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				a_jaque_izq_ab=False				
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				a_jaque_izq_ab=True
 				break
 			fil=fil-1
@@ -337,11 +321,11 @@ class Dama():
 		col=self.casilla[1]-1
 		while(fil<=7 and col>=0):
 			
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				a_jaque_izq_ar=False				
 				break
 		
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				a_jaque_izq_ar=True
 				break
 			fil=fil+1
@@ -355,11 +339,11 @@ class Dama():
 		col=self.casilla[1]+1
 		while(fil>=0 and col<=7):
 			
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				a_jaque_der_ab=False
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				a_jaque_der_ab=True
 				break
 			fil=fil-1
@@ -370,12 +354,12 @@ class Dama():
 		col=self.casilla[1]+1
 		while(fil<=7 and col<=7):
 			
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				
 				a_jaque_der_ar=False					
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				a_jaque_der_ar=True
 				break
 			fil=fil+1

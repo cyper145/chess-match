@@ -1,16 +1,7 @@
+from Pieza import *
+from Square import *
 
-class Peon():
-
-#####################################################################################################################
-	def __init__(self,color,casilla):
-
-		self.color=color
-		self.casilla=casilla
-		self.name=""
-		
-		self.set_Imagen(self.casilla)
-		
-#####################################################################################################################
+class Peon(Pieza):
 
 
 #####################################################################################################################
@@ -26,12 +17,6 @@ class Peon():
 
 
 
-#####################################################################################################################
-        def setCasilla(self,pos):
-	       print "Peon set Casilla"	
-	       print pos	
-               self.casilla = pos
-#####################################################################################################################
 
 
 
@@ -40,18 +25,16 @@ class Peon():
 	def legalMove(self, des,tablero):
 
 		jugada = False
-                print "PEON----->" + self.color
                 if self.color=='B':
 	  	#--------PEON BLANCO--------------------	
 
 	  		#Misma columna- se mueve para adelante	
-	  		if(self.casilla[1]==des[1] and (tablero[des[0]][des[1]]==None)):	
-	    
+	  		if(self.casilla[1]==des[1] and (isinstance(tablero[des[0]][des[1]],Square))):	
 	    			#Una casilla para adelante - tiene q estar desocupada			
 	    			if (self.casilla[0]+1)==des[0]:
 					jugada=True
 	    			#Dos casillas adelante - tiene q estar vacia y ser entre las filas 1 y 3
-	    			if (self.casilla[0] == 1 and des[0]==3 and (tablero[2][des[1]]==None)):
+	    			if (self.casilla[0] == 1 and des[0]==3 and (isinstance(tablero[2][des[1]],Square))):
 					jugada=True
 
 	  		#Distinta columna - come pieza
@@ -66,23 +49,23 @@ class Peon():
 		#--------PEON NEGRO--------------------	
 
 	  		#Misma columna- se mueve para adelante	
-	  		if(self.casilla[1]==des[1] and (tablero[des[0]][des[1]]==None)):	
+	  		if(self.casilla[1]==des[1] and (isinstance(tablero[des[0]][des[1]],Square))):	
 	   
 		    		#Una casilla para adelante - tiene q estar desocupada			
 		    		if (self.casilla[0]-1)==des[0]:
 					jugada=True
 	  
 		    		#Dos casillas adelante - tiene q estar vacia y ser entre las filas 1 y 3
-	    	    		if (self.casilla[0] == 6 and des[0]==4 and (tablero[5][self.casilla[1]]==None)):
+	    	    		if (self.casilla[0] == 6 and des[0]==4 and (isinstance(tablero[5][self.casilla[1]],Square))):
 					jugada=True
 	
 	  		#Distinta columna - come pieza
 	  		elif (self.casilla[1]==des[1]+1 or self.casilla[1]==des[1]-1)  and (tablero[des[0]][des[1]].color=='B'):
-                                print "peon------"
+                                
                                 print self.casilla[0]
                                 print des[0]+1
 				if (self.casilla[0]==des[0]+1 ):
-                                        print "peon2"
+                                      
 					jugada=True
 	
 		return jugada
