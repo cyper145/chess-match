@@ -229,6 +229,7 @@ class ControlVista():
 #########################################################################################################
     def dibujar(self,tabler):
 	
+       self.lock.acquire() 		
        image=[]
        
        for a in range(64):
@@ -236,12 +237,11 @@ class ControlVista():
 		
 		
        #image = gtk.Image()
-       self.lock.acquire() 	
+       
        
        		
        for a in range(8):
             for b in range(8):
-		#image = gtk.Image()
 		if (tabler[a][b] != None):	
 			image[(8*a)+b].set_from_file(tabler[a][b].imagen)
 		else:
@@ -269,7 +269,7 @@ class ControlVista():
       #if (self.controlP.turno == 'computer'):
       #		return	  
 
-      print "pieza clicked"		    
+      
       k=0
       #######################################  
       #Determina la primer y segunda casilla
@@ -289,7 +289,7 @@ class ControlVista():
 		self.jugada.append((k,columna))	
 		#self.controlP.validarMovimiento(self.jugada)
 		self.queue.put(self.jugada)
-		print "Putt"		
+		
 		self.jugada=[]
 		self.primer_click=True
 		
@@ -346,7 +346,7 @@ class ControlVista():
 
 #########################################################################################################
     def tablero_to_string(self, tablero):
-	
+	self.lock.acquire()
 	posicion=[] 
 	for a in range(8):
             for b in range(8):
@@ -360,6 +360,7 @@ class ControlVista():
 
 	#print posicion
 	self.partida.append(posicion)
+	self.lock.release()
 #########################################################################################################
 
 
@@ -369,7 +370,7 @@ class ControlVista():
     def reproducir_posicion(self,posicion):	
 	
 
-	#self.lock.acquire()
+	self.lock.acquire()
 	for a in range(8):
             for b in range(8):
 
@@ -380,7 +381,8 @@ class ControlVista():
 		
        		image.show()
 		self.square[a][b].set_image(image)
-	#self.lock.release()
+	
+	self.lock.release()
 #########################################################################################################
 
 
@@ -394,7 +396,7 @@ class ControlVista():
 
     #----------------------------------------------------------------------------------------------------
     def on_button65_clicked(self,widget, data=None):
-	#self.lock.acquire()
+	self.lock.acquire()
 	if(self.actual_aux >=1):
 		
         	self.actual_aux=self.actual_aux-1
@@ -408,17 +410,17 @@ class ControlVista():
 		self.buff.remove_tag(self.c_tag, self.buff.get_start_iter(), it)
 		
 		if(self.actual_aux>0):	self.buff.apply_tag(self.c_tag, itera,itera1)
-		self.lock.acquire()
+		#self.lock.acquire()
 		self.text.scroll_to_iter(itera,0)
-		self.lock.release()
+		#self.lock.release()
 		self.reproducir_posicion(self.partida[self.actual_aux])
-	#self.lock.release()	
+	self.lock.release()	
     #----------------------------------------------------------------------------------------------------
 
 
     #----------------------------------------------------------------------------------------------------
     def on_button66_clicked(self,widget, data=None):
-	#self.lock.acquire()
+	self.lock.acquire()
 	if(self.actual_aux <self.actual):
         	self.actual_aux=self.actual_aux+1
 		
@@ -434,11 +436,11 @@ class ControlVista():
 		if(self.actual_aux>0):	self.buff.apply_tag(self.c_tag, itera,itera1)
 
 		
-		self.lock.acquire()
+		#self.lock.acquire()
 		self.text.scroll_to_iter(itera,0.0)
-		self.lock.release()
+		#self.lock.release()
 		self.reproducir_posicion(self.partida[self.actual_aux])
-	#self.lock.release()
+	self.lock.release()
     #----------------------------------------------------------------------------------------------------
     def on_button73_clicked(self,widget, data=None):
 
@@ -495,18 +497,18 @@ class ControlVista():
 	self.lock.release()
 
     def on_button70_clicked(self,widget, data=None):
-	self.lock.acquire() 	
+	#self.lock.acquire() 	
 	self.choser.hide()
-	self.lock.release()
+	#self.lock.release()
     def on_button69_clicked(self,widget, data=None): 
        
-	self.lock.acquire()
+	#self.lock.acquire()
 	filename=self.choser.get_filename()	
 	self.open_pgn(filename)	
 	self.choser.hide()
 	self.winPGN.show()
 	#self.liststore.append(["Martin Alonso","1976","Gonzalo Jaimez","2013","Torneo por equipos","Cordoba","25/07/2000","A06","1-0"])
-	self.lock.release()
+	#self.lock.release()
     def on_file_activated(self,widget, data=None): 
 
 	filename=self.choser.get_filename()
@@ -672,11 +674,11 @@ class ControlVista():
 
     def on_winset_Aceptar_clicked(self,widget):
 
-	self.lock.acquire()
+	#self.lock.acquire()
 	self.windowsSet.hide()
 	self.ventanaprincipal.show()
       	self.ventanaprincipal.maximize()
-	self.lock.release()	
+	#self.lock.release()	
 
 	HUMAN = 0
         COMPUTER = 1
@@ -709,6 +711,14 @@ class ControlVista():
 	self.windowsSet.hide()
 	self.presentacion.show()
 
-
 #########################################################################################################
+
+
+
+
+    def setActual(self):
+	self.lock.acquire()
+	self.actual +=1
+	self.actual_aux +=1
+	self.lock.release()	
  

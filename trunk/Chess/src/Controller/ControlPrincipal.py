@@ -7,7 +7,10 @@ from Model.Knight import *
 from Model.Bishop import *
 from Model.Queen import *
 from Model.King import *
+from NoteHelper import *
 from ctypes import *
+from Model.Pieza import *
+from Model.Square import *
 
 import sys
 
@@ -22,6 +25,11 @@ motor.jugar.restype = POINTER(c_char)
 
 class ControlPrincipal():
 
+    
+	
+    LONG_CASTLE = 1000
+    SHORT_CASTLE = 100
+    PROMOTION = 10		
  
 #########################################################################################################
     def __init__(self):
@@ -45,14 +53,14 @@ class ControlPrincipal():
     def iniciar_variables(self):
 
 	self.casillas=['a','b','c','d','e','f','g','h']
-	self.tablero =[[Torre('B',(0,0)),Caballo('B',(0,1)),Alfil('B',(0,2)),Dama('B',(0,3)),Rey('B',(0,4)),Alfil('B',(0,5)),Caballo('B',(0,6)),Torre('B',(0,7))],
-                   [Peon('B',(1,0)),Peon('B',(1,1)),Peon('B',(1,2)),Peon('B',(1,3)),Peon('B',(1,4)),Peon('B',(1,5)),Peon('B',(1,6)),Peon('B',(1,7))],
-                   [None,None,None,None,None,None,None,None],
-                   [None,None,None,None,None,None,None,None],
-                   [None,None,None,None,None,None,None,None],
-                   [None,None,None,None,None,None,None,None],
-                   [Peon('N',(6,0)),Peon('N',(6,1)),Peon('N',(6,2)),Peon('N',(6,3)),Peon('N',(6,4)),Peon('N',(6,5)),Peon('N',(6,6)),Peon('N',(6,7))],
-                   [Torre('N',((7,0))),Caballo('N',(7,1)),Alfil('N',(7,2)),Dama('N',(7,3)),Rey('N',(7,4)),Alfil('N',(7,5)),Caballo('N',(7,6)),Torre('N',(7,7))]]
+	self.tablero =[[Torre('B',(0,0),'T'),Caballo('B',(0,1),'C'),Alfil('B',(0,2),'A'),Dama('B',(0,3),'D'),Rey('B',(0,4),'R'),Alfil('B',(0,5),'A'),Caballo('B',(0,6),'C'),Torre('B',(0,7),'T')],
+                   [Peon('B',(1,0),'P'),Peon('B',(1,1),'P'),Peon('B',(1,2),'P'),Peon('B',(1,3),'P'),Peon('B',(1,4),'P'),Peon('B',(1,5),'P'),Peon('B',(1,6),'P'),Peon('B',(1,7),'P')],
+                   [Square('',(2,0),'as'),Square('',(2,1),''),Square('',(2,2),''),Square('',(2,3),''),Square('',(2,4),''),Square('',(2,5),''),Square('',(2,6),''),Square('',(2,7),'')],
+                   [Square('',(3,0),''),Square('',(3,1),''),Square('',(3,2),''),Square('',(3,3),''),Square('',(3,4),''),Square('',(3,5),''),Square('',(3,6),''),Square('',(3,7),'')],
+                   [Square('',(4,0),''),Square('',(4,1),''),Square('',(4,2),''),Square('',(4,3),''),Square('',(4,4),''),Square('',(4,5),''),Square('',(4,6),''),Square('',(4,7),'')],
+                   [Square('',(5,0),''),Square('',(5,1),''),Square('',(5,2),''),Square('',(5,3),''),Square('',(5,4),''),Square('',(5,5),''),Square('',(5,6),''),Square('',(5,7),'')],
+                   [Peon('N',(6,0),'P'),Peon('N',(6,1),'P'),Peon('N',(6,2),'P'),Peon('N',(6,3),'P'),Peon('N',(6,4),'P'),Peon('N',(6,5),'P'),Peon('N',(6,6),'P'),Peon('N',(6,7),'P')],
+                   [Torre('N',(7,0),'T'),Caballo('N',(7,1),'C'),Alfil('N',(7,2),'A'),Dama('N',(7,3),'D'),Rey('N',(7,4),'R'),Alfil('N',(7,5),'A'),Caballo('N',(7,6),'C'),Torre('N',(7,7),'T')]]
   
 	self.contador=0     
 	self.controlView.dibujar(self.tablero) 
@@ -64,6 +72,8 @@ class ControlPrincipal():
 	self.controlView.actual=self.controlView.actual +1
 	self.controlView.actual_aux=self.controlView.actual_aux +1
 	self.controlView.tablero_to_string(self.tablero)
+	self.noterHelper = NoteHelper(self)
+	
 
 	self.mode = None
 #########################################################################################################
@@ -91,15 +101,15 @@ class ControlPrincipal():
 	self.game= Thread(target=self.Game)
     	self.game.daemon = True
     	self.game.start()
-
+	#self.Game()
 
     def Game(self):
 	
-	count = 0		
+	self.contadpr = 0		
 	while True:
 		
-		count+=1
-                self.controlView.dibujar(self.tablero)
+		self.contador+=1
+               
 		#======================== JUEGAN BLANCAS ==========================================
 		if self.blancas == 0:
 
@@ -108,8 +118,9 @@ class ControlPrincipal():
 			while not valido:
 				jugada = self.moveQueue.get()
 				valido =self.validarMovimiento(jugada)
-                        self.anotar(False,self.tablero[jugada[1][0]][jugada[1][1]],jugada[1])
+                        self.anotar(True,self.tablero[jugada[1][0]][jugada[1][1]],jugada[1])
 			motor.set_jugada(jugada[0][0],jugada[0][1],jugada[1][0],jugada[1][1]);
+			self.changeTurns()
 			#........................................................................
 
 
@@ -117,11 +128,13 @@ class ControlPrincipal():
 		else:
 			jugada=self.jugarMotor(1);
 			self.codificar_jugada(jugada)
-			self.controlView.set_text(str(count)+"."+jugada)
+			#self.changeTurns()
+			#self.controlView.set_text(str(count)+"."+jugada)
 			#........................................................................
 		#====================================================================================
+		
 
-
+		#self.controlView.dibujar(self.tablero)
 		#========================  JUEGAN NEGRAS ============================================
 		if self.negras == 0:
 			
@@ -132,6 +145,7 @@ class ControlPrincipal():
 				valido =self.validarMovimiento(jugada)
                         self.anotar(False,self.tablero[jugada[1][0]][jugada[1][1]],jugada[1])
 			motor.set_jugada(jugada[0][0],jugada[0][1],jugada[1][0],jugada[1][1]);	
+			self.changeTurns()
 			#............................................................................
 
 
@@ -139,11 +153,11 @@ class ControlPrincipal():
 		else:
 			jugada=self.jugarMotor(-1);
 			self.codificar_jugada(jugada)
-			self.controlView.set_text("  "+jugada+"\n")
+			#self.changeTurns()
+			#self.controlView.set_text("  "+jugada+"\n")
 			#............................................................................
        		#=====================================================================================
-                self.changeTurns()
-                
+                #self.controlView.dibujar(self.tablero)
 ############################################################################################################################
 
 
@@ -167,7 +181,7 @@ class ControlPrincipal():
 		else:
 			break
 		i=i+1
-	print "Motor juega: ",jugada
+	print ""
 	return jugada
 ############################################################################################################################
 
@@ -195,18 +209,17 @@ class ControlPrincipal():
 
         self.pieza=self.tablero[self.fila1][self.col1]
 	self.destino = self.tablero[self.fila2][self.col2]
-       
-	if(not self.pieza):
+      	if(not self.pieza):
 		return False
 	if(self.isNotColorTurn()):
 		return False
-        if(self.takeSameColor()):
+	if(self.takeSameColor()):
 		return False
-        if(not self.pieza.legalMove(mov[1],self.tablero)):
+	if(not self.pieza.legalMove(mov[1],self.tablero)):
 		return False
-        if(self.isInCheck()):
+	if(self.isInCheck()):
 		return False
-        self.controlCheck()
+	self.controlCheck()
         return True
 #########################################################################################################
 
@@ -226,8 +239,10 @@ class ControlPrincipal():
     #------------------------------------------------------------------------------------------------------
     def isNotColorTurn(self):
 	if (self.pieza.color=='N' and self.turnoBlanco):
+			print "Not your turn!"
                         return True
 	if (self.pieza.color=='B' and (not self.turnoBlanco)):
+			print "Not your turn!"
                        	return	True
         return False
     #------------------------------------------------------------------------------------------------------
@@ -320,7 +335,7 @@ class ControlPrincipal():
 		if (self.turnoBlanco and self.bl_en_jaque):
 		  for n in range(8):
 		     for m in range(8):
-			 if (self.tablero[n][m]!= None):
+			 if not(isinstance(self.tablero[n][m],Square)):
 			   if(self.tablero[n][m].color=='N'):
 			     if(self.tablero[n][m].verificar_jaque(self.tablero)):
 					  self.moveBack()
@@ -328,7 +343,7 @@ class ControlPrincipal():
 		if ((not self.turnoBlanco) and self.ng_en_jaque):
 		   for n in range(8):
 		      for m in range(8):
-			 if (self.tablero[n][m] != None):
+			 if not(isinstance(self.tablero[n][m],Square)):
 			    if(self.tablero[n][m].color=='B'):
 			       if(self.tablero[n][m].verificar_jaque(self.tablero)):
 					  self.moveBack()
@@ -345,7 +360,7 @@ class ControlPrincipal():
         self.pieza.setCasilla(self.dest)
 	self.pieza.set_Imagen(self.dest)
 	pza=self.tablero[self.fila1].pop(self.col1)
-	self.tablero[self.fila1].insert(self.col1,None)
+	self.tablero[self.fila1].insert(self.col1,Square('',(self.fila1,self.col1),''))
 
 	self.guardo=self.tablero[self.fila2].pop(self.col2)
 	self.tablero[self.fila2].insert(self.col2,pza)
@@ -363,6 +378,17 @@ class ControlPrincipal():
 	self.tablero[self.fila2].insert(self.col2,self.guardo)
 	self.controlView.set_mensaje("Movimiento ilegal")
     #------------------------------------------------------------------------------------------------------
+ 
+    
+    def getTurn(self):
+	return self.turnoBlanco
+
+
+    def setTurno(self,turn):
+	self.turnoBlanco = turn	
+
+    def	getTablero(self):
+	return self.tablero 	
 #########################################################################################################
 
 
@@ -383,577 +409,92 @@ class ControlPrincipal():
 
     def codificar_jugada(self,j):
 	"""Transforma la jugada leida en notacion algebraica en un movimiento de pieza en el tablero"""
-	d=-1
-	#---------------------------------------------ENROQUE LARGO----------------------------------------------
-	if(j[0:5]=='O-O-O'):
-
-		if(self.turnoBlanco): fila=0
-		else: fila=7
-			
-		#Muevo torre
-		self.tablero[fila][0].casilla=(fila,3)
-		self.tablero[fila][0].set_Imagen((fila,3))
-			
-		torre = self.tablero[fila].pop(0)
-		self.tablero[fila].insert(0,None)
-			
-		self.tablero[fila].pop(3)
-		self.tablero[fila].insert(3,torre)
-
-		#Muevo rey
-		self.tablero[fila][4].casilla=(fila,2)
-		self.tablero[fila][4].set_Imagen((fila,2))
-			
-		rey = self.tablero[fila].pop(4)
-		self.tablero[fila].insert(4,None)
-			
-		self.tablero[fila].pop(2)
-		self.tablero[fila].insert(2,rey)
-
-		self.turnoBlanco= not self.turnoBlanco
-		self.controlView.change_turnos()
-		self.controlView.dibujar(self.tablero)
-		self.controlView.actual=self.controlView.actual +1
-		self.controlView.actual_aux=self.controlView.actual_aux +1
-		self.controlView.tablero_to_string(self.tablero)
-		#self.controlView.partida.append(self.tablero)
-		return
-	#--------------------------------------------------------------------------------------------------------
-
-	#---------------------------------------------ENROQUE CORTO----------------------------------------------
-	if(j[0:3]=='O-O'):
-		if(self.turnoBlanco): fila=0
-		else: fila=7
-		self.tablero[fila][7].casilla=(fila,5)
-		self.tablero[fila][7].set_Imagen((fila,5))
-		
-		torre = self.tablero[fila].pop(7)
-		self.tablero[fila].insert(7,None)
-			
-			
-		self.tablero[fila].pop(5)
-		self.tablero[fila].insert(5,torre)
-
-			#Muevo rey
-		self.tablero[fila][4].casilla=(fila,6)
-		self.tablero[fila][4].set_Imagen((fila,6))
-			
-		rey = self.tablero[fila].pop(4)
-		self.tablero[fila].insert(4,None)
-			
-		self.tablero[fila].pop(6)
-		self.tablero[fila].insert(6,rey)
-
-				
-		self.turnoBlanco= not self.turnoBlanco
-		self.controlView.change_turnos()
-		self.controlView.dibujar(self.tablero)
-		self.controlView.actual=self.controlView.actual +1
-		self.controlView.actual_aux=self.controlView.actual_aux +1
-		self.controlView.tablero_to_string(self.tablero)
-		#self.controlView.partida.append(self.tablero)
-		return
-
-	#--------------------------------------------------------------------------------------------------------
-	#Variables comunes a todas las piezas
-	#Saca la fila destino- el except es por que puede haber un jaque '+'
-	try:
-		fila=int(j[-1])-1
-	except:
-		try:
-			fila=int(j[-2])-1
-		except: a=1
-
-	try:
-		columna=self.casillas.index(j[-2])
-	except:
-		try:
-			columna=self.casillas.index(j[-3])
-		except: a=1
-
-	color='B'
-	if(not self.turnoBlanco): color='N'
-
-	if(j[-1]=='+' or j[-1]=='#' ): j=j[0:-1]
-	#-------------------------PEON----------------------------------------------------------------------------
-	if(j[0]=='a' or j[0]=='b' or j[0]=='c' or j[0]=='d' or j[0]=='e' or j[0]=='f' or j[0]=='g' or j[0]=='h'):
-
-		#coronacion		
-		if(re.match('.+=[NBRQ]',j)):
-			
-			fila=int(j[-3])-1
-			columna=self.casillas.index(j[-4])
-			if(fila==0): f=1
-			else:	f=7
-			c=self.casillas.index(j[0])
-			self.tablero[f].pop(c)
-			self.tablero[f].insert(c,None)
-			
-			if(j[-1]=='Q'):
-				self.dibujar_reproducir(10,1,fila,columna)
-				return	
-			if(j[-1]=='R'):
-				self.dibujar_reproducir(10,2,fila,columna)
-				return
-			if(j[-1]=='N'):
-				self.dibujar_reproducir(10,3,fila,columna)
-				return
-			if(j[-1]=='B'):
-				self.dibujar_reproducir(10,4,fila,columna)
-				return
-			
-		if(j[1]!='x'):
-			columna=self.casillas.index(j[0])
-			col=columna
-			
-			if(not self.turnoBlanco):
-				d=1
-			if(self.tablero[fila+d][columna]!=None):
-				ca=fila+d
-			else:
-				ca=fila+(2*d)
-			
-			self.dibujar_reproducir(ca,col,fila,columna)
-			return
-		else:
-			col=self.casillas.index(j[0])
-			#columna=self.casillas.index(j[2])
-			try:
-				fila=int(j[-1])-1
-			except:
-				fila=int(j[-2])-1
-			if(not self.turnoBlanco): d=1
-			ca=fila+d
-			self.dibujar_reproducir(ca,col,fila,columna)
-			return
-	#--------------------------------------------------------------------------------------------------------		
-	
-	#-------------------------TORRE--------------------------------------------------------------------------	
-	if(j[0]=='R'):
-		
-		if(len(j)==3 or j[1]=='x'):
-					
-			#izquierda
-			c=columna-1
-			while(c>=0):
-				try:
-					if(self.tablero[fila][c].name=='T' and self.tablero[fila][c].color==color):
-						self.dibujar_reproducir(fila,c,fila,columna)
-						return
-					if(self.tablero[fila][c].name!=None):
-						break
-				except:
-					a=1				
-				c=c-1
-	
-			#derecha
-			c=columna+1
-			while(c<=7):
-				try:	
-					if(self.tablero[fila][c].name=='T' and self.tablero[fila][c].color==color):
-						self.dibujar_reproducir(fila,c,fila,columna)
-						return
-					if(self.tablero[fila][c].name!=None):
-						break
-				except:
-					a=1				
-				c=c+1
-
-			#abajo
-			f=fila-1
-			while(f>=0):
-				try:
-					if(self.tablero[f][columna].name=='T' and self.tablero[f][columna].color==color):
-						self.dibujar_reproducir(f,columna,fila,columna)
-						return
-					if(self.tablero[fila][c].name!=None):
-						break
-				except:
-					a=1
-				f=f-1
-
-			#arriba
-			f=fila+1
-			while(f<=7):
-				try:
-					if(self.tablero[f][columna].name=='T' and self.tablero[f][columna].color==color):
-						self.dibujar_reproducir(f,columna,fila,columna)
-						return
-				except:
-					a=1				
-				f=f+1
-
-		elif(re.match('.[a-h].+',j)):
-			c=self.casillas.index(j[1])
-			
-			#abajo
-			f=fila
-			while(f>=0):
-				try:
-					if(self.tablero[f][c].name=='T' and self.tablero[f][c].color==color):
-						self.dibujar_reproducir(f,c,fila,columna)
-						return
-				except:
-					a=1
-				f=f-1
-
-			#arriba
-			f=fila+1
-			while(f<=7):
-				try:
-					if(self.tablero[f][c].name=='T' and self.tablero[f][c].color==color):
-						self.dibujar_reproducir(f,c,fila,columna)
-						return
-				except:
-					a=1				
-				f=f+1
-		elif(re.match('.[0-7].+',j)):
-			f=int(j[1])-1
-			c=columna-1
-			while(c>=0):
-				try:
-					if(self.tablero[f][c].name=='T' and self.tablero[f][c].color==color):
-						self.dibujar_reproducir(f,c,fila,columna)
-						return
-					if(self.tablero[f][c].name!=None):
-						break
-				except:
-					a=1				
-				c=c-1
-	
-			#derecha
-			c=columna+1
-			while(c<=7):
-				try:	
-					if(self.tablero[fila][c].name=='T' and self.tablero[fila][c].color==color):
-						self.dibujar_reproducir(fila,c,fila,columna)
-						return
-					if(self.tablero[fila][c].name!=None):
-						break
-				except:
-					a=1				
-				c=c+1
-	#--------------------------------------------------------------------------------------------------------
-
-
-	#---------------------------------------------CABALLO----------------------------------------------------
-	if(j[0]=='N'):
-		
-		if(len(j)==3 or j[1]=='x'):
-						
-			d_fila=2
-			d_col=1
-		
-			for i in range(2):
-				for p in range(2):
-					for k in range(2):
-				
-						f=fila+ d_fila
-						c=columna+d_col
-						try:
-							if (self.tablero[f][c].name=='C' and self.tablero[f][c].color == color):
-								self.dibujar_reproducir(f,c,fila,columna)
-								return
-						except:
-							a=1
-					
-						d_col=d_col*(-1)
-					d_fila=d_fila*(-1)
-				d_fila=1
-				d_col=2
-		elif(re.match('.[a-h].+',j)):
-						
-			c=self.casillas.index(j[1])
-			d=1
-			for k in range(2):
-				
-				f=fila+(d+k)
-				try:					
-					if (self.tablero[f][c].name=='C' and self.tablero[f][c].color == color):
-						self.dibujar_reproducir(f,c,fila,columna)
-						return
-				except: a=1
-
-				f=fila-(d+k)
-				try:					
-					if (self.tablero[f][c].name=='C' and self.tablero[f][c].color == color):
-						self.dibujar_reproducir(f,c,fila,columna)
-						return
-
-				except: a=1
-					
-
-		elif(re.match('.[0-7].+',j)):
-			
-			f=int(j[1])-1
-			d=1
-			for k in range(2):
-				
-				try:
-					c=columna+(d+k)					
-					if (self.tablero[f][c].name=='C' and self.tablero[f][c].color == color):
-						self.dibujar_reproducir(f,c,fila,columna)
-						return
-					c=columna-(d+k)					
-					if (self.tablero[f][c].name=='C' and self.tablero[f][c].color == color):
-						self.dibujar_reproducir(f,c,fila,columna)
-						return
-
-				except:
-					a=1
-
-	#--------------------------------------------------------------------------------------------------------
+	(origen,destino) = self.noterHelper.readMove(j)	
+	self.reproducir(origen,destino)
 
 
 
-	#---------------------------------------------ALFIL------------------------------------------------------
-	if(j[0]=='B'):
-		
-		if(len(j)==3 or j[1]=='x'):
-						
-			#Abajo-izq
-			f=fila-1
-			c=columna-1
-			while(f>=0 and c>=0):
-				try:
-					if(self.tablero[f][c].name=='A' and self.tablero[f][c].color==color ):
-						self.dibujar_reproducir(f,c,fila,columna)
-						return
-				except:
-					a=1		
-				f=f-1
-				c=c-1
-		
-			#Arriba-izq
-			f=fila+1
-			c=columna-1
-			while(f<=7 and c>=0):
-				try:
-					if(self.tablero[f][c].name=='A' and self.tablero[f][c].color==color ):
-						self.dibujar_reproducir(f,c,fila,columna)
-						return
-				except:
-					a=1		
-				f=f+1
-				c=c-1
-
-			#Abajo-der
-			f=fila-1
-			c=columna + 1
-			while(f>=0 and c<=7):
-				try:
-					if(self.tablero[f][c].name=='A' and self.tablero[f][c].color==color ):
-						self.dibujar_reproducir(f,c,fila,columna)
-						return
-				except:
-					a=1		
-				f=f-1
-				c=c+1
-
-		
-			#Arriba-der
-			f=fila+1
-			c=columna + 1
-			while(f<=7 and c<=7):
-				try:
-					if(self.tablero[f][c].name=='A' and self.tablero[f][c].color==color ):
-						self.dibujar_reproducir(f,c,fila,columna)
-						return
-				except:
-					a=1		
-				f=f+1
-				c=c+1
-		
-	#--------------------------------------------------------------------------------------------------------
-
-	#-------------------------------------------DAMA---------------------------------------------------------
-	if(j[0]=='Q'):
-
-		if(j[-1]=='+'): j=j[0:-1]
-		
-		if(len(j)==3 or j[1]=='x'):
-			
-			#############ALFIL##########################
-			#Abajo-izq
-			f=fila-1
-			c=columna-1
-			while(f>=0 and c>=0):
-				try:
-					if(self.tablero[f][c].name=='D' and self.tablero[f][c].color==color ):
-						self.dibujar_reproducir(f,c,fila,columna)
-						return
-				except:
-					a=1		
-				f=f-1
-				c=c-1
-		
-			#Arriba-izq
-			f=fila+1
-			c=columna-1
-			while(f<=7 and c>=0):
-				try:
-					if(self.tablero[f][c].name=='D' and self.tablero[f][c].color==color ):
-						self.dibujar_reproducir(f,c,fila,columna)
-						return
-				except:
-					a=1		
-				f=f+1
-				c=c-1
-
-			#Abajo-der
-			f=fila-1
-			c=columna + 1
-			while(f>=0 and c<=7):
-				try:
-					if(self.tablero[f][c].name=='D' and self.tablero[f][c].color==color ):
-						self.dibujar_reproducir(f,c,fila,columna)
-						return
-				except:
-					a=1		
-				f=f-1
-				c=c+1
-
-		
-			#Arriba-der
-			f=fila+1
-			c=columna + 1
-			while(f<=7 and c<=7):
-				try:
-					if(self.tablero[f][c].name=='D' and self.tablero[f][c].color==color ):
-						self.dibujar_reproducir(f,c,fila,columna)
-						return
-				except:
-					a=1		
-				f=f+1
-				c=c+1
-
-			#######################TORRE#############################
-			#izquierda
-			c=columna-1
-			while(c>=0):
-				try:
-					if(self.tablero[fila][c].name=='D' and self.tablero[fila][c].color==color):
-						self.dibujar_reproducir(fila,c,fila,columna)
-						return
-				except:
-					a=1				
-				c=c-1
-	
-			#derecha
-			c=columna+1
-			while(c<=7):
-				try:	
-					if(self.tablero[fila][c].name=='D' and self.tablero[fila][c].color==color):
-						self.dibujar_reproducir(fila,c,fila,columna)
-						return
-				except:
-					a=1				
-				c=c+1
-
-			#abajo
-			f=fila-1
-			while(f>=0):
-				try:
-					if(self.tablero[f][columna].name=='D' and self.tablero[f][columna].color==color):
-						self.dibujar_reproducir(f,columna,fila,columna)
-						return
-				except:
-					a=1
-				f=f-1
-
-			#arriba
-			f=fila+1
-			while(f<=7):
-				try:
-					if(self.tablero[f][columna].name=='D' and self.tablero[f][columna].color==color):
-						self.dibujar_reproducir(f,columna,fila,columna)
-						return
-				except:
-					a=1				
-				f=f+1
-
-	#--------------------------------------------------------------------------------------------------------
-
-
-	#-----------------------------------------REY-------------------------------------------------------------
-	if(j[0]=='K'):
-				
-		f=fila
-		try: 
-			if(self.tablero[f][columna+1].name=='R' and self.tablero[f][columna+1].color==color):
-				self.dibujar_reproducir(f,columna+1,fila,columna)
-				return
-		except: a=1
-		try:
-			if(self.tablero[f][columna-1].name=='R' and self.tablero[f][columna-1].color==color):
-				self.dibujar_reproducir(f,columna-1,fila,columna)
-				return
-		except: a=1
-		try:
-			if(self.tablero[f+1][columna].name=='R' and self.tablero[f+1][columna].color==color):
-				self.dibujar_reproducir(f+1,columna,fila,columna)
-				return
-		except: a=1
-		try:
-			if(self.tablero[f-1][columna].name=='R' and self.tablero[f-1][columna].color==color):
-				self.dibujar_reproducir(f-1,columna,fila,columna)
-				return
-		except: a=1	
-		df=1
-		dc=1
-		for p in range(2):
-			for k in range(2):
-				f=fila+df
-				c=columna+dc
-				try:
-					if(self.tablero[f][c].name=='R' and self.tablero[f][c].color==color):
-						self.dibujar_reproducir(f,c,fila,columna)
-						return
-				except: a=1
-				dc=dc*-1
-			df=df*-1
-			
-
-	#--------------------------------------------------------------------------------------------------------
-	
 	
 	
 ############################################################################################################################
-    def dibujar_reproducir(self,ca,col,fila,columna):
+    def reproducir(self,origen,destino):
 	
-	#Coronocaion de peon
-	if(ca==10):
+	#............. movimientos especiales ................................................
+	if(origen[0] == self.PROMOTION):
 		if(self.turnoBlanco): color='B'
 		else: color='N'
-		if(col==1):	#Dama
+			
+		self.tablero[detino[2]].pop(detino[3])
+		self.tablero[detino[2]].insert(detino[3],Square('',(destini[2],destino[3]),''))
+		if(origen[1] == 1):	#Dama
 			dama = Dama(color,(fila,columna))
 			self.tablero[fila].insert(columna,dama)
-		if(col==2):	#torre
+		if(origen[1] == 2):	#torre
 			torre = Torre(color,(fila,columna))
 			self.tablero[fila].insert(columna,torre)
-		if(col==3):	#Caballo
+		if(origen[1] == 3):	#Caballo
 			caballo = Caballo(color,(fila,columna))
 			self.tablero[fila].insert(columna,caballo)
-		if(col==4):	#Alfil
+		if(origen[1] == 4):	#Alfil
 			alfil = Alfil(color,(fila,columna))
 			self.tablero[fila].insert(columna,alfil)
 
+	elif(origen[0] == self.LONG_CASTLE):
+		if(self.turnoBlanco): fila=0
+		else: fila=7
+		#Muevo torre
+		self.tablero[fila][0].casilla=(fila,3)
+		self.tablero[fila][0].set_Imagen((fila,3))
+		torre = self.tablero[fila].pop(0)
+		self.tablero[fila].insert(0,Square('',(fila,0),''))
+		self.tablero[fila].pop(3)
+		self.tablero[fila].insert(3,torre)
+ 
+		#Muevo rey
+		self.tablero[fila][4].casilla=(fila,2)
+		self.tablero[fila][4].set_Imagen((fila,2))
+		rey = self.tablero[fila].pop(4)
+		self.tablero[fila].insert(4,Square('',(fila,4),''))
+		self.tablero[fila].pop(2)
+		self.tablero[fila].insert(2,rey)
+
+	elif(origen[0] == self.SHORT_CASTLE):	
+		if(self.turnoBlanco): fila=0
+		else: fila=7
+		#Muevo torre
+		self.tablero[fila][7].casilla=(fila,5)
+		self.tablero[fila][7].set_Imagen((fila,5))
+		torre = self.tablero[fila].pop(7)
+		self.tablero[fila].insert(7,Square('',(fila,7),''))
+		self.tablero[fila].pop(5)
+		self.tablero[fila].insert(5,torre)
+
+		#Muevo rey
+		self.tablero[fila][4].casilla=(fila,6)
+		self.tablero[fila][4].set_Imagen((fila,6))
+		rey = self.tablero[fila].pop(4)
+		self.tablero[fila].insert(4,Square('',(fila,4),''))
+		self.tablero[fila].pop(6)
+		self.tablero[fila].insert(6,rey)
+	#......................................................................................
+
 	else:
+		ca = origen[0]
+		col = origen[1]
+		fila = destino[0]
+		columna = destino[1]
 		pza=self.tablero[ca].pop(col)
-		self.tablero[ca].insert(col,None)
+		self.tablero[ca].insert(col,Square('',(ca,col),''))
+		pza.setCasilla(destino)	
 		self.tablero[fila].pop(columna)
 		self.tablero[fila].insert(columna,pza)
+		pza.set_Imagen((fila,columna))
 
-
-	self.tablero[fila][columna].set_Imagen((fila,columna))
-		
-	self.controlView.dibujar(self.tablero)
+	
+	#self.controlView.dibujar(self.tablero)
 	self.turnoBlanco= not self.turnoBlanco
 	self.controlView.change_turnos()
-
-		
-	self.controlView.actual=self.controlView.actual +1
-	self.controlView.actual_aux=self.controlView.actual_aux +1
+	self.controlView.setActual()
 	self.controlView.tablero_to_string(self.tablero)
 ############################################################################################################################
 

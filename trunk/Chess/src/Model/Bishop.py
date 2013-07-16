@@ -1,18 +1,7 @@
+from Pieza import *
+from Square import *
 
-
-class Alfil():
-
-#####################################################################################################################
-	def __init__(self,color,casilla):
-
-		self.color=color
-		self.casilla=casilla
-		self.name='A'
-
-		self.set_Imagen(self.casilla)
-
-
-#####################################################################################################################
+class Alfil(Pieza):
 
 
 
@@ -26,6 +15,9 @@ class Alfil():
 		else: 
 			self.imagen= 'Images/set1/Alfil'+self.color+'B'+'.jpg'
 #####################################################################################################################
+
+
+
 
 
 #####################################################################################################################
@@ -47,7 +39,7 @@ class Alfil():
 			col= col + d_c
 			if (des[0] == fila and des[1]==col):
 				jugada = True
-			if (tablero[fila][col] != None):
+			if not(isinstance(tablero[fila][col],Square)):
 				break
 		
 		return jugada
@@ -58,10 +50,6 @@ class Alfil():
 
 
 
-#####################################################################################################################
-        def setCasilla(self,pos):	
-		self.casilla = pos
-#####################################################################################################################
 
 
 ##########################################################################################################################
@@ -79,10 +67,10 @@ class Alfil():
 		fil=self.casilla[0]-1
 		col=self.casilla[1]-1
 		while(fil>=0 and col>=0):
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				jugada_izq_ab=False
 				break
 			fil=fil-1
@@ -92,10 +80,10 @@ class Alfil():
 		fil=self.casilla[0]+1
 		col=self.casilla[1]-1
 		while(fil<=7 and col>=0):
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				jugada_izq_ar=False
 				break
 			fil=fil+1
@@ -108,10 +96,10 @@ class Alfil():
 		fil=self.casilla[0]-1
 		col=self.casilla[1]+1
 		while(fil>=0 and col<=7):
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				jugada_der_ab=False
 				break
 			fil=fil-1
@@ -121,10 +109,10 @@ class Alfil():
 		fil=self.casilla[0]+1
 		col=self.casilla[1]+1
 		while(fil<=7 and col>=0):
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				jugada_der_ar=False
 				break
 			fil=fil+1
@@ -154,11 +142,11 @@ class Alfil():
 		fil=self.casilla[0]-1
 		col=self.casilla[1]-1
 		while(fil>=0 and col>=0):
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				jaque_izq_ab=False	
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				jaque_izq_ab=True
 				break
 			fil=fil-1
@@ -168,11 +156,11 @@ class Alfil():
 		fil=self.casilla[0]+1
 		col=self.casilla[1]-1
 		while(fil<=7 and col>=0):
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				jaque_izq_ar=False
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				jaque_izq_ar=True
 				break
 			fil=fil+1
@@ -185,11 +173,11 @@ class Alfil():
 		fil=self.casilla[0]-1
 		col=self.casilla[1]+1
 		while(fil>=0 and col<=7):
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				jaque_der_ab=False
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				jaque_der_ab=True
 				break
 			fil=fil-1
@@ -199,11 +187,11 @@ class Alfil():
 		fil=self.casilla[0]+1
 		col=self.casilla[1]+1
 		while(fil<=7 and col<=0):
-			if(tablero[fil][col]!=None and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
+			if(not(isinstance(tablero[fil][col],Square)) and (not(tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)) ):
 				jaque_der_ar=False
 				break
 			
-			if(tablero[fil][col]!=None and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
+			if(not(isinstance(tablero[fil][col],Square)) and (tablero[fil][col].name=='R' and tablero[fil][col].color!=self.color)):
 				jaque_der_ar=True
 				break
 			fil=fil+1
