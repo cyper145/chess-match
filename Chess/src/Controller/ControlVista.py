@@ -230,38 +230,38 @@ class ControlVista():
     def dibujar(self,tabler):
 	
        self.lock.acquire() 		
-       image=[]
+       self.image=[]
        
        for a in range(64):
-            image.append(gtk.Image())
+            self.image.append(gtk.Image())
 		
-		
-       #image = gtk.Image()
-       
-       
+      
        		
        for a in range(8):
             for b in range(8):
 		if (tabler[a][b] != None):	
-			image[(8*a)+b].set_from_file(tabler[a][b].imagen)
-		else:
-			if(a+b)%2==0:			
-				image[(8*a)+b].set_from_file('Images/set1/'+'Negro'+'.jpg')
-			else:		
-				image[(8*a)+b].set_from_file('Images/set1/'+'Blanco'+'.jpg')
-       		image[(8*a)+b].show()
-		self.square[a][b].set_image(image[(8*a)+b])
+			self.image[(8*a)+b].set_from_file(tabler[a][b].imagen)
+	
+       		self.image[(8*a)+b].show()
+		self.square[a][b].set_image(self.image[(8*a)+b])
        
        self.lock.release()      
        
 
 #########################################################################################################                                
 		
-		
-       
+    def repaint(self,cas1,cas2, tablero):		
+        self.lock.acquire() 		
+
+	self.image[(8* cas1[0])+cas1[1]].set_from_file(tablero[cas1[0]][cas1[1]].imagen)
+	self.image[(8* cas2[0])+cas2[1]].set_from_file(tablero[cas2[0]][cas2[1]].imagen)
+	self.image[(8* cas1[0])+cas1[1]].show()
+	self.image[(8* cas2[0])+cas2[1]].show()
+	self.square[cas1[0]][cas1[1]].set_image(self.image[(8* cas1[0])+ cas1[1]])
+	self.square[cas2[0]][cas2[1]].set_image(self.image[(8* cas2[0])+ cas2[1]])
 
 
-
+	self.lock.release()      
 #########################################################################################################
     def pieza_clicked(self,widget, data=None):
 
