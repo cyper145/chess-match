@@ -33,25 +33,41 @@
 #define	CABALLO_N	-3
 #define	ALFIL_N		-4
 #define	TORRE_N		-5
-#define	DAMA_N		-9
+#define	DAMA_N		-10
 #define	REY_N		-200
 
 #define	PEON_B	 	1
 #define	CABALLO_B	3
 #define	ALFIL_B		4
 #define	TORRE_B		5
-#define	DAMA_B		9
+#define	DAMA_B		10
 #define	REY_B		200
+
+#define	PEON	 	1
+#define	CABALLO		3
+#define	ALFIL		4
+#define	TORRE		5
+#define	DAMA		9
+#define	REY		200
 //------------------------------------------
 
 
 
 //-------PONDERACIONES-----------------------
-#define P_MATERIAL	100
-#define P_CENTRO	4
-#define P_ACTIVIDAD	3
-#define P_POSICION	3
+#define P_MATERIAL	0
+#define P_CENTRO	0
+#define P_ACTIVIDAD	0
+#define P_POSICION	0
+#define P_SEGURIDAD	100
 //-------------------------------------------
+
+
+//-----------ENROQUES------------------------
+#define ENROQUE_CORTO		10
+#define ENROQUE_LARGO   	100
+//-------------------------------------------
+
+
 
 
 #define blanco 		1
@@ -83,6 +99,8 @@ struct Nodo {
 	char notation[5];
 	int value;
 	short  turno;
+	short shortCastle;
+	short longCastle;
 	struct Nodo  *hijo;
 	struct Nodo  *sig;
 	struct Nodo  *padre;

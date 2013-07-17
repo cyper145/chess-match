@@ -31,6 +31,9 @@ class ControlPrincipal():
     SHORT_CASTLE = 100
     PROMOTION = 10		
  
+
+    NOTE_CASTLE = False
+    NOTE_LONG_CASTLE = False	
 #########################################################################################################
     def __init__(self):
 
@@ -211,6 +214,8 @@ class ControlPrincipal():
 
         self.pieza=self.tablero[self.fila1][self.col1]
 	self.destino = self.tablero[self.fila2][self.col2]
+	
+
       	if(isinstance(self.pieza,Square)):
 		return False
 	if(self.isNotColorTurn()):
@@ -282,12 +287,21 @@ class ControlPrincipal():
 
     #------------------------------------------------------------------------------------------------------
     def anotar(self,wTurn,pieza, destino):
-       if(wTurn):
-            texto= str(self.contador)+'. '+pieza.name+self.casillas[destino[1]]+str(destino[0]+1)
-       else:
-            texto='  '+pieza.name+self.casillas[destino[1]]+str(destino[0]+1)+'\n'
+
+       	if(self.NOTE_CASTLE):
+		play = 'O-O'
+		self.NOTE_CASTLE = False
+	elif(self.NOTE_LONG_CASTLE):
+		play = 'O-O-O'	
+		self.NOTE_LONG_CASTLE = False
+	else:
+       		play = pieza.name+self.casillas[destino[1]]+str(destino[0]+1)
+       	if(wTurn):
+       		texto= str(self.contador) + '. ' + play
+       	else:
+       		texto='  ' + play + '\n'
    
-       self.controlView.set_text(texto)
+       	self.controlView.set_text(texto)
     #------------------------------------------------------------------------------------------------------
 
 
@@ -359,14 +373,51 @@ class ControlPrincipal():
 
     #------------------------------------------------------------------------------------------------------
     def move(self):
-        self.pieza.setCasilla(self.dest)
-	self.pieza.set_Imagen(self.dest)
-	pza=self.tablero[self.fila1].pop(self.col1)
-	self.tablero[self.fila1].insert(self.col1,Square('',(self.fila1,self.col1),''))
-
-	self.guardo=self.tablero[self.fila2].pop(self.col2)
-	self.tablero[self.fila2].insert(self.col2,pza)
+	if not(self.isCastle()):
+		self.pieza.setCasilla(self.dest)
+		self.pieza.set_Imagen(self.dest)
+		pza=self.tablero[self.fila1].pop(self.col1)
+		self.tablero[self.fila1].insert(self.col1,Square('',(self.fila1,self.col1),''))
+		self.guardo=self.tablero[self.fila2].pop(self.col2)
+		self.tablero[self.fila2].insert(self.col2,pza)
     #------------------------------------------------------------------------------------------------------
+
+    #------------------------------------------------------------------------------------------------------
+    def isCastle(self):
+	if (isinstance(self.pieza,Rey) and self.pieza.casilla[1] == 4 and (self.dest[1] == 6 or self.dest[1] == 2)):
+				
+			fila = self.pieza.casilla[0]			
+			self.pieza.setCasilla(self.dest)
+			self.pieza.set_Imagen(self.dest)
+			pza=self.tablero[self.fila1].pop(self.col1)
+			self.tablero[self.fila1].insert(self.col1,Square('',(self.fila1,self.col1),''))
+			self.tablero[self.fila2].pop(self.col2)
+			self.tablero[self.fila2].insert(self.col2,pza)
+	
+			if self.dest[1] == 6: 
+				f = 7
+				c = 5
+				self.NOTE_CASTLE = True
+				
+			else: 
+				f = 0
+				c = 3
+				self.NOTE_LONG_CASTLE = True
+
+			torre =	self.tablero[fila].pop(f)
+			torre.setCasilla((fila,c))
+			torre.set_Imagen((fila,c))
+
+			self.tablero[fila].insert(f, Square('',(fila,f),''))
+			self.tablero[fila].pop(c)
+			self.tablero[fila].insert(c, torre)
+			self.controlView.repaint((fila,f),(fila,c),self.tablero)
+			motor.set_jugada(fila,f,fila,c);	
+			return True
+		
+	else: return False
+
+    #------------------------------------------------------------------------------------------------------	
 
 
     #------------------------------------------------------------------------------------------------------
