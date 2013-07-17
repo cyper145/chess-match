@@ -77,22 +77,27 @@ void valuar_utilidad(nodo inicial, int prof){
 int valoracion(Tablero tab){
 		
 	int i,j;
-	int centro=0;		//valua el control de las casillas centrales
-	int material=0;		//valua la cantidad de material
-	int actividad=0;	//mide la cantidad de casillas que controla la pieza
-	int posicion=0;		//mide la ubicacion de las piezas
+	int fza_blanca = 0;
+	int fza_negra = 0;
+	int centro = 0;			//valua el control de las casillas centrales
+	int material = 0;		//valua la cantidad de material
+	int actividad = 0;		//mide la cantidad de casillas que controla la pieza
+	int posicion = 0;		//mide la ubicacion de las piezas
+	int seguridad = 0;		//seguridad del rey
 
 	for(i=0;i<8;i++){
 		for(j=0;j<8;j++){
 
 			//suma de material
 			material=material + tab[i][j];
+			if(tab[i][j] >= 3 ) fza_blanca = fza_blanca + tab[i][j];
+			if(tab[i][j] <= -3 ) fza_negra = fza_negra + tab[i][j];
 
 			switch(tab[i][j]){
 			
 				case (PEON_N):
 					/*PEON NEGRO*/
-					//control del centro
+					posicion = posicion + valoracion_peon(tab,i,j,-1);
 					if(i == F_5){
 						
 						if((j >= C_C )&& (j <= C_F)) centro=centro-1;
@@ -104,7 +109,7 @@ int valoracion(Tablero tab){
 					}
 					break;
 				case (PEON_B):
-					/*PEON BLANCO*/
+					posicion = posicion + valoracion_peon(tab,i,j,1);
 					if(i== F_4){
 						//control del centro
 						if((j >= C_C) && (j <= C_F)) centro=centro+1;
@@ -129,7 +134,7 @@ int valoracion(Tablero tab){
 					actividad=actividad+(actividad_caballo(tab,i,j,-1));
 					*/
 					//posicion
-					posicion=posicion + (Tabla_posicion_caballo[i][j] * -1);
+					posicion=posicion + (Tabla_posicion_caballo[i][j] * -10);
 					break;
 				case (CABALLO_B):
 					/*CABALLO BLANCO*/
@@ -144,7 +149,7 @@ int valoracion(Tablero tab){
 					actividad=actividad+(actividad_caballo(tab,i,j,1));
 					*/
 					//posicion
-					posicion=posicion + Tabla_posicion_caballo[i][j];
+					posicion=posicion + (Tabla_posicion_caballo[i][j] * 10);
 					break;
 				case (ALFIL_N):
 					//actividad de la pieza
@@ -174,7 +179,7 @@ int valoracion(Tablero tab){
 					actividad=actividad+(actividad_torre(tab,i,j,-1));
 
 					//posicion
-					posicion=posicion + (posicion_caballo(tab,i,j,1));
+					posicion=posicion + (posicion_torre(tab,i,j,1));
 					break;
 				case (DAMA_B):
 					/*DAMA BLANCA*/
@@ -185,6 +190,14 @@ int valoracion(Tablero tab){
 					/*DAMA NEGRA*/
 					actividad=actividad+(actividad_alfil(tab,i,j,-1));
 					actividad=actividad+(actividad_torre(tab,i,j,-1));
+					break;
+
+				case (REY_B):
+					seguridad = seguridad + seguridad_rey(tab,i,j,1,fza_negra);
+					break;
+
+				case (REY_N):
+					seguridad = seguridad + seguridad_rey(tab,i,j,1,fza_blanca);
 					break;
 				default:
 					break;
@@ -198,8 +211,9 @@ int valoracion(Tablero tab){
 	material = material * P_MATERIAL;
 	actividad = actividad * P_ACTIVIDAD;	
 	posicion = posicion * P_POSICION;
+	seguridad = seguridad * P_SEGURIDAD;
 
-	return (centro + material + actividad + posicion);
+	return (centro + material + actividad + posicion + seguridad);
 }
 
 
@@ -289,8 +303,10 @@ int actividad_torre(Tablero tab,int fila,int columna,int turno){
 
 
 
-
-
+/************************************************************************** 
+* Calcula cuantas casillas libres controla el alfil y si esta atacando
+* alguna pieza enemiga
+***************************************************************************/
 int actividad_alfil(Tablero tab,int fila,int columna,int turno){
   short int f,c,i,j,k,fil,col;
   short int d_f=1;
@@ -305,7 +321,10 @@ int actividad_alfil(Tablero tab,int fila,int columna,int turno){
   while((f<=7)&&(c>=0)){
 	if((turno*tab[f][c])<=0){
 		casillas=casillas+turno;
-		if(tab[f][c]<0) break;
+		if((turno*tab[f][c])<0) {	
+			casillas = casillas + (turno * tab[f][c]);
+			break;
+		}
 	}
 	else break;
 	f++;
@@ -317,7 +336,7 @@ int actividad_alfil(Tablero tab,int fila,int columna,int turno){
   while((f<=7)&&(c<=7)){
 	if((turno*tab[f][c])<=0){
 		casillas=casillas+turno;
-		if(tab[f][c]<0) break;
+		if((turno*tab[f][c])<0) break;
 	}
 	else break;
 	f++;
@@ -330,7 +349,7 @@ int actividad_alfil(Tablero tab,int fila,int columna,int turno){
   while((f>=0)&&(c<=7)){
 	if((turno*tab[f][c])<=0){
 		casillas=casillas+1;
-		if(tab[f][c]<0) break;
+		if((turno*tab[f][c])<0) break;
 	}
 	else break;
 	f--;
@@ -342,57 +361,152 @@ int actividad_alfil(Tablero tab,int fila,int columna,int turno){
   while((f>=0)&&(c>=0)){
 	if((turno*tab[f][c])<=0){
 		casillas=casillas+turno;
-		if(tab[f][c]<0) break;
+		if((turno*tab[f][c])<0) break;
 	}
 	else break;
 	f--;
   	c--;
   }
-  return (casillas/3);
+  return (casillas);
 }
 
 
 
 
-
-
+/*******************************************************************************************
+* La posicion de la torre mejora al estar en columnas abiertas o semi-abiertas
+* y al estar apoyada por la otra torre 
+*******************************************************************************************/
 int posicion_torre(Tablero tab,int fila,int columna,int turno ){
-
 	int valor=0;
 	int j,v;
-	if(columna == C_E || columna == C_D) valor +=2;
-	if(columna == C_C || columna == C_F) valor +=1;
-	for(j=0;j<8;j++){
-			if((tab[j][columna]*turno)==1) {
-				v=0;
-				break;
-			}
-			v=3;
-	}
-	return (valor + v);
+	
+	return valor;
 }
 
 
 
 
 
-
-int posicion_caballo(Tablero tab,int fila,int columna,int turno ){
-	int valor=0;
-	if(fila>F_3 && fila<F_6 && columna>C_C && columna < C_F){
-		valor=3;
-	}
-	return (valor);
-}
-
-
-
-
-
-
-
+/******************************************************************************************
+* 
+******************************************************************************************/
 int posicion_alfil(Tablero tab,int fila,int columna,int turno ){
 	int valor=0;
 	if(fila == (columna % 7)) valor = 3;
 	return (valor);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*************************************************************************************************************
+* Si fza es mayor a 213, todavia hay piezas pesadas (torres y dama), por lo tanto el rey debe estar
+* resguardado ya que existe la posibilidad de jaque mate. Cuando no hay piezas pesadas en el tablero
+*el rey debe tomar un papael mas activo y ocupar el centro
+**************************************************************************************************************/
+int seguridad_rey(Tablero tab,int fila,int columna,int turno,int fza ){
+	int valor = 0;
+
+	
+	//if( (fza* turno * -1) > 213){
+
+		if((columna == 6) && (tab[fila][5] == (TORRE * turno))){
+			valor = valor +1;
+			if(tab[fila + turno][7] == turno) valor = valor +2;
+			if(tab[fila + turno][6] == turno) valor = valor +2;
+			if(tab[fila + turno][5] == turno) valor = valor +2;
+ 		}
+
+
+		if((columna == 2) && (tab[fila][3] == (TORRE * turno))){
+			valor = valor +1;
+			if(tab[fila + turno][1] == turno) valor = valor +2;
+			if(tab[fila + turno][2] == turno) valor = valor +2;
+			if(tab[fila + turno][3] == turno) valor = valor +2;
+			if(tab[fila + turno][4] == turno) valor = valor +2;
+ 		}
+
+        //}
+	return valor * turno;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/************************************************************************************************************
+* La valoracion de un peon tiene en cuenta si este esta aislado, es un peon pasado o retrasado
+**************************************************************************************************************/
+int valoracion_peon(Tablero tab,int fila,int columna,int turno){
+	int valor = 0;
+	int inicio = (7 + turno) % 7;
+	int izq = columna - 1;
+	int der = columna + 1;
+	int pasado = 1;
+	
+	while(inicio != 0){
+
+		if(tab[inicio][columna] == -turno) pasado = 0;
+		
+		
+		//-------------- Apoyado  (no aislado) ------------------
+		if(izq>0){
+			if (tab[inicio][izq] == turno){
+				 valor++;
+				 if(izq == (fila - turno)) valor++;	
+			}	
+			
+			if (tab[inicio][izq] == -turno) pasado = 0;
+		}
+
+
+		if(der<7){
+			if (tab[inicio][der] == turno){
+				valor++;
+				if(der == (fila - turno)) valor++;	
+			}
+			
+			if (tab[inicio][der] == turno) pasado = 0;
+		}
+		//---------------------------------------------------------
+		inicio = (inicio + turno) % 7;
+	}
+
+	if(pasado) valor = valor + 5;	
+	return valor * turno;
+}
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+

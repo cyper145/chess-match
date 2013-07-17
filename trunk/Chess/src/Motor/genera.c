@@ -76,14 +76,14 @@ char* seleccionar(nodo nod,int color );
 
 
 /*-------- Tablero con posicion inicial--------*/
-Tablero posicion={{5,3,4,10,100,4,3,5},
+Tablero posicion={{5,3,4,10,200,4,3,5},
 		  {1,1,1,1,1,1,1,1},
 		  {0,0,0,0,0,0,0,0},
 		  {0,0,0,0,0,0,0,0},
 		  {0,0,0,0,0,0,0,0},
 		  {0,0,0,0,0,0,0,0},
 		  {-1,-1,-1,-1,-1,-1,-1,-1},
-		  {-5,-3,-4,-10,-100,-4,-3,-5}};
+		  {-5,-3,-4,-10,-200,-4,-3,-5}};
 /*---------------------------------------------*/
 
 
@@ -113,6 +113,8 @@ char* generate(int t)
   	memcpy(inicial->notation,"",(5*sizeof(char)));
 	inicial->turno=turno;
 	inicial->value=0;
+	inicial->shortCastle=1;
+	inicial->longCastle=1;
 	/*---------------------------------------------*/
 	
 	
@@ -226,23 +228,23 @@ void gen(nodo inicial,Tablero tab,int turno)
 		if((tab[f][c]*turno)>0){
 			casilla cas={f,c};
 			switch (tab[f][c]*turno){
-				case 5:
+				case TORRE:
 					torre(inicial,tab,cas);
 					break;
-				case 3:
+				case CABALLO:
 					caballo(inicial,tab,cas);
 					break;
-				case 4:
+				case ALFIL:
 					alfil(inicial,tab,cas);
 					break;
-				case 10:
+				case DAMA:
 					torre(inicial,tab,cas);
 					alfil(inicial,tab,cas);
 					break;
-				case 100:
+				case REY:
 					rey(inicial,tab,cas);
 					break;
-				case 1:
+				case PEON:
 					peon(inicial,tab,cas);
 					break;
 			}
@@ -562,6 +564,18 @@ void rey(nodo padre,Tablero tab,casilla cas){
 	d_f=d_f*-1;
   }
 
+  /*------------ enroque ---------------------------------------*/
+  if((padre->shortCastle) && (tab[cas[0]][6] == 0) && (tab[cas[0]][5] == 0) ){
+	casilla from={ENROQUE_CORTO,0};
+	casilla to={cas[0],6};
+	insertar_nodo(padre,from,to);
+  }	
+  if((padre->longCastle) && (tab[cas[0]][1] == 0) && (tab[cas[0]][2] == 0) && (tab[cas[0]][3] == 0) ){
+
+	casilla from = {ENROQUE_LARGO,0};
+	casilla to = {cas[0],2};
+	insertar_nodo(padre,from,to);
+  }	
 }
 
 
@@ -649,9 +663,9 @@ void insertar_nodo(nodo padre,casilla from,casilla to){
 	nodo nuevo,aux;
 	short  auxiliar,j,i;
 	char *nota;
-	//convert_to_char(padre,from,to,&nota);
+	short fila;
 
-	//printf("%s \n",&nota);
+	
 
 	auxiliar=padre->board[from[0]][from[1]];
 
@@ -661,34 +675,58 @@ void insertar_nodo(nodo padre,casilla from,casilla to){
 	//nuevo=(nodo)malloc(sizeof(struct Nodo));
 	if(nuevo!=NULL){
 
-		//memcpy(nuevo->j.from,from,sizeof(casilla));
-		//memcpy(nuevo->j.to,to,sizeof(casilla));
-		
 		nuevo->j.from[0]=from[0];
 		nuevo->j.from[1]=from[1];
 		nuevo->j.to[0]=to[0];
 		nuevo->j.to[1]=to[1];
 		
 		memcpy(nuevo->board,padre->board,sizeof(Tablero));
-		/*
-		for(j=0;j<8;j++){
-			for(i=0;i<8;i++)  nuevo->board[j][i]=padre->board[j][i];
-
-			}
-		*/
-	//	memcpy(nuevo.board, padre.board,148);
-		short  ax = 0;
-		//memcpy(nuevo->board[from[0]][from[1]],ax,sizeof(short));
-		//memcpy(nuevo->board[to[0]][to[1]],auxiliar,sizeof(short));
-		nuevo->board[to[0]][to[1]]=nuevo->board[from[0]][from[1]];
-		nuevo->board[from[0]][from[1]]=0;
 		
+		short  ax = 0;
 
 		nuevo->hijo=NULL;
 		nuevo->sig=NULL;
 		nuevo->value=0;
-		convert_to_char(padre,from,to,nuevo->notation);
-		//printf("%s \n",&nuevo->notation);
+
+		if(from[0] == ENROQUE_CORTO){
+			
+			if(from[1] == blanco)	fila = 0;
+			else	fila = 7;
+			nuevo->board[fila][5] = nuevo->board[fila][7];
+			nuevo->board[fila][7] = 0 ;
+			nuevo->board[fila][6] = nuevo->board[fila][4];
+			nuevo->board[fila][4] = 0;
+			nuevo->longCastle = 0;
+			nuevo->shortCastle = 0;
+			memcpy(nuevo->notation,"O-O", 5*sizeof(char));
+
+		}
+
+		else if(from[0] == ENROQUE_LARGO){
+
+			if(from[1] == blanco)	fila = 0;
+			else	fila = 7;
+
+			nuevo->board[fila][3] = nuevo->board[fila][0];
+			nuevo->board[fila][0] = 0 ;
+			nuevo->board[fila][2] = nuevo->board[fila][4];
+			nuevo->board[fila][4] = 0;
+			nuevo->longCastle = 0;
+			nuevo->shortCastle = 0;
+			memcpy(nuevo->notation,"O-O-O", 5*sizeof(char));
+
+		}
+
+		else{
+			
+
+			nuevo->board[to[0]][to[1]]=nuevo->board[from[0]][from[1]];
+			nuevo->board[from[0]][from[1]]=0;
+		
+
+			
+			convert_to_char(padre,from,to,nuevo->notation);
+		}
 
 		if(padre->hijo==NULL){
 			padre->hijo=nuevo;
