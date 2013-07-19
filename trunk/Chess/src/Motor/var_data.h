@@ -54,11 +54,12 @@
 
 
 //-------PONDERACIONES-----------------------
-#define P_MATERIAL	0
-#define P_CENTRO	0
-#define P_ACTIVIDAD	0
-#define P_POSICION	0
+#define P_MATERIAL	10
+#define P_CENTRO	2
+#define P_ACTIVIDAD	4
+#define P_POSICION	4
 #define P_SEGURIDAD	100
+#define P_DESARROLLO	10
 //-------------------------------------------
 
 

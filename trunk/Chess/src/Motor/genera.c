@@ -131,7 +131,7 @@ char* generate(int t)
 	}
 	
 
-	
+	//mostrar_arbol(0,inicial,jugada);
 	/*Selecciona la mejor jugada*/	
 	jugada = seleccionar(inicial, turno);
 	
@@ -922,6 +922,8 @@ char* seleccionar(nodo nod, int color)
 	if(flag){
 		posicion[f_origen][c_origen] = 0;
 		posicion[f_dest][c_dest] = auxiliar;
+		/*en el enroque debe mover bien el tablero!!!!!*/
+
 	}
 	return (j);
 }
