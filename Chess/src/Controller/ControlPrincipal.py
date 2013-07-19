@@ -529,6 +529,10 @@ class ControlPrincipal():
 		self.tablero[fila].insert(4,Square('',(fila,4),''))
 		self.tablero[fila].pop(6)
 		self.tablero[fila].insert(6,rey)
+
+		self.controlView.repaint((fila,7),(fila,5),self.tablero)
+		origen = (fila,6)
+		destino = (fila,4)		
 	#......................................................................................
 
 	else:

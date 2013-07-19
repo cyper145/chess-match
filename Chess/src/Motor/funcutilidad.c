@@ -84,6 +84,8 @@ int valoracion(Tablero tab){
 	int actividad = 0;		//mide la cantidad de casillas que controla la pieza
 	int posicion = 0;		//mide la ubicacion de las piezas
 	int seguridad = 0;		//seguridad del rey
+	int desarrollo_negro = 0;
+	int desarrollo_blanco = 0;
 
 	for(i=0;i<8;i++){
 		for(j=0;j<8;j++){
@@ -92,6 +94,14 @@ int valoracion(Tablero tab){
 			material=material + tab[i][j];
 			if(tab[i][j] >= 3 ) fza_blanca = fza_blanca + tab[i][j];
 			if(tab[i][j] <= -3 ) fza_negra = fza_negra + tab[i][j];
+
+			if(i==0){
+				if((tab[i][j] == 3) || (tab[i][j] == 4)) desarrollo_blanco = desarrollo_blanco - 2;  
+			}
+
+			if(i==7){
+				if((tab[i][j] == -3) || (tab[i][j] == -4)) desarrollo_blanco = desarrollo_negro + 2;  
+			}
 
 			switch(tab[i][j]){
 			
@@ -212,8 +222,9 @@ int valoracion(Tablero tab){
 	actividad = actividad * P_ACTIVIDAD;	
 	posicion = posicion * P_POSICION;
 	seguridad = seguridad * P_SEGURIDAD;
-
-	return (centro + material + actividad + posicion + seguridad);
+	desarrollo_blanco = desarrollo_blanco + P_DESARROLLO;
+	desarrollo_negro = desarrollo_negro + P_DESARROLLO;
+	return (centro + material + actividad + posicion + seguridad + desarrollo_blanco + desarrollo_negro);
 }
 
 
