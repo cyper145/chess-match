@@ -4,6 +4,7 @@
 
 
 
+
 #define DEEP	3
 
 
@@ -47,14 +48,14 @@
 #define	CABALLO		3
 #define	ALFIL		4
 #define	TORRE		5
-#define	DAMA		9
+#define	DAMA		10
 #define	REY		200
 //------------------------------------------
 
 
 
 //-------PONDERACIONES-----------------------
-#define P_MATERIAL	10
+#define P_MATERIAL	100
 #define P_CENTRO	2
 #define P_ACTIVIDAD	4
 #define P_POSICION	4
@@ -71,8 +72,8 @@
 
 
 
-#define blanco 		1
-#define negro		-1
+#define BLANCO		1
+#define NEGRO		-1
 
 
 
@@ -97,11 +98,13 @@ typedef struct Jugada jugada;
 struct Nodo {
 	jugada j;
 	Tablero board;
-	char notation[5];
+	char notation[10];
 	int value;
 	short  turno;
-	short shortCastle;
-	short longCastle;
+	short W_shortCastle;
+	short W_longCastle;
+	short B_shortCastle;
+	short B_longCastle;
 	struct Nodo  *hijo;
 	struct Nodo  *sig;
 	struct Nodo  *padre;

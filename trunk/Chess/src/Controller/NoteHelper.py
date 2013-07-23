@@ -24,9 +24,11 @@ class NoteHelper():
 		self.tablero = self.control.getTablero()
 		#---------------------------------------------ENROQUE LARGO----------------------------------------------
 		if(self.lCastle in j):
+			print "Long Castle!!"
 			return self.longCastle()		
 		#---------------------------------------------ENROQUE CORTO----------------------------------------------
 		if(self.sCastle in j):
+			print "Short Castle!!"
 			return self.shortCastle()
 	
 		#--------------------------------------------------------------------------------------------------------
@@ -246,7 +248,7 @@ class NoteHelper():
 			
 			
 		elif(re.match('.[a-h].+',j)):
-			c=self.casillas.index(j[1])
+			c=self.columnas.index(j[1])
 			f = -1
 		elif(re.match('.[0-7].+',j)):
 			f = int(j[1])-1

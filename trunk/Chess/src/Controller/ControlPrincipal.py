@@ -105,7 +105,7 @@ class ControlPrincipal():
     	self.game.daemon = True
     	self.game.start()
 	#self.Game()
-
+	
     def Game(self):
 	
 	self.contadpr = 0		
@@ -510,6 +510,10 @@ class ControlPrincipal():
 		self.tablero[fila].insert(4,Square('',(fila,4),''))
 		self.tablero[fila].pop(2)
 		self.tablero[fila].insert(2,rey)
+
+		self.controlView.repaint((fila,0),(fila,3),self.tablero)
+		origen = (fila,4)
+		destino = (fila,2)		
 
 	elif(origen[0] == self.SHORT_CASTLE):	
 		if(self.turnoBlanco): fila=0

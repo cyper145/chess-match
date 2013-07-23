@@ -164,8 +164,9 @@ void poda(nodo nod){
 
 void preseleccion(nodo nod)
 {
+	int t;
 	nodo aux = nod->hijo;
-	int t = nod->turno;
+	t = nod->turno;
 	while(aux != NULL)	
 		{
 		   preselect(aux,aux->value);		
@@ -241,7 +242,7 @@ void acomodar_minimax(nodo nod, int prof){
 
 			aux=aux->sig;
 		}
-	if(nod->turno != blanco) nod->value = max;
+	if(nod->turno != BLANCO) nod->value = max;
 	else	nod->value = min;
 }
 
