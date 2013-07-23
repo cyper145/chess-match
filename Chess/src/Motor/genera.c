@@ -57,12 +57,12 @@ int valores[3*DEEP];
 void eliminar(nodo nod);
 void mostrar_tablero(Tablero tab);
 void gen(nodo inicial,Tablero tab,int turno);
-void torre(nodo padre,Tablero tab,casilla cas);
-void caballo(nodo padre,Tablero tab,casilla cas);
-void alfil(nodo padre,Tablero tab,casilla cas);
-void rey(nodo padre,Tablero tab,casilla cas);
-void peon(nodo padre,Tablero tab,casilla cas);
-void insertar_nodo(nodo padre,casilla from,casilla to);
+void torre(nodo padre,Tablero tab,casilla cas,short turno,short w_l_cas,short w_s_cas,short b_l_cas,short b_s_cas);
+void caballo(nodo padre,Tablero tab,casilla cas,short w_l_cas,short w_s_cas,short b_l_cas,short b_s_cas);
+void alfil(nodo padre,Tablero tab,casilla cas,short w_l_cas,short w_s_cas,short b_l_cas,short b_s_cas);
+void rey(nodo padre,Tablero tab,casilla cas,short turno,short w_l_cas,short w_s_cas,short b_l_cas,short b_s_cas);
+void peon(nodo padre,Tablero tab,casilla cas,short w_l_cas,short w_s_cas,short b_l_cas,short b_s_cas);
+void insertar_nodo(nodo padre,casilla from,casilla to,short w_l_cas,short w_s_cas,short b_l_cas,short b_s_cas);
 void mostrar_arbol(int prof,nodo padre, char *z);
 void generar(int prof,nodo nod,int turno);
 void regenera(nodo nod);
@@ -70,7 +70,7 @@ void convert_to_char(nodo padre,casilla from,casilla to,char *s);
 void set_jugada(int f_origen,int c_origen,int f_dest,int c_dest);
 char* jugar(int t);
 char* seleccionar(nodo nod,int color );
-
+void KnightGoTo(Tablero tab, casilla from, casilla to, char* notation);
 
 
 
@@ -87,6 +87,12 @@ Tablero posicion={{5,3,4,10,200,4,3,5},
 /*---------------------------------------------*/
 
 
+/*--------- Enroques ----------------------------*/
+short W_LONG_CASTLE = 1;
+short W_SHORT_CASTLE = 1;
+short B_LONG_CASTLE = 1;
+short B_SHORT_CASTLE = 1;
+/*------------------------------------------------*/
 
 
 
@@ -110,11 +116,13 @@ char* generate(int t)
 	cont_f=0;
   	inicial->hijo=NULL;
   	inicial->sig=NULL;
-  	memcpy(inicial->notation,"",(5*sizeof(char)));
+  	memcpy(inicial->notation,"",(10*sizeof(char)));
 	inicial->turno=turno;
 	inicial->value=0;
-	inicial->shortCastle=1;
-	inicial->longCastle=1;
+	inicial->W_shortCastle = W_SHORT_CASTLE;
+	inicial->W_longCastle = W_LONG_CASTLE;
+	inicial->B_shortCastle = B_SHORT_CASTLE;
+	inicial->B_longCastle = B_LONG_CASTLE;
 	/*---------------------------------------------*/
 	
 	
@@ -123,11 +131,13 @@ char* generate(int t)
 	valuar_utilidad(inicial,0);
 	poda(inicial);
 	preseleccion(inicial);
-	for(k=0;k<6;k++)	
+	
+	for(k=0;k<8;k++)	
 	{	
 		regenera(inicial);
 		acomodar_minimax(inicial,0);
 		preseleccion(inicial);
+		
 	}
 	
 
@@ -222,30 +232,33 @@ void generar(int prof,nodo nod, int turno){
 void gen(nodo inicial,Tablero tab,int turno)
 {
   short f,c;
-
+  short w_l_cas = inicial->W_longCastle;
+  short w_s_cas = inicial->W_shortCastle;
+  short b_l_cas = inicial->B_longCastle;
+  short b_s_cas = inicial->B_shortCastle;	
  for(f=0;f<8;f++){
 	for(c=0;c<8;c++){
 		if((tab[f][c]*turno)>0){
 			casilla cas={f,c};
 			switch (tab[f][c]*turno){
 				case TORRE:
-					torre(inicial,tab,cas);
+					torre(inicial,tab,cas,turno,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 					break;
 				case CABALLO:
-					caballo(inicial,tab,cas);
+					caballo(inicial,tab,cas,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 					break;
 				case ALFIL:
-					alfil(inicial,tab,cas);
+					alfil(inicial,tab,cas,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 					break;
 				case DAMA:
-					torre(inicial,tab,cas);
-					alfil(inicial,tab,cas);
+					torre(inicial,tab,cas, turno,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
+					alfil(inicial,tab,cas,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 					break;
 				case REY:
-					rey(inicial,tab,cas);
+					rey(inicial,tab,cas,turno,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 					break;
 				case PEON:
-					peon(inicial,tab,cas);
+					peon(inicial,tab,cas,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 					break;
 			}
 		}
@@ -268,25 +281,10 @@ void regenera(nodo nod)
 			regenera(aux);
 			}
 		else {
-			generar(DEEP-2,aux,turno);
+			generar(DEEP-1,aux,turno);
 			valuar_utilidad(aux,0);
 			poda(aux);
 			acomodar_minimax(aux,0);
-			
-			/*
-			if(sem_wait(&semaforo) == 0){
-				valuar_utilidad(aux,0);
-				sem_post(&semaforo);
-			}	
-			if(sem_wait(&semaforo) == 0){
-				poda(aux);
-				sem_post(&semaforo);
-			}
-			if(sem_wait(&semaforo) == 0){
-				acomodar_minimax(aux,0);
-				sem_post(&semaforo);
-			}
-			*/
 		}	
 		aux=aux->sig;
 	}
@@ -306,7 +304,7 @@ void regenera(nodo nod)
 *
 * @cas: casilla donde se encuentra la torre a analizar 
 ****************************************************************************************/
-void torre(nodo padre,Tablero tab,casilla cas){
+void torre(nodo padre,Tablero tab,casilla cas,short turno,short w_l_cas,short w_s_cas,short b_l_cas,short b_s_cas){
 
 	short f,c,fil,col;
 
@@ -314,17 +312,25 @@ void torre(nodo padre,Tablero tab,casilla cas){
 	col=cas[1];
 	f=cas[0]-1;
 	c=cas[1];
-
+	
+	if(turno == BLANCO) {
+		if(fil == 0) w_l_cas = 0;
+		if (fil == 7) w_s_cas = 0;
+	}
+	else{
+		if(fil == 0) b_l_cas = 0;
+		if (fil == 7) b_s_cas = 0;
+	}
 	/*abajo*/
 	while(f>=0){
 
 		if((tab[fil][col]*tab[f][c])==0){
 			casilla to={f,c};
-			insertar_nodo(padre,cas,to);
+			insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 		}
 		else if((tab[fil][col]*tab[f][c])<0){
 			casilla to={f,c};
-			insertar_nodo(padre,cas,to);
+			insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 			break;
 		}	
 		else break;
@@ -337,11 +343,11 @@ void torre(nodo padre,Tablero tab,casilla cas){
 	while(f<=7){
 		if((tab[fil][col]*tab[f][c])==0){
 			casilla to={f,c};
-			insertar_nodo(padre,cas,to);
+			insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 		}
 		else if((tab[fil][col]*tab[f][c])<0){
 			casilla to={f,c};
-			insertar_nodo(padre,cas,to);
+			insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 			break;
 		}	
 		else break;
@@ -354,11 +360,11 @@ void torre(nodo padre,Tablero tab,casilla cas){
 	while(c>=0){
 		if((tab[fil][col]*tab[f][c])==0){
 			casilla to={f,c};
-			insertar_nodo(padre,cas,to);
+			insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 		}
 		else if((tab[fil][col]*tab[f][c])<0){
 			casilla to={f,c};
-			insertar_nodo(padre,cas,to);
+			insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 			break;
 		}	
 		else break;
@@ -371,11 +377,11 @@ void torre(nodo padre,Tablero tab,casilla cas){
 	while(c<=7){
 		if((tab[fil][col]*tab[f][c])==0){
 			casilla to={f,c};
-			insertar_nodo(padre,cas,to);
+			insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 		}
 		else if((tab[fil][col]*tab[f][c])<0){
 			casilla to={f,c};
-			insertar_nodo(padre,cas,to);
+			insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 			break;
 		}	
 		else break;
@@ -397,7 +403,7 @@ void torre(nodo padre,Tablero tab,casilla cas){
 *
 * @cas: casilla donde se encuentra el caballo a analizar 
 ****************************************************************************************/
-void caballo(nodo padre,Tablero tab,casilla cas){
+void caballo(nodo padre,Tablero tab,casilla cas,short w_l_cas,short w_s_cas,short b_l_cas,short b_s_cas){
 
   short  f,c,i,j,k,fil,col;
   short  d_f=2;
@@ -413,7 +419,7 @@ void caballo(nodo padre,Tablero tab,casilla cas){
 			c=cas[1]+d_c;
 			if((0<=f)&&(f<=7)&&(0<=c)&&(c<=7)&&((tab[fil][col]*tab[f][c])<=0)){
 				casilla to={f,c};
-				insertar_nodo(padre,cas,to);
+				insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 			}
 			d_c=d_c*-1;
 		}
@@ -444,7 +450,7 @@ void caballo(nodo padre,Tablero tab,casilla cas){
 *
 * @cas: casilla donde se encuentra el alfil a analizar 
 ****************************************************************************************/
-void alfil(nodo padre,Tablero tab,casilla cas){
+void alfil(nodo padre,Tablero tab,casilla cas,short w_l_cas,short w_s_cas,short b_l_cas,short b_s_cas){
 
   short  f,c,i,j,k,fil,col;
   short  d_f=1;
@@ -458,7 +464,7 @@ void alfil(nodo padre,Tablero tab,casilla cas){
   while((f<=7)&&(c>=0)){
 	if((tab[fil][col]*tab[f][c])<=0){
 		casilla to={f,c};
-		insertar_nodo(padre,cas,to);
+		insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 		if(tab[f][c]!=0) break;
 	}
 	else break;
@@ -471,7 +477,7 @@ void alfil(nodo padre,Tablero tab,casilla cas){
   while((f<=7)&&(c<=7)){
 	if((tab[fil][col]*tab[f][c])<=0){
 		casilla to={f,c};
-		insertar_nodo(padre,cas,to);
+		insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 		if(tab[f][c]!=0) break;
 	}
 	else break;
@@ -485,7 +491,7 @@ void alfil(nodo padre,Tablero tab,casilla cas){
   while((f>=0)&&(c<=7)){
 	if((tab[fil][col]*tab[f][c])<=0){
 		casilla to={f,c};
-		insertar_nodo(padre,cas,to);
+		insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 		if(tab[f][c]!=0) break;
 	}
 	else break;
@@ -498,7 +504,7 @@ void alfil(nodo padre,Tablero tab,casilla cas){
   while((f>=0)&&(c>=0)){
 	if((tab[fil][col]*tab[f][c])<=0){
 		casilla to={f,c};
-		insertar_nodo(padre,cas,to);
+		insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 		if(tab[f][c]!=0) break;
 	}
 	else break;
@@ -524,22 +530,30 @@ void alfil(nodo padre,Tablero tab,casilla cas){
 *
 * @cas: casilla donde se encuentra el rey a analizar 
 ****************************************************************************************/
-void rey(nodo padre,Tablero tab,casilla cas){
+void rey(nodo padre,Tablero tab,casilla cas,short turno,short w_l_cas,short w_s_cas,short b_l_cas,short b_s_cas){
 
- short  f,c,i,j,k,fil,col;
- short  d_f=1;
- short  d_c=0;
+ int  f,c,i,j,k,fil,col;
+ int  d_f=1;
+ int  d_c=0;
 
  fil=cas[0];
  col=cas[1];
 
+ if(turno == BLANCO){
+	w_l_cas = 0;
+	w_s_cas = 0;
+ }
+ else{
+	b_l_cas = 0;
+	b_s_cas = 0;
+ }	
  for(i=0;i<2;i++){
 	for(j=0;j<2;j++){
 		f=cas[0]+d_f;
 		c=cas[1]+d_c;
 		if((0<=f)&&(f<=7)&&(0<=c)&&(c<=7)&&((tab[fil][col]*tab[f][c])<=0)){
 			casilla to={f,c};
-			insertar_nodo(padre,cas,to);
+			insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 		}
 		d_f=d_f*-1;
 		d_c=d_c*-1;
@@ -556,7 +570,7 @@ void rey(nodo padre,Tablero tab,casilla cas){
 		c=cas[1]+d_c;
 		if((0<=f)&&(f<=7)&&(0<=c)&&(c<=7)&&((tab[fil][col]*tab[f][c])<=0)){
 			casilla to={f,c};
-			insertar_nodo(padre,cas,to);
+			insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 			
 		}
 		d_c=d_c*-1;
@@ -565,16 +579,25 @@ void rey(nodo padre,Tablero tab,casilla cas){
   }
 
   /*------------ enroque ---------------------------------------*/
-  if((padre->shortCastle) && (tab[cas[0]][6] == 0) && (tab[cas[0]][5] == 0) ){
+  short l_castle, s_castle;	
+  if(turno == BLANCO) {
+	s_castle = padre->W_shortCastle;
+	l_castle =  padre->W_longCastle;
+  }
+  else{
+     s_castle = padre->B_shortCastle;
+     l_castle =  padre->B_longCastle;	
+  }			
+  if((s_castle) && (tab[cas[0]][6] == 0) && (tab[cas[0]][5] == 0)){
 	casilla from={ENROQUE_CORTO,0};
 	casilla to={cas[0],6};
-	insertar_nodo(padre,from,to);
+	insertar_nodo(padre,from,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
   }	
-  if((padre->longCastle) && (tab[cas[0]][1] == 0) && (tab[cas[0]][2] == 0) && (tab[cas[0]][3] == 0) ){
+  if((l_castle) && (tab[cas[0]][1] == 0) && (tab[cas[0]][2] == 0) && (tab[cas[0]][3] == 0)){
 
 	casilla from = {ENROQUE_LARGO,0};
 	casilla to = {cas[0],2};
-	insertar_nodo(padre,from,to);
+	insertar_nodo(padre,from,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
   }	
 }
 
@@ -597,7 +620,7 @@ void rey(nodo padre,Tablero tab,casilla cas){
 *
 * @cas: casilla donde se encuentra el peon a analizar 
 ****************************************************************************************/
-void peon(nodo padre,Tablero tab,casilla cas){
+void peon(nodo padre,Tablero tab,casilla cas,short w_l_cas,short w_s_cas,short b_l_cas,short b_s_cas){
 
    short  paso,f,c,j,d_c,fil,col, destino;
    fil=cas[0];
@@ -613,14 +636,14 @@ void peon(nodo padre,Tablero tab,casilla cas){
    if((0<=f)&&(f>=7))	
    if((tab[f][c]) == 0){
 	casilla to={f,c};
-	insertar_nodo(padre,cas,to);
+	insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 	}
 
 
    /*dos casillas adelante*/
    if (((cas[0]==((paso+7)%7))&& (tab[f][cas[1]]==0)) && (tab[f+paso][c]==0)){
 	casilla to={(f+paso),c};
-	insertar_nodo(padre,cas,to);
+	insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
  	}
 
    /*come*/
@@ -629,7 +652,7 @@ void peon(nodo padre,Tablero tab,casilla cas){
 	c=cas[1]+d_c;
 	if(((tab[f][c]*tab[fil][col])<0)&&((c<=7)&&(0<=c))) {
 		casilla to={f,c};
-		insertar_nodo(padre,cas,to);
+		insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 	}
 	d_c=d_c*-1;
     }
@@ -658,28 +681,27 @@ void peon(nodo padre,Tablero tab,casilla cas){
 *
 * @to: casilla final de la pieza a mover.
 **********************************************************************************************/
-void insertar_nodo(nodo padre,casilla from,casilla to){
+void insertar_nodo(nodo padre,casilla from,casilla to,short w_l_cas,short w_s_cas,short b_l_cas,short b_s_cas){
 
 	nodo nuevo,aux;
-	short  auxiliar,j,i;
+	int  auxiliar,j,i;
 	char *nota;
 	short fila;
-
-	
-
-	auxiliar=padre->board[from[0]][from[1]];
 
 	contador++;
 
 	nuevo=malloc(sizeof(struct Nodo));
-	//nuevo=(nodo)malloc(sizeof(struct Nodo));
 	if(nuevo!=NULL){
 
 		nuevo->j.from[0]=from[0];
 		nuevo->j.from[1]=from[1];
 		nuevo->j.to[0]=to[0];
 		nuevo->j.to[1]=to[1];
-		
+		nuevo->W_longCastle = w_l_cas;
+		nuevo->W_shortCastle = w_s_cas;
+		nuevo->B_longCastle = b_l_cas;
+		nuevo->B_shortCastle = b_s_cas;		
+
 		memcpy(nuevo->board,padre->board,sizeof(Tablero));
 		
 		short  ax = 0;
@@ -690,41 +712,29 @@ void insertar_nodo(nodo padre,casilla from,casilla to){
 
 		if(from[0] == ENROQUE_CORTO){
 			
-			if(from[1] == blanco)	fila = 0;
-			else	fila = 7;
+			fila = to[0];
 			nuevo->board[fila][5] = nuevo->board[fila][7];
 			nuevo->board[fila][7] = 0 ;
 			nuevo->board[fila][6] = nuevo->board[fila][4];
 			nuevo->board[fila][4] = 0;
-			nuevo->longCastle = 0;
-			nuevo->shortCastle = 0;
-			memcpy(nuevo->notation,"O-O", 5*sizeof(char));
-
+			memcpy(nuevo->notation,"O-O", 10*sizeof(char));
 		}
 
 		else if(from[0] == ENROQUE_LARGO){
-
-			if(from[1] == blanco)	fila = 0;
-			else	fila = 7;
-
+			
+			fila = to[0];
 			nuevo->board[fila][3] = nuevo->board[fila][0];
 			nuevo->board[fila][0] = 0 ;
 			nuevo->board[fila][2] = nuevo->board[fila][4];
 			nuevo->board[fila][4] = 0;
-			nuevo->longCastle = 0;
-			nuevo->shortCastle = 0;
-			memcpy(nuevo->notation,"O-O-O", 5*sizeof(char));
-
+			memcpy(nuevo->notation,"O-O-O", 10*sizeof(char));
 		}
 
 		else{
-			
+			auxiliar=padre->board[from[0]][from[1]];
 
 			nuevo->board[to[0]][to[1]]=nuevo->board[from[0]][from[1]];
 			nuevo->board[from[0]][from[1]]=0;
-		
-
-			
 			convert_to_char(padre,from,to,nuevo->notation);
 		}
 
@@ -800,7 +810,7 @@ void mostrar_arbol(int prof,nodo padre, char *z){
 ********************************************************************************************/
 void convert_to_char(nodo padre,casilla from,casilla to,char *s){
 
-	char not[5]="",cc[2]="";
+	char not[10]="",cc[2]="";
 
 	int pza,pza2;
 	char casillas[8]={'a','b','c','d','e','f','g','h'};
@@ -808,15 +818,19 @@ void convert_to_char(nodo padre,casilla from,casilla to,char *s){
 	pza=padre->board[from[0]][from[1]];
 	pza2=padre->board[to[0]][to[1]];
 
-	if(pza==5 || pza==-5) 	strcat(not,tor);
+	if(pza == TORRE || pza == TORRE_N) {
+			strcat(not,tor);
+			
+	}
+	if(pza == ALFIL || pza == ALFIL_N)	strcat(not,alf);
 
-	if(pza==4 || pza==-4)	strcat(not,alf);
+	if(pza == CABALLO || pza == CABALLO_N)	{
+			strcat(not,cab);
+			KnightGoTo(padre->board,from,to,not);			
+	}
+	if(pza == DAMA || pza == DAMA_N)	strcat(not,dam);
 
-	if(pza==3 || pza==-3)	strcat(not,cab);
-
-	if(pza==10 || pza==-10)	strcat(not,dam);
-
-	if(pza==100 || pza==-100)   strcat(not,re);
+	if(pza == REY || pza == REY_N)   	strcat(not,re);
 
 	if(pza==1 || pza==-1)  {
 
@@ -847,8 +861,6 @@ void convert_to_char(nodo padre,casilla from,casilla to,char *s){
 	}
 
 	if(pza2!=0) strcat(not,come);
-
-
 
 	//strcat(cc,casillas[to[1]]);
 	cc[0]=casillas[to[1]];
@@ -907,25 +919,72 @@ char* seleccionar(nodo nod, int color)
 		{
 			max = (aux->value * color);
 			j = aux->notation;
-			f_origen=aux->j.from[0];
-			c_origen=aux->j.from[1];
-			f_dest=aux->j.to[0];
-			c_dest=aux->j.to[1];	
-			flag=1;
+			W_LONG_CASTLE = aux->W_longCastle;
+			W_SHORT_CASTLE = aux->W_shortCastle;
+			B_LONG_CASTLE = aux->B_longCastle;
+			B_SHORT_CASTLE = aux->B_shortCastle;
+			memcpy(posicion,aux->board,sizeof(Tablero));
 		
 		}
 		
 		aux = aux->sig;
 	}	
 
-	auxiliar = posicion[f_origen][c_origen];
-	if(flag){
-		posicion[f_origen][c_origen] = 0;
-		posicion[f_dest][c_dest] = auxiliar;
+	//auxiliar = posicion[f_origen][c_origen];
+	//if(flag){
+		
+		
+	//	posicion[f_origen][c_origen] = 0;
+	//	posicion[f_dest][c_dest] = auxiliar;
 		/*en el enroque debe mover bien el tablero!!!!!*/
 
-	}
+	//}
 	return (j);
 }
+
+
+
+
+
+void KnightGoTo(Tablero tab, casilla from, casilla to, char* notation){
+	char cas[10]="";
+	int i,j,k;
+	int  d_f=2;
+	int  d_c=1;
+  	char casillas[8]={'a','b','c','d','e','f','g','h'};
+	char columnas[8]={'1','2','3','4','5','6','7','8'};
+	int f,c;
+
+  	for(i=0;i<2;i++){
+		for(j=0;j<2;j++){
+			for(k=0;k<2;k++){
+				f = to[0]+d_f;
+				c = to[1]+d_c;
+				if((0 <= f) && (f <= 7) && (0 <=c ) && (c <= 7)&& ((from[0] != f)||(from[1] != c))){
+					if(tab[f][c] == tab[from[0]][from[1]]){
+						//printf("from0: %d f: %d\n",from[0],f);
+						if(from[0] != f) cas[0] = casillas[from[1]];
+						else cas[0] = columnas[from[0]];
+						strcat(notation,cas);
+					}	  			
+				}
+				d_c=d_c*-1;
+			}
+	  		d_f=d_f*-1;
+		}
+		d_f=1;
+		d_c=2;
+   	}
+}
+
+
+
+
+
+
+
+
+
+
 
 

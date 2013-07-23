@@ -66,7 +66,7 @@ void valuar_utilidad(nodo inicial, int prof){
 		if(aux->value < min) min=aux->value;
 		aux=aux->sig;		
 	}
-	if(inicial->turno == blanco) memcpy(&inicial->value,&max,sizeof(int));//inicial->value = max;
+	if(inicial->turno == BLANCO) memcpy(&inicial->value,&max,sizeof(int));//inicial->value = max;
 	else	memcpy(&inicial->value,&min,sizeof(int));//inicial->value = min;
 }
 
@@ -89,11 +89,16 @@ int valoracion(Tablero tab){
 
 	for(i=0;i<8;i++){
 		for(j=0;j<8;j++){
-
-			//suma de material
+		//suma de material
 			material=material + tab[i][j];
 			if(tab[i][j] >= 3 ) fza_blanca = fza_blanca + tab[i][j];
 			if(tab[i][j] <= -3 ) fza_negra = fza_negra + tab[i][j];
+		}
+	}
+	for(i=0;i<8;i++){
+		for(j=0;j<8;j++){
+
+			
 
 			if(i==0){
 				if((tab[i][j] == 3) || (tab[i][j] == 4)) desarrollo_blanco = desarrollo_blanco - 2;  
@@ -189,7 +194,7 @@ int valoracion(Tablero tab){
 					actividad=actividad+(actividad_torre(tab,i,j,-1));
 
 					//posicion
-					posicion=posicion + (posicion_torre(tab,i,j,1));
+					posicion=posicion + (posicion_torre(tab,i,j,-1));
 					break;
 				case (DAMA_B):
 					/*DAMA BLANCA*/
@@ -207,7 +212,7 @@ int valoracion(Tablero tab){
 					break;
 
 				case (REY_N):
-					seguridad = seguridad + seguridad_rey(tab,i,j,1,fza_blanca);
+					seguridad = seguridad + seguridad_rey(tab,i,j,-1,fza_blanca);
 					break;
 				default:
 					break;
@@ -225,33 +230,6 @@ int valoracion(Tablero tab){
 	desarrollo_blanco = desarrollo_blanco + P_DESARROLLO;
 	desarrollo_negro = desarrollo_negro + P_DESARROLLO;
 	return (centro + material + actividad + posicion + seguridad + desarrollo_blanco + desarrollo_negro);
-}
-
-
-
-
-
-
-int actividad_caballo(Tablero tab,int fila,int columna,int turno){
-	int i,j,k,val=0,f,c,d_f=2,d_c=1;
-
-	for(i=0;i<2;i++){
-	for(j=0;j<2;j++){
-		for(k=0;k<2;k++){
-			f=fila+d_f;
-			c=columna+d_c;
-			if((0<=f)&&(f<=7)&&(0<=c)&&(c<=7)){
-				val = val +turno;
-			}
-			d_c=d_c*-1;
-		}
-	  	d_f=d_f*-1;
-	}
-	d_f=1;
-	d_c=2;
-   }
-   return (val);
-
 }
 
 
@@ -306,7 +284,7 @@ int actividad_torre(Tablero tab,int fila,int columna,int turno){
 		else break;
 		c++;
 	}
-    return (casillas/5);
+    return (casillas);
 }
 
 
