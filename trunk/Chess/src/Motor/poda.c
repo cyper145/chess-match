@@ -19,9 +19,6 @@
 * del oponente.
 *************************************************************************************************/
 
-
-#define LEVEL_NODES	4
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "poda.h"

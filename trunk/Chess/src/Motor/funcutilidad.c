@@ -101,11 +101,13 @@ int valoracion(Tablero tab){
 			
 
 			if(i==0){
-				if((tab[i][j] == 3) || (tab[i][j] == 4)) desarrollo_blanco = desarrollo_blanco - 2;  
+				if((tab[i][j] == 3) || (tab[i][j] == 4)) desarrollo_blanco = desarrollo_blanco - 5;
+				if((tab[i][6] != REY) && (tab[i][2] != REY)) desarrollo_blanco = desarrollo_blanco - 20;  
 			}
 
 			if(i==7){
-				if((tab[i][j] == -3) || (tab[i][j] == -4)) desarrollo_blanco = desarrollo_negro + 2;  
+				if((tab[i][j] == -3) || (tab[i][j] == -4)) desarrollo_negro = desarrollo_negro + 5;
+				if((tab[i][6] != REY_N) && (tab[i][2] != REY_N)) desarrollo_negro = desarrollo_negro + 20;  
 			}
 
 			switch(tab[i][j]){
@@ -136,35 +138,10 @@ int valoracion(Tablero tab){
 					}
 					break;
 				case (CABALLO_N):
-					/*CABALLO NEGRO*/
-					//control del centro
-					/*
-					if((i== F_6)&&(j==C_F)) centro=centro-4;
-					if((i== F_7)&&(j==C_E)) centro=centro-1;
-					if((i== F_6)&&(j==C_C)) centro=centro-4;
-					if((i== F_7)&&(j==C_D)) centro=centro-2;
-
-
-					//actividad de la pieza
-					actividad=actividad+(actividad_caballo(tab,i,j,-1));
-					*/
-					//posicion
-					posicion=posicion + (Tabla_posicion_caballo[i][j] * -10);
+					posicion=posicion + (Tabla_posicion_caballo[i][j] * -2);
 					break;
 				case (CABALLO_B):
-					/*CABALLO BLANCO*/
-					//control del centro
-					/*
-					if((i== F_3)&&(j==C_F)) centro=centro+4;
-					if((i== F_2)&&(j==C_E)) centro=centro+2;
-					if((i== F_3)&&(j==C_C)) centro=centro+4;
-					if((i== F_2)&&(j==C_D)) centro=centro+2;
-
-					//actividad de la pieza
-					actividad=actividad+(actividad_caballo(tab,i,j,1));
-					*/
-					//posicion
-					posicion=posicion + (Tabla_posicion_caballo[i][j] * 10);
+					posicion=posicion + (Tabla_posicion_caballo[i][j] * 2);
 					break;
 				case (ALFIL_N):
 					//actividad de la pieza
@@ -175,10 +152,6 @@ int valoracion(Tablero tab){
 					actividad=actividad+(actividad_alfil(tab,i,j,1));
 					break;
 				case (TORRE_B):
-					/*TORRE BLANCA*/
-					//control del centro
-					if((i>2)&&(i<6)) centro=centro+2;
-
 					//actividad de la pieza
 					actividad=actividad+(actividad_torre(tab,i,j,1));
 
@@ -186,10 +159,6 @@ int valoracion(Tablero tab){
 					posicion=posicion + (posicion_torre(tab,i,j,1));
 					break;
 				case (TORRE_N):
-					/*TORRE NEGRA*/
-					//control del centro
-					if((i>2)&&(i<6)) centro=centro-2;
-
 					//actividad de la pieza
 					actividad=actividad+(actividad_torre(tab,i,j,-1));
 
@@ -237,7 +206,10 @@ int valoracion(Tablero tab){
 
 
 
-
+/************************************************************************** 
+* Calcula cuantas casillas libres controla la torre y si esta atacando
+* alguna pieza enemiga
+***************************************************************************/
 int actividad_torre(Tablero tab,int fila,int columna,int turno){
 	short int f,c,fil,col;
 	int casillas=0;	
@@ -249,7 +221,11 @@ int actividad_torre(Tablero tab,int fila,int columna,int turno){
 	//abajo
 	while(f>=0){
 		if((turno*tab[f][c])<=0){
-			casillas=casillas+turno;
+			casillas = casillas + turno;
+			if((turno*tab[f][c])<0) {	
+				casillas = casillas + (-1 * tab[f][c]);
+				break;
+			}
 		}
 		else break;
 		f--;
@@ -259,7 +235,11 @@ int actividad_torre(Tablero tab,int fila,int columna,int turno){
 	//arriba
 	while(f<=7){
 		if((turno*tab[f][c])<=0){
-			casillas=casillas+turno;
+			casillas = casillas + turno;
+			if((turno*tab[f][c])<0) {	
+				casillas = casillas + (-1 * tab[f][c]);
+				break;
+			}
 		}
 		else break;
 		f++;
@@ -269,7 +249,11 @@ int actividad_torre(Tablero tab,int fila,int columna,int turno){
 	//izquierda
 	while(c>=0){
 		if((turno*tab[f][c])<=0){
-			casillas=casillas+turno;
+			casillas = casillas + turno;
+			if((turno*tab[f][c])<0) {	
+				casillas = casillas + (-1 * tab[f][c]);
+				break;
+			}
 		}
 		else break;
 		c--;
@@ -279,13 +263,21 @@ int actividad_torre(Tablero tab,int fila,int columna,int turno){
 	//arriba
 	while(c<=7){
 		if((turno*tab[f][c])<=0){
-			casillas=casillas+turno;
+			casillas = casillas + turno;
+			if((turno*tab[f][c])<0) {	
+				casillas = casillas + (-1 * tab[f][c]);
+				break;
+			}
 		}
 		else break;
 		c++;
 	}
     return (casillas);
 }
+/*************************************************************************************************************/
+
+
+
 
 
 
@@ -311,7 +303,7 @@ int actividad_alfil(Tablero tab,int fila,int columna,int turno){
 	if((turno*tab[f][c])<=0){
 		casillas=casillas+turno;
 		if((turno*tab[f][c])<0) {	
-			casillas = casillas + (turno * tab[f][c]);
+			casillas = casillas + (-1 * tab[f][c]);
 			break;
 		}
 	}
@@ -325,7 +317,10 @@ int actividad_alfil(Tablero tab,int fila,int columna,int turno){
   while((f<=7)&&(c<=7)){
 	if((turno*tab[f][c])<=0){
 		casillas=casillas+turno;
-		if((turno*tab[f][c])<0) break;
+		if((turno*tab[f][c])<0) {	
+			casillas = casillas + (-1 * tab[f][c]);
+			break;
+		}
 	}
 	else break;
 	f++;
@@ -337,8 +332,11 @@ int actividad_alfil(Tablero tab,int fila,int columna,int turno){
   c=columna+1;
   while((f>=0)&&(c<=7)){
 	if((turno*tab[f][c])<=0){
-		casillas=casillas+1;
-		if((turno*tab[f][c])<0) break;
+		casillas = casillas + turno;
+		if((turno*tab[f][c])<0) {	
+			casillas = casillas + (-1 * tab[f][c]);
+			break;
+		}
 	}
 	else break;
 	f--;
@@ -349,8 +347,11 @@ int actividad_alfil(Tablero tab,int fila,int columna,int turno){
   c=columna-1;
   while((f>=0)&&(c>=0)){
 	if((turno*tab[f][c])<=0){
-		casillas=casillas+turno;
-		if((turno*tab[f][c])<0) break;
+		casillas = casillas + turno;
+		if((turno*tab[f][c])<0) {	
+			casillas = casillas + (-1 * tab[f][c]);
+			break;
+		}
 	}
 	else break;
 	f--;
@@ -358,6 +359,18 @@ int actividad_alfil(Tablero tab,int fila,int columna,int turno){
   }
   return (casillas);
 }
+/*****************************************************************************************************/
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -367,25 +380,104 @@ int actividad_alfil(Tablero tab,int fila,int columna,int turno){
 * y al estar apoyada por la otra torre 
 *******************************************************************************************/
 int posicion_torre(Tablero tab,int fila,int columna,int turno ){
-	int valor=0;
-	int j,v;
+	int valor=10;
+	int f,c;
 	
-	return valor;
+	f = fila + turno;
+	c = columna;
+	
+	/*columnas cerradas o semiabiertas*/
+	while((f >= 0) && (f <= 7)){	
+
+		if(tab[f][c] == turno){
+			valor = 0;
+			break;
+		}
+		if(tab[f][c] == turno + -1){
+			valor = 5;
+			break;
+		}
+		f = f + turno;		
+	}
+
+	f = fila - turno;
+
+	/*apoyada por la otra torre en la columna*/		
+	while((f >= 0) && (f <= 7)){
+	
+		if(tab[f][c] == turno * TORRE){
+			valor = valor + 20;
+		}
+		f = f - turno;		
+	}
+
+	/*apoyada por la otra torre en la fila*/
+	for(c=0;c<8;c++){
+
+		if((tab[fila][c] == (TORRE * turno)) && (c != columna)){
+			valor = valor+20;
+			break;
+		}
+	}	
+	return (valor * turno);
 }
+/*******************************************************************************************/
+
+
+
+
+
+
+
+
 
 
 
 
 
 /******************************************************************************************
-* 
+* La posicion del alfil mejora cuando esta apoyado por un peon y no puede ser desalojado
+* por un peon enemigo.
 ******************************************************************************************/
 int posicion_alfil(Tablero tab,int fila,int columna,int turno ){
 	int valor=0;
-	if(fila == (columna % 7)) valor = 3;
-	return (valor);
-}
+	int f,c1,c2;
+		
+	f = fila + turno;
+	c1 = columna + 1;
+	c2 = columna -1;
 
+	if( (f > 0) && (f < 7)){
+		if(c1 <= 7){
+			if(tab[f][c1] == turno) valor = valor + 25;
+			
+		}	
+		if(c2 >= 0){
+			if(tab[f][c2] == turno) valor = valor + 25;	
+			
+		}
+	}
+
+	while((f < 7) && (f > 0)){
+		
+		if(c1 <= 7){
+			if(tab[f][c1] == (turno * -1)){
+				valor = valor -2 ;	
+				break;
+			}
+		}	
+		if(c2 >= 0){
+			if(tab[f][c2] == (turno * -1)){
+				valor = valor -2;	
+				break;
+			}
+		}
+	
+		f = f + turno;
+	}  
+	return (valor * turno);
+}
+/***********************************************************************************************/
 
 
 
@@ -408,29 +500,27 @@ int posicion_alfil(Tablero tab,int fila,int columna,int turno ){
 int seguridad_rey(Tablero tab,int fila,int columna,int turno,int fza ){
 	int valor = 0;
 
-	
-	//if( (fza* turno * -1) > 213){
-
-		if((columna == 6) && (tab[fila][5] == (TORRE * turno))){
-			valor = valor +1;
-			if(tab[fila + turno][7] == turno) valor = valor +2;
-			if(tab[fila + turno][6] == turno) valor = valor +2;
-			if(tab[fila + turno][5] == turno) valor = valor +2;
- 		}
+	if((columna == 6) && (tab[fila][5] == (TORRE * turno))){
+		valor = valor +10;
+		if(tab[fila + turno][7] == turno) valor = valor +2;
+		if(tab[fila + turno][6] == turno) valor = valor +2;
+		if(tab[fila + turno][5] == turno) valor = valor +2;
+ 	}
 
 
-		if((columna == 2) && (tab[fila][3] == (TORRE * turno))){
-			valor = valor +1;
-			if(tab[fila + turno][1] == turno) valor = valor +2;
-			if(tab[fila + turno][2] == turno) valor = valor +2;
-			if(tab[fila + turno][3] == turno) valor = valor +2;
-			if(tab[fila + turno][4] == turno) valor = valor +2;
- 		}
+	if((columna == 2) && (tab[fila][3] == (TORRE * turno))){
+		valor = valor +7;
+		if(tab[fila + turno][1] == turno) valor = valor +2;
+		if(tab[fila + turno][2] == turno) valor = valor +2;
+		if(tab[fila + turno][3] == turno) valor = valor +2;
+		if(tab[fila + turno][4] == turno) valor = valor +2;
+ 	}
 
-        //}
-	return valor * turno;
+	/*Habria q tener en cuenta los rayos-x de las piezas enemigas*/
+        
+	return (valor * turno);
 }
-
+/*****************************************************************************************************************/
 
 
 
@@ -482,9 +572,9 @@ int valoracion_peon(Tablero tab,int fila,int columna,int turno){
 	}
 
 	if(pasado) valor = valor + 5;	
-	return valor * turno;
+	return (valor * turno);
 }
-
+/*****************************************************************************************************/
 
 
 

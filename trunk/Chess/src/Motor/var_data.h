@@ -5,8 +5,9 @@
 
 
 
-#define DEEP	3
-
+#define DEEP 		3	
+#define CICLOS		10
+#define LEVEL_NODES	5
 
 //--------CASILLAS---------------------------
 #define F_1	0
@@ -59,8 +60,8 @@
 #define P_CENTRO	2
 #define P_ACTIVIDAD	4
 #define P_POSICION	4
-#define P_SEGURIDAD	100
-#define P_DESARROLLO	10
+#define P_SEGURIDAD	10
+#define P_DESARROLLO	2
 //-------------------------------------------
 
 
