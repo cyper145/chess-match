@@ -1542,6 +1542,7 @@
     </action-widgets>
   </object>
   <object class="GtkWindow" id="winPGN">
+    <property name="border_width">1</property>
     <property name="window_position">center-always</property>
     <property name="default_width">800</property>
     <property name="default_height">600</property>
@@ -1745,6 +1746,7 @@
     </child>
   </object>
   <object class="GtkWindow" id="presentacion">
+    <property name="border_width">1</property>
     <property name="resizable">False</property>
     <property name="window_position">center-always</property>
     <property name="default_width">600</property>
@@ -1782,6 +1784,7 @@
     </child>
   </object>
   <object class="GtkWindow" id="window2">
+    <property name="border_width">1</property>
     <property name="window_position">center-always</property>
     <property name="default_width">440</property>
     <property name="default_height">250</property>

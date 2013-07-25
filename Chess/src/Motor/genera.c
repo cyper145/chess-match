@@ -33,7 +33,7 @@
 #include "funcutilidad.h"
 #include "var_data.h"
 #include <time.h> 
-
+#include "piezas.h"
 
 
 
@@ -52,7 +52,15 @@ const char come[]="x";
 char *partido[2*DEEP];
 int valores[3*DEEP];
 
-    
+  
+
+
+
+
+
+
+
+  
 
 void eliminar(nodo nod);
 void mostrar_tablero(Tablero tab);
@@ -66,11 +74,22 @@ void insertar_nodo(nodo padre,casilla from,casilla to,short w_l_cas,short w_s_ca
 void mostrar_arbol(int prof,nodo padre, char *z);
 void generar(int prof,nodo nod,int turno);
 void regenera(nodo nod);
-void convert_to_char(nodo padre,casilla from,casilla to,char *s);
+void convert_to_char(nodo padre,nodo act,casilla from,casilla to,char *s);
 void set_jugada(int f_origen,int c_origen,int f_dest,int c_dest);
 char* jugar(int t);
 char* seleccionar(nodo nod,int color );
 void KnightGoTo(Tablero tab, casilla from, casilla to, char* notation);
+void RookGoTo(Tablero tab, casilla from, casilla to, char* notation);
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -93,6 +112,23 @@ short W_SHORT_CASTLE = 1;
 short B_LONG_CASTLE = 1;
 short B_SHORT_CASTLE = 1;
 /*------------------------------------------------*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -132,7 +168,7 @@ char* generate(int t)
 	poda(inicial);
 	preseleccion(inicial);
 	
-	for(k=0;k<8;k++)	
+	for(k=0;k< CICLOS ;k++)	
 	{	
 		regenera(inicial);
 		acomodar_minimax(inicial,0);
@@ -158,6 +194,16 @@ char* generate(int t)
 
 
 
+
+
+
+
+
+
+
+
+
+
 /*********************************************************************************************
 *  Esta funcion es la que se llama para hacer jugar al motor.
 *  Recibe el turno y retorna la jugada elegida por el motor.
@@ -170,6 +216,15 @@ char* jugar(int t)
 {
   return(generate(t));		
 }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -198,6 +253,13 @@ void set_jugada(int f_origen,int c_origen,int f_dest,int c_dest)
 
 
 
+
+
+
+
+
+
+
 void generar(int prof,nodo nod, int turno){
 	
 	gen(nod,nod->board,turno);
@@ -211,6 +273,14 @@ void generar(int prof,nodo nod, int turno){
 		nod=nod->sig;
 	}
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -235,40 +305,50 @@ void gen(nodo inicial,Tablero tab,int turno)
   short w_l_cas = inicial->W_longCastle;
   short w_s_cas = inicial->W_shortCastle;
   short b_l_cas = inicial->B_longCastle;
-  short b_s_cas = inicial->B_shortCastle;	
+  short b_s_cas = inicial->B_shortCastle;
+  int w_king = 0,b_king = 0;
+ 
  for(f=0;f<8;f++){
 	for(c=0;c<8;c++){
-		if((tab[f][c]*turno)>0){
-			casilla cas={f,c};
-			switch (tab[f][c]*turno){
-				case TORRE:
-					torre(inicial,tab,cas,turno,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
-					break;
-				case CABALLO:
-					caballo(inicial,tab,cas,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
-					break;
-				case ALFIL:
-					alfil(inicial,tab,cas,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
-					break;
-				case DAMA:
-					torre(inicial,tab,cas, turno,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
-					alfil(inicial,tab,cas,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
-					break;
-				case REY:
-					rey(inicial,tab,cas,turno,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
-					break;
-				case PEON:
-					peon(inicial,tab,cas,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
-					break;
+		if(tab[f][c] == REY_B) w_king=1;
+		if(tab[f][c] == REY_N) b_king=1;	
+	}
+}
+ if(b_king && w_king){
+	 			
+ 	for(f=0;f<8;f++){
+		for(c=0;c<8;c++){
+			if((tab[f][c]*turno)>0){
+				casilla cas={f,c};
+				switch (tab[f][c]*turno){
+					case TORRE:
+						torre(inicial,tab,cas,turno,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
+						break;
+					case CABALLO:
+						caballo(inicial,tab,cas,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
+						break;
+					case ALFIL:
+						alfil(inicial,tab,cas,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
+						break;
+					case DAMA:
+						torre(inicial,tab,cas, turno,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
+						alfil(inicial,tab,cas,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
+						break;
+					case REY:
+						rey(inicial,tab,cas,turno,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
+						break;
+					case PEON:
+						peon(inicial,tab,cas,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
+						break;
+				}
 			}
 		}
-
-	}
+	 }
  }
-
-
-
 }
+
+
+
 
 void regenera(nodo nod)
 {
@@ -281,7 +361,7 @@ void regenera(nodo nod)
 			regenera(aux);
 			}
 		else {
-			generar(DEEP-1,aux,turno);
+			generar(DEEP-2,aux,turno);
 			valuar_utilidad(aux,0);
 			poda(aux);
 			acomodar_minimax(aux,0);
@@ -701,7 +781,7 @@ void insertar_nodo(nodo padre,casilla from,casilla to,short w_l_cas,short w_s_ca
 		nuevo->W_shortCastle = w_s_cas;
 		nuevo->B_longCastle = b_l_cas;
 		nuevo->B_shortCastle = b_s_cas;		
-
+		nuevo->turno = padre->turno * -1;
 		memcpy(nuevo->board,padre->board,sizeof(Tablero));
 		
 		short  ax = 0;
@@ -735,7 +815,8 @@ void insertar_nodo(nodo padre,casilla from,casilla to,short w_l_cas,short w_s_ca
 
 			nuevo->board[to[0]][to[1]]=nuevo->board[from[0]][from[1]];
 			nuevo->board[from[0]][from[1]]=0;
-			convert_to_char(padre,from,to,nuevo->notation);
+			convert_to_char(padre,nuevo,from,to,nuevo->notation);
+			
 		}
 
 		if(padre->hijo==NULL){
@@ -808,7 +889,7 @@ void mostrar_arbol(int prof,nodo padre, char *z){
 *
 * @to:	casilla final de la pieza a mover.
 ********************************************************************************************/
-void convert_to_char(nodo padre,casilla from,casilla to,char *s){
+void convert_to_char(nodo padre,nodo act,casilla from,casilla to,char *s){
 
 	char not[10]="",cc[2]="";
 
@@ -820,7 +901,7 @@ void convert_to_char(nodo padre,casilla from,casilla to,char *s){
 
 	if(pza == TORRE || pza == TORRE_N) {
 			strcat(not,tor);
-			
+			RookGoTo(padre->board,from,to,not);
 	}
 	if(pza == ALFIL || pza == ALFIL_N)	strcat(not,alf);
 
@@ -851,7 +932,7 @@ void convert_to_char(nodo padre,casilla from,casilla to,char *s){
 		else{
 			sprintf(cc,"%hd",(to[0]+1));
 			strcat(not,cc);
-			//printf("%s \n",not);
+			
 			//return(not);
 			memcpy(s,not,sizeof(not));
 			return;
@@ -868,9 +949,15 @@ void convert_to_char(nodo padre,casilla from,casilla to,char *s){
 	sprintf(cc,"%hd",(to[0]+1));
 	strcat(not,cc);
 
+	if(check(act->board,padre->turno)){
+		//printf("JAque! \n");
+		strcat(not,"+");
+	}  	
+
 	//printf("%s \n",not);
 	//return (not);
 	memcpy(s,not,sizeof(not));
+	//printf("jugada: %s color: %d \n",not,padre->turno);	
 	return;
 	//s=not;
 
@@ -893,6 +980,13 @@ void mostrar_tablero(Tablero tab)
 
 
 
+
+
+
+
+
+
+
 /*****************************************************************************************************
 * Selecciona la mejor jugada del arbol ya evaluado y podado.
 * Si es el turno blanco elije el nodo con mayor valoracion,o la de menor valoracion
@@ -907,7 +1001,7 @@ char* seleccionar(nodo nod, int color)
 {
 	nodo aux;
 	aux = nod->hijo;
-	int max = -1000;
+	int max = -100000;
 	short auxiliar,f_origen,c_origen,f_dest,c_dest;
 	char * j;
 	jugada move;
@@ -924,21 +1018,13 @@ char* seleccionar(nodo nod, int color)
 			B_LONG_CASTLE = aux->B_longCastle;
 			B_SHORT_CASTLE = aux->B_shortCastle;
 			memcpy(posicion,aux->board,sizeof(Tablero));
+			move = aux->j;
 		
 		}
 		
 		aux = aux->sig;
 	}	
-
-	//auxiliar = posicion[f_origen][c_origen];
-	//if(flag){
-		
-		
-	//	posicion[f_origen][c_origen] = 0;
-	//	posicion[f_dest][c_dest] = auxiliar;
-		/*en el enroque debe mover bien el tablero!!!!!*/
-
-	//}
+	//printf("Jugada: %s %d %d %d %d\n",j, move.from[0], move.from[1], move.to[0], move.to[1]);
 	return (j);
 }
 
@@ -946,8 +1032,20 @@ char* seleccionar(nodo nod, int color)
 
 
 
+
+
+
+
+
+
+
+
+/******************************************************************************************
+* Distingue en la notacion de la jugada cual de los dos caballos es el del movimiento
+* en caso en que los dos puedan ir a la casilla de destino
+*******************************************************************************************/
 void KnightGoTo(Tablero tab, casilla from, casilla to, char* notation){
-	char cas[10]="";
+	char cas[2]="";
 	int i,j,k;
 	int  d_f=2;
 	int  d_c=1;
@@ -984,7 +1082,120 @@ void KnightGoTo(Tablero tab, casilla from, casilla to, char* notation){
 
 
 
+/******************************************************************************************
+* Distingue en la notacion de la jugada cual de las dos torres es la del movimiento
+* en caso en que las dos puedan ir a la casilla de destino
+*******************************************************************************************/
+void RookGoTo(Tablero tab, casilla from, casilla to, char* notation){
+
+	char cas[2]="";
+	int fila,columna;
+	int pza = tab[from[0]][from[1]];
+	char casillas[8] = {'1','2','3','4','5','6','7','8'};	
+	char columnas[8] = {'a','b','c','d','e','f','g','h'};				
+	
+	fila = to[0] +1;
+	while(fila <= 7){
+			if((tab[fila][to[1]] == pza) && (fila != from[0]))
+				cas[0] = casillas[from[0]];
+			if(tab[fila][to[1]] != 0) break;
+			fila++;
+		}
+	
+	fila = to[0] -1;
+	while(fila >= 0){
+			if((tab[fila][to[1]] == pza) && (fila != from[0]))
+				cas[0] = casillas[from[0]];
+			if(tab[fila][to[1]] != 0) break;
+			fila--;
+		}
+
+
+	columna = to[1] +1;
+	while(columna <= 7){
+			if((tab[to[0]][columna] == pza) && (columna != from[1]))
+				cas[0] = columnas[from[1]];
+			if(tab[to[0]][columna] != 0) break;
+			columna++;
+		}
+
+	columna = to[1] -1;
+	while(columna >= 0){
+			if((tab[to[0]][columna] == pza) && (columna != from[1]))
+				cas[0] = columnas[from[1]];
+			columna--;
+		}
+
+	
+	strcat(notation,cas);
+}
 
 
 
 
+
+
+
+
+
+
+int check(Tablero tab,int color){
+	short i,j,k,n;
+	int rey = REY_N * color;
+	int pza;
+	casilla king={0,0};
+	casilla c;
+
+	for(i=0;i<8;i++){  
+		for(j=0;j<8;j++){
+			if(tab[i][j] == rey){
+				k=i;
+				n=j;
+				king[0]=k;
+				king[1]=n;
+				break;		
+			}
+		}
+	}
+	
+	for(i=0;i<8;i++){  
+		for(j=0;j<8;j++){
+			pza = tab[i][j];
+			//printf("pieza: %d color: %d\n",pza,color);
+			switch(pza*color){
+			
+				case(PEON):
+					c[0]=i;
+					c[1]=j;
+					if(peonAtacaCasilla(c,king,color))
+						return 1;
+					break;
+				case(TORRE):
+					c[0]=i;
+					c[1]=j;
+					if(torreAtacaCasilla(c,king,tab))
+						return 1;
+					break;
+				case(CABALLO):
+					c[0]=i;
+					c[1]=j;
+					if(caballoAtacaCasilla(c,king))
+						return 1;
+					break;
+				case(ALFIL):
+					c[0]=i;
+					c[1]=j;
+					if(alfilAtacaCasilla(c,king,tab))
+						return 1;
+					break;
+				case(DAMA):
+					c[0]=i;
+					c[1]=j;
+					if(damaAtacaCasilla(c,king,tab))
+						return 1;
+					break;
+				}	
+		}
+	}
+	return 0;
+}

@@ -1,6 +1,6 @@
 
 from ControlVista import *
-from XmlParser import *
+
 from Model.Pawn import *
 from Model.Rook import *
 from Model.Knight import *
