@@ -1,3 +1,0 @@
-gcc -c -lpthread genera.c poda.c funcutilidad.c piezas.c piezas.h poda.h funcutilidad.h var_data.h
-gcc -shared genera.o poda.o funcutilidad.o piezas.o -o genera.so
-
