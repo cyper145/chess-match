@@ -7,7 +7,7 @@
 
 #define DEEP 		3	
 #define CICLOS		10
-#define LEVEL_NODES	5
+#define LEVEL_NODES	4
 
 //--------CASILLAS---------------------------
 #define F_1	0
