@@ -65,7 +65,7 @@ int valores[3*DEEP];
 void eliminar(nodo nod);
 void mostrar_tablero(Tablero tab);
 void gen(nodo inicial,Tablero tab,int turno);
-void torre(nodo padre,Tablero tab,casilla cas,short turno,short w_l_cas,short w_s_cas,short b_l_cas,short b_s_cas);
+void torre(nodo padre,Tablero tab,casilla cas,short turno);
 void caballo(nodo padre,Tablero tab,casilla cas,short w_l_cas,short w_s_cas,short b_l_cas,short b_s_cas);
 void alfil(nodo padre,Tablero tab,casilla cas,short w_l_cas,short w_s_cas,short b_l_cas,short b_s_cas);
 void rey(nodo padre,Tablero tab,casilla cas,short turno,short w_l_cas,short w_s_cas,short b_l_cas,short b_s_cas);
@@ -80,11 +80,11 @@ char* jugar(int t);
 char* seleccionar(nodo nod,int color );
 void KnightGoTo(Tablero tab, casilla from, casilla to, char* notation);
 void RookGoTo(Tablero tab, casilla from, casilla to, char* notation);
-
-
-
-
-
+char* pensar(int t);
+int not_checkMate(Tablero tab);
+short clearCastle(nodo nod,int columna,int turno);
+nodo iniciar_arbol(int turno);
+void enroques(nodo padre,Tablero tab,casilla cas,short turno);
 
 
 
@@ -124,86 +124,6 @@ short B_SHORT_CASTLE = 1;
 
 
 
-
-
-
-
-
-
-
-
-
-char* generate(int t)
-{
-	int k, turno;
-	char *a="", *jugada=NULL;;
-	turno = t;
-	
-	clock_t start = clock();
-	
-	
-	/*---Inicializa el primer nodo del arbol------*/
-	nodo inicial;
-	inicial=malloc(sizeof(struct Nodo));
-	//struct Nodo inicial;
-	memcpy(inicial->board,posicion,sizeof(Tablero));
-	cont_free = 0;
-	contador =0;
-	cont_f=0;
-  	inicial->hijo=NULL;
-  	inicial->sig=NULL;
-  	memcpy(inicial->notation,"",(10*sizeof(char)));
-	inicial->turno=turno;
-	inicial->value=0;
-	inicial->W_shortCastle = W_SHORT_CASTLE;
-	inicial->W_longCastle = W_LONG_CASTLE;
-	inicial->B_shortCastle = B_SHORT_CASTLE;
-	inicial->B_longCastle = B_LONG_CASTLE;
-	/*---------------------------------------------*/
-	
-	
-
-	generar(0,inicial,turno);
-	valuar_utilidad(inicial,0);
-	poda(inicial);
-	preseleccion(inicial);
-	
-	for(k=0;k< CICLOS ;k++)	
-	{	
-		regenera(inicial);
-		acomodar_minimax(inicial,0);
-		preseleccion(inicial);
-		
-	}
-	
-
-	//mostrar_arbol(0,inicial,jugada);
-	/*Selecciona la mejor jugada*/	
-	jugada = seleccionar(inicial, turno);
-	
-	double finish = (((double)clock() - start) / CLOCKS_PER_SEC);
-	printf ("Jugadas analizadas: %ld - timepo: %f  seg - Seleccionada: %s ",contador,finish,jugada );
-	
-	cont_f++;
-	borrar_all_hijos(inicial);
-	return (jugada);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*********************************************************************************************
 *  Esta funcion es la que se llama para hacer jugar al motor.
 *  Recibe el turno y retorna la jugada elegida por el motor.
@@ -214,8 +134,117 @@ char* generate(int t)
 **********************************************************************************************/
 char* jugar(int t)
 {
-  return(generate(t));		
+  return(pensar(t));		
 }
+/**********************************************************************************************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**************************************************************************************************
+* La funcion pensar calcula y devuelve la mejor jugada para el turno insicado.
+* Consta de varias etapas. La Primera consiste en generar todas las combinaciones de jugadas
+* a partir de la posicion actual con una profundidad DEEP. Es decir, calcula todas las jugadas posibles
+* del bando que es el turno. Para cada una de estas jugadas, calcula todas las posibles respuestas del
+* oponente y a cada una de esta cada respuesta del primero y asi hasta una profundidad DEEP. Con esto se 
+* forma un arbol de profundidad DEEP.
+* Luego se procede a valuar el arbol, lo cual consiste en darle un valor a cada posicion obtenida al
+* final de cada rama del arbol. Este valor representa las mejores jugadas o ventaja de la posicion.
+* Un valor positivo representa ventaja blanca mientras que un valor negativo, ventaja negra.
+* Luego se poda el arbol. Se desacrtan las peores jugadas basandose en la valoracion anterior.
+* Se repite el mismo procedimiento una cantidad CICLOS de veces y finalmente se elige la mejor jugada.
+*
+* Antes de volver se borra todo el arbol.
+**************************************************************************************************/
+char* pensar(int t)
+{
+	int k, turno;
+	char *a="", *jugada=NULL;;
+	clock_t start = clock();
+
+	/*---Inicializa el primer nodo del arbol------*/
+	nodo inicial = iniciar_arbol(t);
+	
+	/*primer ciclo: genera todas las combinaciones de jugadas en una profundidad DEEP*/
+	generar(0,inicial,t);
+	valuar_utilidad(inicial,0);
+	poda(inicial);
+	preseleccion(inicial);
+
+	/*Expande el arbol en las ramas de las n (LEVEL_NODES) mejores juagdas*/
+	for(k=0;k< CICLOS/2 ;k++)	
+	{	
+		regenera(inicial);
+		acomodar_minimax(inicial,0);
+		preseleccion(inicial);
+	}
+	
+	jugada = seleccionar(inicial, turno);
+	double finish = (((double)clock() - start) / CLOCKS_PER_SEC);
+	printf ("Jugadas analizadas: %ld - timepo: %f  seg - Seleccionada: %s ",contador,finish,jugada );
+	
+	cont_f++;
+	borrar_all_hijos(inicial);
+	return (jugada);
+}
+/*************************************************************************************************************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*************************************************************************************************************
+* Inicia el prier nodo del arbol.
+* Se copia la posicion actual del tablero, de la variable global 'posicion'
++ y las condiciones disponibles de los enroques
+**************************************************************************************************************/
+nodo iniciar_arbol(int turno){
+	nodo inicial=malloc(sizeof(struct Nodo));
+	if(inicial != NULL){
+		memcpy(inicial->board,posicion,sizeof(Tablero));
+		cont_free = 0;
+		contador =0;
+		cont_f=0;
+  		inicial->hijo=NULL;
+  		inicial->sig=NULL;
+  		memcpy(inicial->notation,"",(10*sizeof(char)));
+		inicial->turno=turno;
+		inicial->value=0;
+		inicial->W_shortCastle = W_SHORT_CASTLE;
+		inicial->W_longCastle = W_LONG_CASTLE;
+		inicial->B_shortCastle = B_SHORT_CASTLE;
+		inicial->B_longCastle = B_LONG_CASTLE;
+	}
+	return inicial;
+}
+/****************************************************************************************************************/
+
+
+
+
 
 
 
@@ -244,10 +273,8 @@ void set_jugada(int f_origen,int c_origen,int f_dest,int c_dest)
 	aux = posicion[f_origen][c_origen];
 	posicion[f_origen][c_origen] = cero;
 	posicion[f_dest][c_dest] = aux;
-	//printf("MOSTRAR TABLERO \n");	
-	//mostrar_tablero(posicion);
-
 }
+/***********************************************************************************************/
 
 
 
@@ -260,6 +287,14 @@ void set_jugada(int f_origen,int c_origen,int f_dest,int c_dest)
 
 
 
+
+
+
+
+/***********************************************************************************************
+* Genera para un nodo todas las jugadas posibles y repite recursivamente el proceso para cada
+* nodo hijo hasta llegar a una profundidad DEEP
+************************************************************************************************/
 void generar(int prof,nodo nod, int turno){
 	
 	gen(nod,nod->board,turno);
@@ -273,7 +308,7 @@ void generar(int prof,nodo nod, int turno){
 		nod=nod->sig;
 	}
 }
-
+/************************************************************************************************/
 
 
 
@@ -308,21 +343,14 @@ void gen(nodo inicial,Tablero tab,int turno)
   short b_s_cas = inicial->B_shortCastle;
   int w_king = 0,b_king = 0;
  
- for(f=0;f<8;f++){
-	for(c=0;c<8;c++){
-		if(tab[f][c] == REY_B) w_king=1;
-		if(tab[f][c] == REY_N) b_king=1;	
-	}
-}
- if(b_king && w_king){
-	 			
- 	for(f=0;f<8;f++){
+  if(not_checkMate(tab)){
+	for(f=0;f<8;f++){
 		for(c=0;c<8;c++){
 			if((tab[f][c]*turno)>0){
 				casilla cas={f,c};
 				switch (tab[f][c]*turno){
 					case TORRE:
-						torre(inicial,tab,cas,turno,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
+						torre(inicial,tab,cas,turno);
 						break;
 					case CABALLO:
 						caballo(inicial,tab,cas,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
@@ -331,11 +359,12 @@ void gen(nodo inicial,Tablero tab,int turno)
 						alfil(inicial,tab,cas,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 						break;
 					case DAMA:
-						torre(inicial,tab,cas, turno,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
+						torre(inicial,tab,cas, turno);
 						alfil(inicial,tab,cas,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 						break;
 					case REY:
 						rey(inicial,tab,cas,turno,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
+						enroques(inicial,tab,cas,turno);
 						break;
 					case PEON:
 						peon(inicial,tab,cas,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
@@ -346,10 +375,47 @@ void gen(nodo inicial,Tablero tab,int turno)
 	 }
  }
 }
+/*****************************************************************************************************************/
 
 
 
 
+
+
+
+
+
+
+
+
+
+/*******************************************************************************************************************
+* Controla que los dos reyes se encuentren en el tablero. En el caso de que alguno no este, es por que hubo jaqueMate
+* en la jugada anterior y por lo tanto no generara mas jugadas.
+*******************************************************************************************************************/
+int not_checkMate(Tablero tab){
+	int f,c,w_king=0,b_king=0;
+	
+	for(f=0;f<8;f++){
+		for(c=0;c<8;c++){
+			if(tab[f][c] == REY_B) w_king=1;
+			if(tab[f][c] == REY_N) b_king=1;	
+		}
+	}	
+	return(w_king && b_king);
+}
+/******************************************************************************************************************/
+
+
+
+
+
+
+
+/*******************************************************************************************************************
+* Repite el proceso de generar-valuar-podar pero con una profundidad de 3 jugadas
+*
+********************************************************************************************************************/
 void regenera(nodo nod)
 {
 	nodo aux;
@@ -361,7 +427,7 @@ void regenera(nodo nod)
 			regenera(aux);
 			}
 		else {
-			generar(DEEP-2,aux,turno);
+			generar(DEEP-1,aux,turno);
 			valuar_utilidad(aux,0);
 			poda(aux);
 			acomodar_minimax(aux,0);
@@ -369,13 +435,17 @@ void regenera(nodo nod)
 		aux=aux->sig;
 	}
 }
+/***********************************************************************************************************************/
 
 
 
 
 
 
-/***************************************************************************************
+
+
+
+/**********************************************************************************************************************
 * Analiza y agrega al arbol cada jugada posible para una torre.
 *
 * @padre: nodo inicial del arbol
@@ -383,91 +453,72 @@ void regenera(nodo nod)
 * @tab: tablero con la posicion actual
 *
 * @cas: casilla donde se encuentra la torre a analizar 
-****************************************************************************************/
-void torre(nodo padre,Tablero tab,casilla cas,short turno,short w_l_cas,short w_s_cas,short b_l_cas,short b_s_cas){
+**********************************************************************************************************************/
+void torre(nodo padre,Tablero tab,casilla cas,short turno){
 
-	short f,c,fil,col;
-
-	fil=cas[0];
-	col=cas[1];
-	f=cas[0]-1;
-	c=cas[1];
+	short f,c,
+	fil=cas[0],
+	col=cas[1],enr[4];
+	int i,k,df=0,dc=1;;
+	 *enr = clearCastle(padre,cas[1],turno);
 	
-	if(turno == BLANCO) {
-		if(fil == 0) w_l_cas = 0;
-		if (fil == 7) w_s_cas = 0;
-	}
-	else{
-		if(fil == 0) b_l_cas = 0;
-		if (fil == 7) b_s_cas = 0;
-	}
-	/*abajo*/
-	while(f>=0){
-
-		if((tab[fil][col]*tab[f][c])==0){
-			casilla to={f,c};
-			insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
+	for(i=0;i<2;i++){
+		for(k=0;k<2;k++){
+			f = fil + df;
+			c = col + dc; 
+			while((c>=0)&&(c<=7)&&(f>=0)&&(f<=7)){
+				if((tab[fil][col]*tab[f][c])<=0){
+					casilla to={f,c};
+					insertar_nodo(padre,cas,to,enr[0],enr[1],enr[2],enr[3]);
+					if(tab[f][c]<0) break;
+				}
+				else break;
+				f = f + df;
+				c = c + dc; 
+			}
+			df = df *-1;
+			dc = dc *-1;
 		}
-		else if((tab[fil][col]*tab[f][c])<0){
-			casilla to={f,c};
-			insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
-			break;
-		}	
-		else break;
-		f--;
-	}
-	f=cas[0]+1;
-	c=cas[1];
-
-	/*arriba*/
-	while(f<=7){
-		if((tab[fil][col]*tab[f][c])==0){
-			casilla to={f,c};
-			insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
-		}
-		else if((tab[fil][col]*tab[f][c])<0){
-			casilla to={f,c};
-			insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
-			break;
-		}	
-		else break;
-		f++;
-	}
-	f=cas[0];
-	c=cas[1]-1;
-
-	/*izquierda*/
-	while(c>=0){
-		if((tab[fil][col]*tab[f][c])==0){
-			casilla to={f,c};
-			insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
-		}
-		else if((tab[fil][col]*tab[f][c])<0){
-			casilla to={f,c};
-			insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
-			break;
-		}	
-		else break;
-		c--;
-	}
-	f=cas[0];
-	c=cas[1]+1;
-	
-	/*derecha*/
-	while(c<=7){
-		if((tab[fil][col]*tab[f][c])==0){
-			casilla to={f,c};
-			insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
-		}
-		else if((tab[fil][col]*tab[f][c])<0){
-			casilla to={f,c};
-			insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
-			break;
-		}	
-		else break;
-		c++;
+	 	df = 1;
+		dc = 0;
 	}
 }
+/***********************************************************************************************************/
+
+
+
+
+
+
+
+
+/****************************************************************************************
+* Deshabilita los enroques correspondintes a la jugada de torre 
+****************************************************************************************/
+short clearCastle(nodo nod,int columna,int turno){
+	short castles[4]={nod->W_shortCastle,nod->W_longCastle,nod->B_shortCastle,nod->B_longCastle};
+	if(turno == BLANCO) {
+		if(columna == 0) castles[0] = 0;
+		if (columna == 7) castles[1] = 0;
+		if (columna == 4){
+			castles[0]=0;
+			castles[1]=0;
+		}
+	} else{
+		if(columna == 0) castles[2] = 0;
+		if (columna == 7) castles[3] = 0;
+ 		if (columna == 4){
+			castles[2]=0;
+			castles[3]=0;
+		}
+	}
+	return *castles;
+}
+/***************************************************************************************/
+
+
+
+
 
 
 
@@ -497,7 +548,9 @@ void caballo(nodo padre,Tablero tab,casilla cas,short w_l_cas,short w_s_cas,shor
 		for(k=0;k<2;k++){
 			f=cas[0]+d_f;
 			c=cas[1]+d_c;
-			if((0<=f)&&(f<=7)&&(0<=c)&&(c<=7)&&((tab[fil][col]*tab[f][c])<=0)){
+			//printf("caballo %d %d %d %d\n",f,c,fil,col);
+			if((0<=f)&&(f<=7)&&(0<=c)&&(c<=7))
+				if((tab[fil][col]*tab[f][c])<=0){
 				casilla to={f,c};
 				insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 			}
@@ -508,9 +561,9 @@ void caballo(nodo padre,Tablero tab,casilla cas,short w_l_cas,short w_s_cas,shor
 	d_f=1;
 	d_c=2;
    }
-
+   
 }
-
+/*****************************************************************************************************************/
 
 
 
@@ -531,67 +584,29 @@ void caballo(nodo padre,Tablero tab,casilla cas,short w_l_cas,short w_s_cas,shor
 * @cas: casilla donde se encuentra el alfil a analizar 
 ****************************************************************************************/
 void alfil(nodo padre,Tablero tab,casilla cas,short w_l_cas,short w_s_cas,short b_l_cas,short b_s_cas){
-
-  short  f,c,i,j,k,fil,col;
-  short  d_f=1;
-  short  d_c=-1;
-  f=cas[0]+1;
-  c=cas[1]-1;
-  fil=cas[0];
-  col=cas[1];
-  /**Derecha**/
-  /*abajo*/
-  while((f<=7)&&(c>=0)){
-	if((tab[fil][col]*tab[f][c])<=0){
-		casilla to={f,c};
-		insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
-		if(tab[f][c]!=0) break;
+  short  i,k,fil=cas[0],col =cas[1],
+	 dc=1,df=1,f,c;
+  
+  for(i=0;i<2;i++){
+  	for(k=0;k<2;k++){
+		f = fil + df;
+		c = col + dc;
+		while((c>=0)&&(c<=7)&&(f>=0)&&(f<=7)){
+			if((tab[fil][col]*tab[f][c])<=0){
+				casilla to={f,c};
+				insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
+				if(tab[f][c]<0) break;
+			}
+			else break;
+			f = f + df;
+			c = c + dc; 
+		}
+		df = df*-1;
 	}
-	else break;
-	f++;
-  	c--;
-  }
-  /*arriba*/
-  f=cas[0]+1;
-  c=cas[1]+1;
-  while((f<=7)&&(c<=7)){
-	if((tab[fil][col]*tab[f][c])<=0){
-		casilla to={f,c};
-		insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
-		if(tab[f][c]!=0) break;
-	}
-	else break;
-	f++;
-  	c++;
-  }
-  /**izquierda**/
-  /*arriba*/
-  f=cas[0]-1;
-  c=cas[1]+1;
-  while((f>=0)&&(c<=7)){
-	if((tab[fil][col]*tab[f][c])<=0){
-		casilla to={f,c};
-		insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
-		if(tab[f][c]!=0) break;
-	}
-	else break;
-	f--;
-  	c++;
-  }
-   /*abajo*/
-  f=cas[0]-1;
-  c=cas[1]-1;
-  while((f>=0)&&(c>=0)){
-	if((tab[fil][col]*tab[f][c])<=0){
-		casilla to={f,c};
-		insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
-		if(tab[f][c]!=0) break;
-	}
-	else break;
-	f--;
-  	c--;
-  }
+	dc = dc*-1;
+  }		
 }
+/***********************************************************************************************************************/
 
 
 
@@ -600,8 +615,7 @@ void alfil(nodo padre,Tablero tab,casilla cas,short w_l_cas,short w_s_cas,short 
 
 
 
-
-/***************************************************************************************
+/*******************************************************************************************************************
 * Analiza y agrega al arbol cada jugada posible para un rey. (falta implementar los enroques!!)
 *
 * @padre: nodo inicial del arbol
@@ -609,77 +623,71 @@ void alfil(nodo padre,Tablero tab,casilla cas,short w_l_cas,short w_s_cas,short 
 * @tab: tablero con la posicion actual
 *
 * @cas: casilla donde se encuentra el rey a analizar 
-****************************************************************************************/
+********************************************************************************************************************/
 void rey(nodo padre,Tablero tab,casilla cas,short turno,short w_l_cas,short w_s_cas,short b_l_cas,short b_s_cas){
 
- int  f,c,i,j,k,fil,col;
- int  d_f=1;
- int  d_c=0;
+ 	int  f,c,i,j,k,fil=cas[0],col=cas[1],
+ 	d_f=1,d_c=0,aux;
+ 	short enr[4];
 
- fil=cas[0];
- col=cas[1];
-
- if(turno == BLANCO){
-	w_l_cas = 0;
-	w_s_cas = 0;
- }
- else{
-	b_l_cas = 0;
-	b_s_cas = 0;
- }	
- for(i=0;i<2;i++){
-	for(j=0;j<2;j++){
-		f=cas[0]+d_f;
-		c=cas[1]+d_c;
-		if((0<=f)&&(f<=7)&&(0<=c)&&(c<=7)&&((tab[fil][col]*tab[f][c])<=0)){
-			casilla to={f,c};
-			insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
+  	*enr = clearCastle(padre,cas[1],turno);
+	for(i=0;i<2;i++){
+		for(j=0;j<2;j++){
+			for(k=0;k<2;k++){
+				f=fil+d_f;
+				c=col+d_c;
+				if((0<=f)&&(f<=7)&&(0<=c)&&(c<=7))
+					if((tab[fil][col]*tab[f][c])<=0){
+						casilla to={f,c};
+						insertar_nodo(padre,cas,to,enr[0],enr[1],enr[2],enr[3]);			
+					}
+				d_f=d_f*-1;
+				d_c=d_c*-1;
+			}
+			aux = d_f;
+			d_f= d_c;
+			d_c=aux;
 		}
-		d_f=d_f*-1;
-		d_c=d_c*-1;
+  		d_f = 1;
+  		d_c = 1;	
 	}
-	d_f=0;
-	d_c=1;
   }
+/***********************************************************************************************************************/
 
- d_f=1;
- d_c=1;
- for(i=0;i<2;i++){
-	for(j=0;j<2;j++){
-		f=cas[0]+d_f;
-		c=cas[1]+d_c;
-		if((0<=f)&&(f<=7)&&(0<=c)&&(c<=7)&&((tab[fil][col]*tab[f][c])<=0)){
-			casilla to={f,c};
-			insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
-			
-		}
-		d_c=d_c*-1;
-	}
-	d_f=d_f*-1;
-  }
 
-  /*------------ enroque ---------------------------------------*/
+
+
+
+
+
+
+
+
+/*******************************************************************************************
+* Movimientos de enroque
+********************************************************************************************/
+void enroques(nodo padre,Tablero tab,casilla cas,short turno){
   short l_castle, s_castle;	
   if(turno == BLANCO) {
 	s_castle = padre->W_shortCastle;
 	l_castle =  padre->W_longCastle;
-  }
-  else{
+  }else{
      s_castle = padre->B_shortCastle;
      l_castle =  padre->B_longCastle;	
   }			
   if((s_castle) && (tab[cas[0]][6] == 0) && (tab[cas[0]][5] == 0)){
 	casilla from={ENROQUE_CORTO,0};
 	casilla to={cas[0],6};
-	insertar_nodo(padre,from,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
+	insertar_nodo(padre,from,to,padre->W_longCastle,padre->W_shortCastle,padre->B_longCastle,padre->B_shortCastle);
   }	
   if((l_castle) && (tab[cas[0]][1] == 0) && (tab[cas[0]][2] == 0) && (tab[cas[0]][3] == 0)){
-
 	casilla from = {ENROQUE_LARGO,0};
 	casilla to = {cas[0],2};
-	insertar_nodo(padre,from,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
+	insertar_nodo(padre,from,to,padre->W_longCastle,padre->W_shortCastle,padre->B_longCastle,padre->B_shortCastle);
   }	
 }
+/***********************************************************************************************************************/
+
 
 
 
@@ -707,8 +715,7 @@ void peon(nodo padre,Tablero tab,casilla cas,short w_l_cas,short w_s_cas,short b
    col=cas[1];
 
    paso=tab[fil][col];
-   
-
+ 
    /*una casilla adelante*/
    f=cas[0]+paso;
    c=cas[1];
@@ -718,7 +725,6 @@ void peon(nodo padre,Tablero tab,casilla cas,short w_l_cas,short w_s_cas,short b
 	casilla to={f,c};
 	insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
 	}
-
 
    /*dos casillas adelante*/
    if (((cas[0]==((paso+7)%7))&& (tab[f][cas[1]]==0)) && (tab[f+paso][c]==0)){
@@ -737,7 +743,7 @@ void peon(nodo padre,Tablero tab,casilla cas,short w_l_cas,short w_s_cas,short b
 	d_c=d_c*-1;
     }
 }
-
+/***********************************************************************************************************************/
 
 
 
@@ -769,7 +775,6 @@ void insertar_nodo(nodo padre,casilla from,casilla to,short w_l_cas,short w_s_ca
 	short fila;
 
 	contador++;
-
 	nuevo=malloc(sizeof(struct Nodo));
 	if(nuevo!=NULL){
 
@@ -838,37 +843,31 @@ void insertar_nodo(nodo padre,casilla from,casilla to,short w_l_cas,short w_s_ca
 	}
 	else printf("no hay memoria\n");
 }
+/***********************************************************************************************************************/
+
+
+
 
 
 
 int cont=0;
 
 
-
-
+/***********************************************************************************************************************
+* Muestra el arbol de jugadas, imprimiendo cada linea de jugadas completas por rama.
+***********************************************************************************************************************/
 void mostrar_arbol(int prof,nodo padre, char *z){
-
 	int k;
-	
 	partido[prof]=padre->notation;
 	valores[prof]=padre->value;
-	//partido[prof]=padre->hijo->notation;
 	nodo aux =padre->hijo;
-	//partido[prof]=aux->notation;
-	//printf("padre v:%s  %d\n",padre->notation,padre->value);
+	
 	while(aux!=NULL){
-		//printf("%s ",&aux->notation);
-		//if(prof<DEEP){
 		if(aux->hijo != NULL){
 			mostrar_arbol(prof+1,aux,z);
-
-			}
-
-		//if(prof==DEEP){
+		}
 		else{
 			partido[prof+1]=aux->notation;
-			//valores[prof+1]=aux->value;
-
 			for(k=1;k<= prof+1;k++){
 				printf("%s ",partido[k]);
 			}
@@ -877,8 +876,15 @@ void mostrar_arbol(int prof,nodo padre, char *z){
 		}
 		aux=aux->sig;
 	}
-	
 }
+/***********************************************************************************************************************/
+
+
+
+
+
+
+
 
 
 
@@ -890,9 +896,7 @@ void mostrar_arbol(int prof,nodo padre, char *z){
 * @to:	casilla final de la pieza a mover.
 ********************************************************************************************/
 void convert_to_char(nodo padre,nodo act,casilla from,casilla to,char *s){
-
 	char not[10]="",cc[2]="";
-
 	int pza,pza2;
 	char casillas[8]={'a','b','c','d','e','f','g','h'};
 
@@ -923,47 +927,42 @@ void convert_to_char(nodo padre,nodo act,casilla from,casilla to,char *s){
 			strcat(not,cc);
 			sprintf(cc,"%hd",(to[0]+1));
 			strcat(not,cc);
-			//printf("%s \n",not);
-			//return(not);
 			memcpy(s,not,sizeof(not));
 			return;
-			//s=not;
-		}
-		else{
+		}else{
 			sprintf(cc,"%hd",(to[0]+1));
 			strcat(not,cc);
-			
-			//return(not);
 			memcpy(s,not,sizeof(not));
 			return;
-			//s=not;
 		}
-
 	}
 
 	if(pza2!=0) strcat(not,come);
-
-	//strcat(cc,casillas[to[1]]);
 	cc[0]=casillas[to[1]];
 	strcat(not,cc);
 	sprintf(cc,"%hd",(to[0]+1));
 	strcat(not,cc);
 
-	if(check(act->board,padre->turno)){
-		//printf("JAque! \n");
-		strcat(not,"+");
-	}  	
-
-	//printf("%s \n",not);
-	//return (not);
+	if(check(act->board,padre->turno)) strcat(not,"+");
 	memcpy(s,not,sizeof(not));
-	//printf("jugada: %s color: %d \n",not,padre->turno);	
+
 	return;
-	//s=not;
-
 }
+/**********************************************************************************************************************/
 
 
+
+
+
+
+
+
+
+
+
+/***********************************************************************************************************************
+* Muestra la posicion actual del tablero
+***********************************************************************************************************************/
 void mostrar_tablero(Tablero tab)
 {
  int j,k;
@@ -975,6 +974,9 @@ void mostrar_tablero(Tablero tab)
 	}
 	return;
 }
+/***********************************************************************************************************************/
+
+
 
 
 
@@ -999,16 +1001,14 @@ void mostrar_tablero(Tablero tab)
 ******************************************************************************************************/
 char* seleccionar(nodo nod, int color)
 {
-	nodo aux;
-	aux = nod->hijo;
+	nodo aux= nod->hijo;
 	int max = -100000;
 	short auxiliar,f_origen,c_origen,f_dest,c_dest;
 	char * j;
-	jugada move;
-	int flag = 0;
+	
+	
 	while(aux != NULL)
 	{
-
 		if((aux->value* color) > max)
 		{
 			max = (aux->value * color);
@@ -1018,16 +1018,12 @@ char* seleccionar(nodo nod, int color)
 			B_LONG_CASTLE = aux->B_longCastle;
 			B_SHORT_CASTLE = aux->B_shortCastle;
 			memcpy(posicion,aux->board,sizeof(Tablero));
-			move = aux->j;
-		
 		}
-		
 		aux = aux->sig;
 	}	
-	//printf("Jugada: %s %d %d %d %d\n",j, move.from[0], move.from[1], move.to[0], move.to[1]);
 	return (j);
 }
-
+/***********************************************************************************************************************/
 
 
 
@@ -1074,7 +1070,7 @@ void KnightGoTo(Tablero tab, casilla from, casilla to, char* notation){
 		d_c=2;
    	}
 }
-
+/***********************************************************************************************/
 
 
 
@@ -1129,7 +1125,7 @@ void RookGoTo(Tablero tab, casilla from, casilla to, char* notation){
 	
 	strcat(notation,cas);
 }
-
+/**********************************************************************************************************************/
 
 
 
@@ -1161,7 +1157,6 @@ int check(Tablero tab,int color){
 	for(i=0;i<8;i++){  
 		for(j=0;j<8;j++){
 			pza = tab[i][j];
-			//printf("pieza: %d color: %d\n",pza,color);
 			switch(pza*color){
 			
 				case(PEON):
@@ -1199,3 +1194,4 @@ int check(Tablero tab,int color){
 	}
 	return 0;
 }
+

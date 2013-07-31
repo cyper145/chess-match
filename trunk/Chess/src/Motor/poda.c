@@ -42,9 +42,8 @@ void podar(nodo nod)
 	nodo ant;
 	int val=0,i;
 	int minimax[LEVEL_NODES];
-	for(i=0;i < LEVEL_NODES;i++){
-		minimax[i] = -10000;
-	}	
+	for(i=0;i < LEVEL_NODES;i++) minimax[i] = -10000;
+	
 	int t = nod->turno;
 	while(aux != NULL)	
 		{
@@ -69,8 +68,7 @@ void podar(nodo nod)
 		{
 			val=(aux->value * nod->turno);
 			if(val < minimax[0]){
-					
-				if(ant==NULL) {
+				if(ant==NULL){
 					nod->hijo=aux->sig;
 					aux2 =aux->sig;
 					borrar_all_hijos(aux);
@@ -78,26 +76,22 @@ void podar(nodo nod)
 					free(aux);
 					aux = aux2;
 					cont_free ++;
-					
-					
+				}else{
+					ant->sig=aux->sig;
+					aux2 =aux->sig;
+					borrar_all_hijos(aux);
+					cont_f++;
+					free(aux);
+					aux = aux2;
+					cont_free ++;
 				}
-				else	{
-				ant->sig=aux->sig;
-				aux2 =aux->sig;
-				borrar_all_hijos(aux);
-				cont_f++;
-				free(aux);
-				aux = aux2;
-				cont_free ++;
-				
-				}
+			}else{
+			 	ant=aux;
+		         	aux=aux->sig;
 			}
-			else{
-			 ant=aux;
-		         aux=aux->sig;
-			}
-		 }	
+		 }
 }
+/***********************************************************************************************************/
 
 
 
@@ -107,11 +101,10 @@ void podar(nodo nod)
 
 
 
-
-/***********************************************************************************************
+/************************************************************************************************************
 * Borra y libera la memoria de todos los nodos hijos (y los hijos de los hijos....)
 * para un nodo en particular
-*************************************************************************************************/
+************************************************************************************************************/
 void borrar_all_hijos(nodo nod){
 	nodo aux = nod->hijo,aux2;
 	while(aux != NULL)
@@ -123,15 +116,20 @@ void borrar_all_hijos(nodo nod){
 			 cont_free ++;
 			 aux = aux2;
 		}	
-		else {
+		else{
 			aux2=aux->sig;
 			free(aux);
 			cont_free ++;
 			aux = aux2;
-			
-		}		
+ 		}		
 	}
 }
+/**********************************************************************************************************/
+
+
+
+
+
 
 
 
@@ -152,6 +150,7 @@ void poda(nodo nod){
 		nod=nod->sig;
 	}
 }
+/************************************************************************************************************/
 
 
 
@@ -159,6 +158,14 @@ void poda(nodo nod){
 
 
 
+
+
+
+
+
+/**************************************************************************************************************
+* Poda el arbol de jugadas de tal manera que solo quedan las LEVEL_NODES mejores ramas
+***************************************************************************************************************/
 void preseleccion(nodo nod)
 {
 	int t;
@@ -169,8 +176,8 @@ void preseleccion(nodo nod)
 		   preselect(aux,aux->value);		
 		   aux = aux->sig;	
 		}
-	
 }
+/****************************************************************************************************************/
 
 
 
@@ -179,28 +186,25 @@ void preseleccion(nodo nod)
 
 
 
-
-
+/*****************************************************************************************************************
+* Poda el arbol de jugadas de tal manera que solo quedan las LEVEL_NODES mejores ramas
+******************************************************************************************************************/
 void preselect(nodo nod,int max)
 {
 	nodo ax,ax2;
 	nodo aux = nod->hijo;
 
 	while(aux != NULL){
-		if(aux->value != max) {
+		if(aux->value != max){
 			ax = aux;
 			aux = aux->sig;
 			nod->hijo = aux;
-			//free(ax);
 			borrar_all_hijos(ax);
 			cont_f++;
 			free(ax);
 			cont_free++;	
-		}		
-		else
-		{
+		}else{
 			nod->hijo = aux;
-			//aca borrar todo lo q hay delante!!
 			ax = aux->sig;
 			while (ax != NULL){
 				borrar_all_hijos(ax);
@@ -215,6 +219,7 @@ void preselect(nodo nod,int max)
 		}
 	}
 }
+/********************************************************************************************************************/
 
 
 
@@ -222,6 +227,14 @@ void preselect(nodo nod,int max)
 
 
 
+
+
+
+
+/**********************************************************************************************************************
+* Despues de haber regenrado y podado el arbol, los valores maximos y minimos de los hijos pueden
+* haber cambiado, por lo que es necesario reacomodar los valores
+***********************************************************************************************************************/
 void acomodar_minimax(nodo nod, int prof){
 	nodo aux;
 	int m, n, min=10000, max= -10000;
@@ -231,9 +244,7 @@ void acomodar_minimax(nodo nod, int prof){
 			if(aux->hijo != NULL){
 				acomodar_minimax(aux,prof+1);
 				}
-			else{
-				m = (aux->value);
-			 }
+			else	m = (aux->value);
 			if(aux->value > max) max=aux->value;
 			if(aux->value < min) min=aux->value;
 
@@ -242,7 +253,7 @@ void acomodar_minimax(nodo nod, int prof){
 	if(nod->turno != BLANCO) nod->value = max;
 	else	nod->value = min;
 }
-
+/***********************************************************************************************************************/
 
 
 
