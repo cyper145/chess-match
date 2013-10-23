@@ -720,7 +720,7 @@ void peon(nodo padre,Tablero tab,casilla cas,short w_l_cas,short w_s_cas,short b
    f=cas[0]+paso;
    c=cas[1];
    destino = tab[f][c];
-   if((0<=f)&&(f>=7))	
+   if((0<=f)&&(f<=7))	
    if((tab[f][c]) == 0){
 	casilla to={f,c};
 	insertar_nodo(padre,cas,to,w_l_cas,w_s_cas,b_l_cas,b_s_cas);
