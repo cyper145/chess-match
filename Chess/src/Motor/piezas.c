@@ -3,7 +3,6 @@
 
 
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "piezas.h"
@@ -14,7 +13,7 @@
 ****************************************************************************************************/
 int peonAtacaCasilla(casilla peon, casilla cas, int color){
 	if(color == BLANCO){
-		if((cas[0] == peon[0]+ color) && ((cas[1] == peon[1]+1) || (cas[1] == peon[1]+1)))
+		if((cas[0] == peon[0]+ color) && ((cas[1] == peon[1]+1) || (cas[1] == peon[1]-1)))
 			return 1;
 	}
 	return 0;
